@@ -17,19 +17,28 @@ const PatientHistory = () => {
 
     return (
         <div className="section" id="patientHistorySection">
-            <div className="section-header">
-                <h2 className="section-title">Patient History</h2>
-                {/* Search Box with your original inline CSS */}
-                <div className="search-box" style={{ width: '400px' }}>
-                    <i className="fas fa-search"></i>
-                    <input 
-                        type="text" 
-                        id="historySearch" 
-                        placeholder="Search patient by name or ID..." 
-                    />
-                </div>
-            </div>
 
+     <div className="date-filter">
+          <h2 className="section-title">Patient History</h2>
+                                    <div className="filter-controls">
+            <input
+              type="date"
+              className="date-input"
+              id="startDate"
+              defaultValue="2023-10-01"
+            />
+            <span>to</span>
+            <input
+              type="date"
+              className="date-input"
+              id="endDate"
+              defaultValue="2023-10-15"
+            />
+            <button className="filter-btn" id="applyFilterBtn">
+              <i className="fas fa-filter"></i> Apply Filter
+            </button>
+          </div>
+        </div>
             <div className="table-container">
                 <table>
                     <thead>

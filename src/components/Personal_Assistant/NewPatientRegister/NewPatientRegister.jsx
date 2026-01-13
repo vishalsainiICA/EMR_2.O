@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import "./NewPatientRegister.css"
 
 const NewPatient = () => {
+  const [patient, setPatient] = useState({});
+  const [files, setFiles] = useState([])
+
+  const FileinputRef = useRef(null)
+
+  const openFileDialog = () => {
+    FileinputRef.current.click();
+  }
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    setFiles((prev) => [...prev, ...selectedFiles]);
+  };
+  const handleChange = (key, value) => {
+    setPatient((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   return (
     <div className="section active" id="newPatientSection">
       <div className="section-header">
@@ -55,6 +74,8 @@ const NewPatient = () => {
             <div className="form-group">
               <label htmlFor="patientName">Full Name *</label>
               <input
+                onChange={(e) => handleChange("name", e.target.value)}
+                value={patient?.name}
                 type="text"
                 id="patientName"
                 className="form-control"
@@ -65,6 +86,8 @@ const NewPatient = () => {
             <div className="form-group">
               <label htmlFor="patientAge">Age *</label>
               <input
+                onChange={(e) => handleChange("age", e.target.value)}
+                value={patient?.age}
                 type="number"
                 id="patientAge"
                 className="form-control"
@@ -79,7 +102,10 @@ const NewPatient = () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="patientGender">Gender *</label>
-              <select id="patientGender" className="form-control" required defaultValue="">
+              <select
+                onChange={(e) => handleChange("gender", e.target.value)}
+                value={patient?.gender}
+                id="patientGender" className="form-control" required defaultValue="">
                 <option value="" disabled>Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -89,6 +115,8 @@ const NewPatient = () => {
             <div className="form-group">
               <label htmlFor="patientPhone">Contact Number *</label>
               <input
+                onChange={(e) => handleChange("contact", e.target.value)}
+                value={patient?.contact}
                 type="tel"
                 id="patientPhone"
                 className="form-control"
@@ -113,6 +141,8 @@ const NewPatient = () => {
             <div className="form-group">
               <label htmlFor="emergencyName">Emergency Contact Name</label>
               <input
+                onChange={(e) => handleChange("attendeeName", e.target.value)}
+                value={patient?.attendeeName}
                 type="text"
                 id="emergencyName"
                 className="form-control"
@@ -122,6 +152,8 @@ const NewPatient = () => {
             <div className="form-group">
               <label htmlFor="emergencyPhone">Emergency Contact Number</label>
               <input
+                onChange={(e) => handleChange("attendeePhone", e.target.value)}
+                value={patient?.attendeePhone}
                 type="tel"
                 id="emergencyPhone"
                 className="form-control"
@@ -133,7 +165,10 @@ const NewPatient = () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="consultingDoctor">Consulting Doctor *</label>
-              <select id="consultingDoctor" className="form-control" required defaultValue="">
+              <select
+                onChange={(e) => handleChange("doctorId", e.target.value)}
+                value={patient?.doctorId}
+                id="consultingDoctor" className="form-control" required defaultValue="">
                 <option value="" disabled>Select Doctor</option>
                 <option value="dr_sharma">Dr. Anil Sharma (General Physician)</option>
                 <option value="dr_nair">Dr. Priya Nair (Internal Medicine)</option>
@@ -144,7 +179,10 @@ const NewPatient = () => {
 
             <div className="form-group">
               <label htmlFor="visitType">Visit Type</label>
-              <select id="visitType" className="form-control" defaultValue="consultation">
+              <select
+                onChange={(e) => handleChange("visitType", e.target.value)}
+                value={patient?.visitType}
+                id="visitType" className="form-control" defaultValue="consultation">
                 <option value="consultation">Consultation</option>
                 <option value="followup">Follow Up</option>
               </select>
@@ -154,6 +192,8 @@ const NewPatient = () => {
           <div className="form-group">
             <label htmlFor="patientHistory">Medical History Summary</label>
             <textarea
+              onChange={(e) => handleChange("patientHistory", e.target.value)}
+              value={patient?.patientHistory}
               id="patientHistory"
               className="form-control"
               placeholder="Any known medical conditions, allergies, or previous surgeries"
@@ -164,14 +204,23 @@ const NewPatient = () => {
           {/* File Upload Section */}
           <div className="file-upload-section">
             <h3 style={{ marginBottom: '15px' }}>Upload Previous Medical Records</h3>
-            <div className="file-upload-box" id="fileUploadBox">
+            <div onClick={openFileDialog} className="file-upload-box" id="fileUploadBox">
               <i className="fas fa-cloud-upload-alt"></i>
               <p>Click to upload or drag and drop</p>
               <span>Supports PDF, JPG, PNG (Max 10MB each)</span>
             </div>
-            <div className="uploaded-files" id="uploadedFiles">
-              {/* Uploaded files will appear here */}
-            </div>
+            <input type="file"
+              ref={FileinputRef}
+              multiple
+              accept='.pdf,.jpg,.jpeg,.png'
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          <div className="uploaded-files">
+        {files.map((file, index) => (
+          <p key={index}>{file.name}</p>
+        ))}
+      </div>
           </div>
 
           <div

@@ -6,24 +6,6 @@ function Personalassitant() {
         {/* UPDATED: Date Filter */}
         <div className="date-filter">
           <h3>Dashboard Overview</h3>
-          <div className="filter-controls">
-            <input
-              type="date"
-              className="date-input"
-              id="startDate"
-              defaultValue="2023-10-01"
-            />
-            <span>to</span>
-            <input
-              type="date"
-              className="date-input"
-              id="endDate"
-              defaultValue="2023-10-15"
-            />
-            <button className="filter-btn" id="applyFilterBtn">
-              <i className="fas fa-filter"></i> Apply Filter
-            </button>
-          </div>
         </div>
 
         {/* UPDATED: Dashboard Cards - Smaller */}

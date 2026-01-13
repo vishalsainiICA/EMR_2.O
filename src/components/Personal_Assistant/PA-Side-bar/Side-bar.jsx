@@ -23,7 +23,7 @@ const Side_bar = () => {
           </NavLink>
           <NavLink to="/new_patientregister" className="nav-item " data-page="newPatient" onClick={()=>setHeadline("Patient Registration")}>
             <i className="fas fa-user-injured"></i>
-            <span>New Patient Registration</span>
+            <span>+ Patient Registration</span>
           </NavLink>
           <NavLink to="/pa_initial_assessment" className="nav-item" data-page="initialAssessment" onClick={()=>setHeadline("Initial Assessments")}>
             <i className="fas fa-clipboard-check"></i>
