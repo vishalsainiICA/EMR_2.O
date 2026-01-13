@@ -20,10 +20,6 @@ const NewPatient = () => {
             <span>Click here or use scanner to capture Aadhar details</span>
           </div>
 
-          {/* Patient Preview Section 
-             (Ye HTML me display: none tha, maine waisa hi rakha hai.
-             Isme Dummy Data (Rajesh Kumar) already hai.)
-          */}
 
           <div
             className="patient-preview"
@@ -51,7 +47,9 @@ const NewPatient = () => {
             </div>
           </div>
 
-          <h3 style={{ marginBottom: '20px' }}>Patient Information</h3>
+          <div className='patient-detail-heading'>
+            <h3 style={{ marginBottom: '20px' }}>Patient Information</h3>
+          </div>
 
           <div className="form-row">
             <div className="form-group">
@@ -177,14 +175,14 @@ const NewPatient = () => {
           </div>
 
           <div
-            className="form-group"
+            // className="form-group1"
             style={{
               display: 'flex',
               justifyContent: 'flex-end',
               gap: '15px',
               marginTop: '30px'
             }}
-          >
+           >
             <button type="button" className="btn btn-outline" id="cancelPatientBtn">
               Cancel
             </button>
@@ -192,6 +190,7 @@ const NewPatient = () => {
               Register Patient
             </button>
           </div>
+
         </form>
       </div>
     </div>
