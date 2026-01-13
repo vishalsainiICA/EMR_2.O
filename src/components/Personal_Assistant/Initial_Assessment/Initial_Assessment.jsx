@@ -63,7 +63,7 @@ const Initialassessment = () => {
                                 <td><span className="status completed">{item.status}</span></td>
                                 <td>
                                     <button className="action-btn">View</button>
-                                                            <button class="action-btn">Assess</button>
+                                  <button class="action-btn">Assess</button>
                                 </td>
                             </tr>
                         ))}
