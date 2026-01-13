@@ -29,8 +29,8 @@ const Initialassessment = () => {
         <div className="section" id="initialAssessmentSection" style={{ display: 'block' }}>
             <div className="section-header">
                 <h2 className="section-title">Initial Patient Assessments</h2>
-                <button 
-                    className="btn btn-primary" 
+                <button
+                    className="btn btn-primary"
                     id="newAssessmentBtn"
                     onClick={() => setShowForm(true)}
                 >
@@ -71,22 +71,26 @@ const Initialassessment = () => {
             </div>
 
             {/* Assessment Form (Conditionally rendered based on state) */}
-            <div 
-                className="assessment-form" 
-                id="assessmentForm" 
+            <div
+                className="assessment-form"
+                id="assessmentForm"
                 style={{ display: showForm ? "block" : "none", marginTop: "30px" }}
             >
-                <h3 style={{ marginBottom: "20px" }}>Initial Assessment Form</h3>
+                <div className='patient-detail-heading'>
+                    <h3 style={{ marginBottom: "40px" }}>Initial Assessment Form</h3>
+                </div>
 
                 <div className="patient-info" style={{ marginBottom: "30px" }}>
                     <div className="patient-avatar">RK</div>
-                    <div>
+                    <div style={{display: "flex",flexDirection:"column",alignItems:"start"}}>
                         <h3 id="assessmentPatientName">Rajesh Kumar</h3>
                         <p id="assessmentPatientId">#PT-2023-0012 | 42 years, Male</p>
                     </div>
                 </div>
 
-                <h4 style={{ marginBottom: "15px" }}>Vital Signs</h4>
+                <div className='patient-detail-heading'>
+                    <h4 style={{ marginBottom: "15px" }}>Vital Signs</h4>
+                </div>
                 <div className="vitals-grid">
                     <div className="vital-item">
                         <div className="vital-label">Blood Pressure</div>
@@ -140,10 +144,10 @@ const Initialassessment = () => {
                     </div>
                 </div>
 
-                <div className="form-group" style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
-                    <button 
-                        type="button" 
-                        className="btn btn-outline" 
+                <div  style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
+                    <button
+                        type="button"
+                        className="btn btn-outline"
                         id="cancelAssessmentBtn"
                         onClick={() => setShowForm(false)}
                     >
