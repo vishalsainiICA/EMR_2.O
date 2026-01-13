@@ -37,11 +37,24 @@
     margin-bottom: 24px;
 }
 
+.patient-detail-heading
+{
+    display: flex;
+    align-items: start;
+    color: var(--text-dark);
+}
+
 .section-title {
     font-size: 20px;
     font-weight: 600;
     color: var(--text-dark);
 }
+
+/* .test{
+    height: 10px;
+    width: 10px;
+    background: var(--accent-color);
+} */
 
 /* 3. Buttons (Original Hover Effects) */
 .btn {
@@ -176,6 +189,9 @@ tr:hover {
 }
 
 .vital-item {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
     background-color: var(--bg-light);
     padding: 16px;
     border-radius: 8px;
