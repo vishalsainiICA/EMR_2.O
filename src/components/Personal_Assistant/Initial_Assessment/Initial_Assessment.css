@@ -256,3 +256,41 @@ textarea:focus {
         flex-direction: column;
     }
 }
+
+/* patient detail history */
+
+/* Modal Overlay to cover the whole screen */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Background thoda dark karne ke liye */
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center;     /* Vertically center */
+    z-index: 9999;          /* Sabse upar dikhane ke liye */
+}
+
+/* Modal Content Box */
+.modal-content {
+    background-color: #fff;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;       /* Screen se bahar na jaye */
+    overflow-y: auto;       /* Agar content bada ho toh scroll ho jaye */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 10000;
+}
+
+/* Close button positioning */
+.close-modal {
+    cursor: pointer;
+    font-size: 24px;
+    border: none;
+    background: none;
+}

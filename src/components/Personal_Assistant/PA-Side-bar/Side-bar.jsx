@@ -3,9 +3,12 @@ import Dashboard from '../Dashbord/Dashbord';
 import Newdashbord from '../NewPatientRegister/NewPatientRegister.jsx';
 import "./Side-bar.css"
 import { NavLink, Outlet } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClipboard, faCog, faDashboard, faHistory, faSearch, faUserInjured } from '@fortawesome/free-solid-svg-icons';
+import { faBell } from '@fortawesome/free-regular-svg-icons';
 const Side_bar = () => {
 
-  const[headline,setHeadline]=useState("PA Dashboard")
+  const [headline, setHeadline] = useState("PA Dashboard")
   return (
     <div className="app-container"> {/* Ek wrapper div zaroori hai React return ke liye */}
 
@@ -17,20 +20,22 @@ const Side_bar = () => {
         </div>
 
         <div className="nav-menu">
-          <NavLink to="/dashboard" className="nav-item  " data-page="dashboard" onClick={()=>setHeadline("PA Dashboard")}>
-            <i className="fas fa-tachometer-alt"></i>
+          <NavLink to="/dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("PA Dashboard")}>
+            <FontAwesomeIcon icon={faDashboard} />
             <span>Dashboard</span>
           </NavLink>
-          <NavLink to="/new_patientregister" className="nav-item " data-page="newPatient" onClick={()=>setHeadline("Patient Registration")}>
-            <i className="fas fa-user-injured"></i>
-            <span>+ Patient Registration</span>
+          <NavLink to="/new_patientregister" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Patient Registration")}>
+            <FontAwesomeIcon icon={faUserInjured} />
+            <span>Patient Registration</span>
           </NavLink>
-          <NavLink to="/pa_initial_assessment" className="nav-item" data-page="initialAssessment" onClick={()=>setHeadline("Initial Assessments")}>
-            <i className="fas fa-clipboard-check"></i>
+          <NavLink to="/pa_initial_assessment" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Initial Assessments")}>
+            {/* <i className="fas fa-clipboard-check"></i> */}
+            <FontAwesomeIcon icon={faClipboard} />
             <span>Initial Assessments</span>
           </NavLink>
-          <NavLink to="patienthistory" className="nav-item" data-page="patientHistory" onClick={()=>setHeadline("Patient History")}>
-            <i className="fas fa-history"></i>
+          <NavLink to="patienthistory" className="nav-item" data-page="patientHistory" onClick={() => setHeadline("Patient History")}>
+            {/* <i className="fas fa-history"></i> */}
+            <FontAwesomeIcon icon={faHistory}/>
             <span>Patient History</span>
           </NavLink>
           {/* <NavLink to="/" className="nav-item" data-page="medicalRecords">
@@ -41,8 +46,9 @@ const Side_bar = () => {
             <i className="fas fa-user-md"></i>
             <span>Doctor Queue</span>
           </NavLink> */}
-          <NavLink to="/pa_setting" className="nav-item" data-page="settings" onClick={()=>setHeadline("PA Settings")} >
-            <i className="fas fa-cog"></i>
+          <NavLink to="/pa_setting" className="nav-item" data-page="settings" onClick={() => setHeadline("PA Settings")} >
+            {/* <i className="fas fa-cog"></i> */}
+            <FontAwesomeIcon icon={faCog}/>
             <span>Settings</span>
           </NavLink>
         </div>
@@ -69,7 +75,7 @@ const Side_bar = () => {
 
           <div className="header-actions">
             <div className="search-box">
-              <i className="fas fa-search"></i>
+              <FontAwesomeIcon icon={faSearch}/>
               <input
                 type="text"
                 id="globalSearch"
@@ -79,6 +85,7 @@ const Side_bar = () => {
 
             <div className="notification" id="notificationBtn">
               <i className="far fa-bell"></i>
+              <FontAwesomeIcon icon={faBell}/>
               <div className="notification-badge">3</div>
             </div>
           </div>

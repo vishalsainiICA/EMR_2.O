@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import "./Initial_Assessment.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faFile, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Initialassessment = () => {
     // State to toggle form visibility
@@ -34,7 +36,7 @@ const Initialassessment = () => {
                     id="newAssessmentBtn"
                     onClick={() => setShowForm(true)}
                 >
-                    <i className="fas fa-plus"></i>
+                    <FontAwesomeIcon icon={faPlus} />
                     New Assessment
                 </button>
             </div>
@@ -61,9 +63,9 @@ const Initialassessment = () => {
                                 <td>{item.complaint}</td>
                                 <td>{item.time}</td>
                                 <td><span className="status completed">{item.status}</span></td>
-                                <td>
-                                    <button className="action-btn">View</button>
-                                  <button class="action-btn">Assess</button>
+                                <td className='action-handler'>
+                                    <button className="action-btn"><FontAwesomeIcon icon={faEye}/>View</button>
+                                    <button class="action-btn"> <FontAwesomeIcon icon={faFile}/> Assess</button>
                                 </td>
                             </tr>
                         ))}
@@ -83,7 +85,7 @@ const Initialassessment = () => {
 
                 <div className="patient-info" style={{ marginBottom: "30px" }}>
                     <div className="patient-avatar">RK</div>
-                    <div style={{display: "flex",flexDirection:"column",alignItems:"start"}}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
                         <h3 id="assessmentPatientName">Rajesh Kumar</h3>
                         <p id="assessmentPatientId">#PT-2023-0012 | 42 years, Male</p>
                     </div>
@@ -145,7 +147,7 @@ const Initialassessment = () => {
                     </div>
                 </div>
 
-                <div  style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
                     <button
                         type="button"
                         className="btn btn-outline"

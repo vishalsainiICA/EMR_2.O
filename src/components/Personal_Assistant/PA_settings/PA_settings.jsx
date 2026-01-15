@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import "./PA_settings.css"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDatabase,faBell, faPrint, faUserCog, faShieldAlt, faKey, faHistory, faUserShield } from '@fortawesome/free-solid-svg-icons';
+import {  } from '@fortawesome/free-regular-svg-icons';
 
 const PA_setting = () => {
     // State management for all toggles
@@ -36,7 +39,7 @@ const PA_setting = () => {
             <div className="settings-grid">
                 {/* Account Settings */}
                 <div className="setting-card">
-                    <h3><i className="fas fa-user-cog"></i> Account Settings</h3>
+                    <h3><FontAwesomeIcon icon={faUserCog}/> Account Settings</h3>
                     <div className="setting-option">
                         <span>Email Notifications</span>
                         <label className="toggle-switch">
@@ -74,7 +77,7 @@ const PA_setting = () => {
 
                 {/* Notification Settings */}
                 <div className="setting-card">
-                    <h3><i className="fas fa-bell"></i> Notification Settings</h3>
+                    <h3><FontAwesomeIcon icon={faBell}/> Notification Settings</h3>
                     <div className="setting-option">
                         <span>New Patient Alerts</span>
                         <label className="toggle-switch">
@@ -112,7 +115,7 @@ const PA_setting = () => {
 
                 {/* Print Settings */}
                 <div className="setting-card">
-                    <h3><i className="fas fa-print"></i> Print Settings</h3>
+                    <h3><FontAwesomeIcon icon={faPrint}/> Print Settings</h3>
                     <div className="setting-option">
                         <span>Auto Print Prescriptions</span>
                         <label className="toggle-switch">
@@ -150,7 +153,7 @@ const PA_setting = () => {
 
                 {/* Data Management */}
                 <div className="setting-card">
-                    <h3><i className="fas fa-database"></i> Data Management</h3>
+                    <h3><FontAwesomeIcon icon={faDatabase}/> Data Management</h3>
                     <div className="setting-option">
                         <span>Auto Backup Records</span>
                         <label className="toggle-switch">
@@ -189,16 +192,16 @@ const PA_setting = () => {
 
             {/* Security Buttons Section */}
             <div className="setting-card" style={{ marginTop: "30px" }}>
-                <h3><i className="fas fa-shield-alt"></i> Security</h3>
+                <h3><FontAwesomeIcon icon={faShieldAlt}/> Security</h3>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', marginTop: '15px' }}>
                     <button className="btn btn-outline">
-                        <i className="fas fa-key"></i> Change Password
+                         <FontAwesomeIcon icon={faKey}/> Change Password
                     </button>
                     <button className="btn btn-outline">
-                        <i className="fas fa-history"></i> View Login History
+                        <FontAwesomeIcon icon={faHistory}/> View Login History
                     </button>
                     <button className="btn btn-outline">
-                        <i className="fas fa-user-shield"></i> Privacy Settings
+                     <FontAwesomeIcon icon={faUserShield}/> Privacy Settings
                     </button>
                 </div>
             </div>

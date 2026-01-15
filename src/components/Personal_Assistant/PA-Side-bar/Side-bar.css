@@ -71,6 +71,11 @@ body {
 }
 
 .nav-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 7px;
+    
     flex: 1;
     padding: 20px 0;
     overflow-y: auto;
@@ -86,11 +91,17 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
+    gap: 10px;
 }
 
 .nav-item:hover, .nav-item.active {
     background-color: var(--primary-light);
     color: var(--primary-color);
+}
+
+.nav-item.active
+{
+    font-weight: bold;
 }
 
 .nav-item i {
@@ -162,6 +173,7 @@ body {
 }
 
 .search-box input {
+    padding: 13px 0px;
     border: none;
     background: transparent;
     width: 100%;

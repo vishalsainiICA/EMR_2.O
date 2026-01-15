@@ -1,5 +1,9 @@
 import React, { useRef, useState } from 'react';
 import "./NewPatientRegister.css"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClipboard, faClipboardList, faCloudUploadAlt, faEdit, faEye, faFolder, faList, faScaleUnbalanced, faSyncAlt, faUserMd, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faIdCard } from '@fortawesome/free-regular-svg-icons';
+
 
 const NewPatient = () => {
   const [patient, setPatient] = useState({});
@@ -26,7 +30,7 @@ const NewPatient = () => {
       <div className="section-header">
         <h2 className="section-title">New Patient Registration </h2>
         <button className="btn btn-outline" id="scanAadharBtn">
-          <i className="fas fa-id-card"></i> Scan Aadhar Card
+         <FontAwesomeIcon icon={faIdCard}/> Scan Aadhar Card
         </button>
       </div>
 
@@ -34,7 +38,7 @@ const NewPatient = () => {
         <form id="newPatientForm">
           {/* Aadhar Scan Section */}
           <div className="aadhar-scan" id="aadharScanBtnSection">
-            <i className="fas fa-id-card"></i>
+            <i className=" fa-id-card"><FontAwesomeIcon icon={faIdCard}/></i>
             <p>Scan Aadhar Card to Auto-fetch Patient Details</p>
             <span>Click here or use scanner to capture Aadhar details</span>
           </div>
@@ -205,7 +209,7 @@ const NewPatient = () => {
           <div className="file-upload-section">
             <h3 style={{ marginBottom: '15px' }}>Upload Previous Medical Records</h3>
             <div onClick={openFileDialog} className="file-upload-box" id="fileUploadBox">
-              <i className="fas fa-cloud-upload-alt"></i>
+              <i className="fas fa-cloud-upload-alt"><FontAwesomeIcon icon={faCloudUploadAlt}/></i>
               <p>Click to upload or drag and drop</p>
               <span>Supports PDF, JPG, PNG (Max 10MB each)</span>
             </div>

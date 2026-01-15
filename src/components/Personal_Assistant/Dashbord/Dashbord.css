@@ -239,6 +239,14 @@ tr:hover {
     border-radius: 10px;
 }
 
+.action-handler
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
 .btn-outline, .view-all-btn {
     background-color: transparent;
     color: var(--primary-color);
