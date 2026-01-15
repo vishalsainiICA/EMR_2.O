@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import "./Initial_Assessment.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faFile, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { NavLink } from 'react-router-dom';
 
 const Initialassessment = () => {
     // State to toggle form visibility
     const [showForm, setShowForm] = useState(false);
+
+    setTimeout(() => {
+        document.getElementById("assessmentForm")?.scrollIntoView({ behavior: "smooth" });
+    }, 0);
 
     // Dummy Data for Table
     const [assessments] = useState([
@@ -32,9 +37,13 @@ const Initialassessment = () => {
             <div className="section-header">
                 <h2 className="section-title">Initial Patient Assessments</h2>
                 <button
+
                     className="btn btn-primary"
                     id="newAssessmentBtn"
-                    onClick={() => setShowForm(true)}
+                    onClick={() => {
+                        setShowForm(true);
+
+                    }}
                 >
                     <FontAwesomeIcon icon={faPlus} />
                     New Assessment
@@ -64,8 +73,8 @@ const Initialassessment = () => {
                                 <td>{item.time}</td>
                                 <td><span className="status completed">{item.status}</span></td>
                                 <td className='action-handler'>
-                                    <button className="action-btn"><FontAwesomeIcon icon={faEye}/>View</button>
-                                    <button class="action-btn"> <FontAwesomeIcon icon={faFile}/> Assess</button>
+                                    <button className="action-btn"><FontAwesomeIcon icon={faEye} />View</button>
+                                    <button class="action-btn"> <FontAwesomeIcon icon={faFile} /> Assess</button>
                                 </td>
                             </tr>
                         ))}
