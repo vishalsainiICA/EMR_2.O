@@ -10,7 +10,7 @@ const Initialassessment = () => {
 
     setTimeout(() => {
         document.getElementById("assessmentForm")?.scrollIntoView({ behavior: "smooth" });
-    }, 0);
+    }, 100);
 
     // Dummy Data for Table
     const [assessments] = useState([
