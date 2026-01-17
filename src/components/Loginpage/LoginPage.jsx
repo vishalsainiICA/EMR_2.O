@@ -1,4 +1,3 @@
-import { BsEye, BsEyeSlash } from "react-icons/bs";
 import "./LoginPage.css"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,69 +11,66 @@ const Loginpage = () => {
   const navigate = useNavigate()
   const [password, setPassword] = useState(null)
   const [email, setemail] = useState(null)
-  const [error, seterror] = useState(null)
-  const [isProcessing, setIsProcessing] = useState(false)
   const [value, setvalue] = useState(false);
   const [Eyelogo, setEyelogo] = useState(false);
 
   
-  const {request:login , loading:loginloading , error:loginError}  = useApi(CommonApi.login())
+  const {request:login , loading:isProcessing , error:error}  = useApi(CommonApi.login)
   const handlelogin = async () => {
     try {
 
+      console.log("Call");
+      
+
       if (validation()) {
+        console.log("Call 1");
         const res = await login({ email, password });
-        if (res.status === 200) {
-          localStorage.setItem("token", res.data?.token);   // single token key
-          localStorage.setItem("profile", res.data);
+        console.log( "res",res);
+        
+          localStorage.setItem("token", res?.token);   // single token key
+          localStorage.setItem("role", res?.role);   // single token key
+          localStorage.setItem("profile", JSON.stringify(res?.profile));
           // role saved
           toast.success("Login success")
 
-          if (res.data?.role === "superadmin") {
-            navigate("/super-admin/dashboard", { replace: true });
+          // if (res.data?.role === "superadmin") {
+          //   navigate("/super-admin/dashboard", { replace: true });
+          // }
+          // else if (res.data?.role === "doctor") {
+          //   navigate("/doctor", { replace: true });
+          // }
+          // else if (res.data?.role === "medicalDirector") {
+          //   navigate("/md/dashboard", { replace: true });
+          // }
+          if (res?.role === "personalAssitant") {           
+           navigate("/pa")
           }
-          else if (res.data?.role === "doctor") {
-            navigate("/doctor", { replace: true });
-          }
-          else if (res.data?.role === "medicalDirector") {
-            navigate("/md/dashboard", { replace: true });
-          }
-          else if (res.data?.role === "personalAssitant") {
-            navigate("/pa", { replace: true });
-          }
-        }
-        else {
-          seterror({ error: res.data?.message });
-        }
+
       }
     } catch (error) {
       console.log("ererfv", error);
-      seterror({ error: error.response?.data?.message || "Internal Server Error" });
-    }
-    finally {
-      setIsProcessing(false)
+      toast.error({ error: error.response?.data?.message || "Internal Server Error" });
     }
   };
 
 
   const validation = () => {
     if (!email) {
-      seterror({ email: "Please Enter Email" });
+      toast.info({ email: "Please Enter Email" });
       return false;
     }
     if (!password) {
-      seterror({ password: "Please Enter Password" });
+      toast.info({ password: "Please Enter Password" });
       return false;
     }
     if (email.trim() === "") {
-      seterror({ email: "Email Can't be Empty" });
+      toast.info({ email: "Email Can't be Empty" });
       return false;
     }
     if (password.trim() === "") {
-      seterror({ password: "Password Can't be Empty" });
+      toast.info({ password: "Password Can't be Empty" });
       return false;
     }
-    seterror(null);
     return true;
   };
 
@@ -84,7 +80,6 @@ const Loginpage = () => {
       <div className="login-page-detail">
         <div className="login">
           <span>Log in</span>
-          <p>Welcome Back! Please enter your details</p>
         </div>
 
         <div className="all-detai">
@@ -95,7 +90,7 @@ const Loginpage = () => {
             <label htmlFor="">Password</label>
             <div style={{ display: "flex", width: '100%', padding: '0 5px', border: "0.3px solid lightgray ", borderRadius: "7px" }} >
               <input onChange={(e) => setPassword(e.target.value)} style={{ color: "black", cursor: "auto", border: "none" }} type={value ? 'text' : 'password'} placeholder="Enter your password" />
-              <span onClick={() => { setvalue(!value); setEyelogo(!Eyelogo) }}>{Eyelogo ? <BsEyeSlash /> : <BsEye />}</span>
+              {/* <span onClick={() => { setvalue(!value); setEyelogo(!Eyelogo) }}>{Eyelogo ? <BsEyeSlash /> : <BsEye />}</span> */}
             </div>
             {error?.password && (<p>{error?.password}</p>)}
           </div>

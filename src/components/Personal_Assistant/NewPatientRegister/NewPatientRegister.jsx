@@ -7,6 +7,7 @@ import { calculateAge, extractTextFromImage, indianStates, parseAadhaarText } fr
 import { toast } from 'react-toastify';
 import { useApi } from '../../../api/useApi';
 import personalAssitantApi from '../../../api/apiService';
+import { useNavigate } from 'react-router-dom';
 
 
 const NewPatient = () => {
@@ -18,10 +19,22 @@ const NewPatient = () => {
 const [selectedSymtomps, setselectedSymtomps] = useState([]);
 const [searchTermforsymtoms, setsearchTermforsymtoms] = useState("");
 const [filteredsymtomps, setfilteredsymtomps] = useState([]);
+const [assinDoc, setAssignDoc] = useState([]);
 
-
+  const navigate = useNavigate()
   const FileinputRef = useRef(null)
   const AadharFileInputRef = useRef(null)
+
+  useEffect(()=>{
+     const profile = JSON.parse(localStorage.getItem("profile")) || null
+
+     if(!profile){ 
+      navigate("/login", {replace:true})
+     }
+     console.log("prfie", profile)
+     
+     setAssignDoc(profile?.assignDoctors)
+  },[])
 
   const openFileDialog = (type = null) => {
     if(type && type ==="addhar"){
@@ -157,10 +170,6 @@ const handleChangeSymtomps = (e) => {
   // last part = search term
   const searchTerm = parts[parts.length - 1] || "";
 
-  // confirmed selected symptoms
-  const confirmed = parts.slice(0, -1);
-
-  setselectedSymtomps(confirmed);
   setsearchTermforsymtoms(searchTerm);
 
   if (!searchTerm) {
@@ -367,11 +376,14 @@ const handleChangeSymtomps = (e) => {
                 value={patient?.doctorId}
                 id="consultingDoctor" className="form-control" required defaultValue="">
                 <option value="" disabled>Select Doctor</option>
-                <option value="dr_sharma">Dr. Anil Sharma (General Physician)</option>
-                <option value="dr_nair">Dr. Priya Nair (Internal Medicine)</option>
-                <option value="dr_mehta">Dr. Rohan Mehta (Cardiologist)</option>
-                <option value="dr_verma">Dr. Sunita Verma (Endocrinologist)</option>
-              </select>
+                {console.log( "AD",assinDoc)
+                }
+                {assinDoc?.length > 0 && (
+                  assinDoc?.map((doc , index)=>{
+                    return   <option key={index} value={doc._id}>{`${doc.name} (${doc.departmentName})`}</option>
+                  })
+                )}  
+            </select>
             </div>
 
             <div className="form-group">
@@ -394,17 +406,13 @@ const handleChangeSymtomps = (e) => {
     {filteredsymtomps.length > 0 && searchTermforsymtoms.trim() !== "" && (
     <div className="illnessSuggenstion">
       {filteredsymtomps.map((ill, i) =>
-        ill.symptoms?.map((sym, index) => {
-          const isSelected = selectedSymtomps.includes(sym);
-
-          return (
+        ill.symptoms?.map((sym, index) => {   
+       return (
             <div
               key={`${i}-${index}`}
               className="illCard"
               onClick={() => {
-                setselectedSymtomps((prev) =>
-                  prev.includes(sym) ? prev : [...prev, sym]
-                );
+                 setselectedSymtomps((prev) => [...prev, sym]);
                 setsearchTermforsymtoms("");
                 setfilteredsymtomps([]);
               }}
@@ -414,7 +422,7 @@ const handleChangeSymtomps = (e) => {
                 <p>{ill?.illnessName}</p>
               </div>
 
-              {isSelected && (
+              {/* {isSelected && (
                 <i
                   className="ri-check-line"
                   style={{
@@ -422,7 +430,7 @@ const handleChangeSymtomps = (e) => {
                     color: "green",
                   }}
                 ></i>
-              )}
+              )} */}
             </div>
           );
         })
@@ -434,16 +442,21 @@ const handleChangeSymtomps = (e) => {
   </div>
 
 
-  <textarea
+  <div
     id="patientHistory"
-    className="form-control"
-    placeholder=""
-    rows="3"
-    value={[...selectedSymtomps, searchTermforsymtoms]
-      .filter(Boolean)
-      .join(", ")}
-    onChange={handleChangeSymtomps}
-  ></textarea>
+    className="form-control-show-sym"
+  >
+    {console.log( 
+      "sum", selectedSymtomps)
+    }
+    {selectedSymtomps.length > 0 && (
+     selectedSymtomps.map((sym, index)=>{
+      console.log(sym);
+      
+      return <p key={index}>{sym} </p>
+     })
+    )}
+  </div>
 </div>
 
           {/* File Upload Section */}

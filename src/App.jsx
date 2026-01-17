@@ -20,6 +20,7 @@ import Consultation_Queue from './components/Doctor/Dr_Consultation_Queue/Consul
 import PatientRecords from './components/Doctor/Dr_Patient_Record/Patient_Record.jsx'
 import PrescriptionManagement from './components/Doctor/Dr_Priscription/Priscription.jsx'
 import Settings from './components/Doctor/Dr_Settings/Settings.jsx'
+import Loginpage from './components/Loginpage/LoginPage.jsx'
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path='/login' element={<Loginpage />}></Route>
       <Route path='/pa' element={<Pa_Side_bar />}>
         <Route index='dashboard' element={<Pa_Dashboard />} />
         <Route path='dashboard' element={<Pa_Dashboard />} />

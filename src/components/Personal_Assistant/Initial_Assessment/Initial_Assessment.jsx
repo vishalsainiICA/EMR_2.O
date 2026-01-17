@@ -1,12 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "./Initial_Assessment.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faFile, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
+import { useApi } from '../../../api/useApi';
+import personalAssitantApi from '../../../api/apiService';
 
 const Initialassessment = () => {
     // State to toggle form visibility
-    const [showForm, setShowForm] = useState(false);
+    const [patients, setPatients] = useState([]);
+    const [selectedPatient, setSelectedPatient] = useState(null);
+const [showForm, setShowForm] = useState(false);
+
+const [assessmentData, setAssessmentData] = useState({
+  vitals: {
+    bp: "",
+    heartRate: "",
+    temperature: "",
+    respRate: "",
+    spo2: "",
+    weight: "",
+    height: ""
+  },
+  complaint: "",
+  medicalHistory: "",
+  physicalExam: "",
+  notes: ""
+});
+
+    const handleVitalsChange = (e) => {
+  const { name, value } = e.target;
+  setAssessmentData(prev => ({
+    ...prev,
+    vitals: { ...prev.vitals, [name]: value }
+  }));
+};
+
+const handleTextChange = (e) => {
+  const { name, value } = e.target;
+  setAssessmentData(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
+
 
     setTimeout(() => {
         document.getElementById("assessmentForm")?.scrollIntoView({ behavior: "smooth" });
@@ -32,6 +69,23 @@ const Initialassessment = () => {
         }
     ]);
 
+ const {request : loadpatient , loading , error} = useApi(personalAssitantApi.loadPatient)
+
+   useEffect(()=>{
+    
+  const handleLoadPatient = async()=>{
+      try {
+        const res = await loadpatient()
+        setPatients(res?.data)
+      } catch (error) {
+        console.log(error);  
+      }
+    } 
+    handleLoadPatient()
+   
+   },[])
+
+
     return (
         <div className="section" id="initialAssessmentSection" style={{ display: 'block' }}>
             <div className="section-header">
@@ -40,10 +94,6 @@ const Initialassessment = () => {
 
                     className="btn btn-primary"
                     id="newAssessmentBtn"
-                    onClick={() => {
-                        setShowForm(true);
-
-                    }}
                 >
                     <FontAwesomeIcon icon={faPlus} />
                     New Assessment
@@ -63,111 +113,156 @@ const Initialassessment = () => {
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="assessmentsTable">
-                        {assessments.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item.id}</td>
-                                <td>{item.name}</td>
-                                <td>{item.vitals}</td>
-                                <td>{item.complaint}</td>
-                                <td>{item.time}</td>
-                                <td><span className="status completed">{item.status}</span></td>
-                                <td className='action-handler'>
-                                    <button className="action-btn"><FontAwesomeIcon icon={faEye} />View</button>
-                                    <button class="action-btn"> <FontAwesomeIcon icon={faFile} /> Assess</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
+<tbody id="assessmentsTable">
+  {loading && (
+    <tr>
+      <td colSpan="7">Loading...</td>
+    </tr>
+  )}
+
+  {!loading && patients.length > 0 &&
+    patients.map((item, index) => (
+      <tr key={item._id}>
+        <td>{index + 1}</td>
+        <td>{item.name}</td>
+        <td>{item.gender}</td>
+        <td>{item.age}</td>
+        <td>{new Date(item.createdAt).toLocaleString()}</td>
+        <td>
+          <span className={`status ${item.status?.toLowerCase()}`}>
+            {item.status}
+          </span>
+        </td>
+        <td className="action-handler">
+          <button className="action-btn">
+            <FontAwesomeIcon icon={faEye} /> View
+          </button>
+          <button 
+            onClick={() => {
+                        setShowForm(true);
+                        setSelectedPatient(item)
+
+                    }}
+           className="action-btn">
+            
+            <FontAwesomeIcon icon={faFile} /> Assess
+          </button>
+        </td>
+      </tr>
+    ))
+  }
+
+  {!loading && patients.length === 0 && (
+    <tr>PM	Schedul
+      <td colSpan="7">No patients found</td>
+    </tr>
+  )}
+</tbody>
+
                 </table>
             </div>
 
             {/* Assessment Form (Conditionally rendered based on state) */}
-            <div
-                className="assessment-form"
-                id="assessmentForm"
-                style={{ display: showForm ? "block" : "none", marginTop: "30px" }}
-            >
-                <div className='patient-detail-heading'>
-                    <h3 style={{ marginBottom: "40px" }}>Initial Assessment Form</h3>
-                </div>
+{showForm && selectedPatient && (
+  <div
+    className="assessment-form"
+    id={`assessmentForm-${selectedPatient._id}`}
+    style={{ marginTop: "30px" }}
+  >
+    <div className="patient-detail-heading">
+      <h3 style={{ marginBottom: "40px" }}>Initial Assessment Form</h3>
+    </div>
 
-                <div className="patient-info" style={{ marginBottom: "30px" }}>
-                    <div className="patient-avatar">RK</div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-                        <h3 id="assessmentPatientName">Rajesh Kumar</h3>
-                        <p id="assessmentPatientId">#PT-2023-0012 | 42 years, Male</p>
-                    </div>
-                </div>
+    {/* ================= Patient Info ================= */}
+    <div className="patient-info" style={{ marginBottom: "30px" }}>
+      <div className="patient-avatar">
+        {selectedPatient.name
+          .split(" ")
+          .map(w => w[0])
+          .join("")
+          .toUpperCase()}
+      </div>
 
-                <div className='patient-detail-heading'>
-                    <h4 style={{ marginBottom: "15px" }}>Vital Signs</h4>
-                </div>
-                <div className="vitals-grid">
-                    <div className="vital-item">
-                        <div className="vital-label">Blood Pressure</div>
-                        <input type="text" className="vital-input" placeholder="120/80" />
-                    </div>
-                    <div className="vital-item">
-                        <div className="vital-label">Heart Rate</div>
-                        <input type="text" className="vital-input" placeholder="72 bpm" />
-                    </div>
-                    <div className="vital-item">
-                        <div className="vital-label">Temperature</div>
-                        <input type="text" className="vital-input" placeholder="98.6°F" />
-                    </div>
-                    <div className="vital-item">
-                        <div className="vital-label">Respiratory Rate</div>
-                        <input type="text" className="vital-input" placeholder="16/min" />
-                    </div>
-                    <div className="vital-item">
-                        <div className="vital-label">SpO2</div>
-                        <input type="text" className="vital-input" placeholder="98%" />
-                    </div>
-                    <div className="vital-item">
-                        <div className="vital-label">Weight</div>
-                        <input type="text" className="vital-input" placeholder="75 kg" />
-                    </div>
-                    <div className="vital-item">
-                        <div className="vital-label">Height</div>
-                        <input type="text" className="vital-input" placeholder="175 cm" />
-                    </div>
-                </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
+        <h3>{selectedPatient.name}</h3>
+        <p>
+          #{selectedPatient._id.slice(-6)} | {selectedPatient.age} years, {selectedPatient.gender}
+        </p>
+      </div>
+    </div>
 
-                <div className="form-group">
-                    <label htmlFor="chiefComplaint">Chief Complaint *</label>
-                    <textarea id="chiefComplaint" placeholder="Describe the patient's main symptoms and duration" required></textarea>
-                </div>
+    {/* ================= Vital Signs ================= */}
+    <h4 style={{ marginBottom: "15px" }}>Vital Signs</h4>
 
-                <div className="form-group">
-                    <label htmlFor="medicalHistory">Relevant Medical History</label>
-                    <textarea id="medicalHistory" placeholder="Any relevant medical history for current complaint"></textarea>
-                </div>
+    <div className="vitals-grid">
+      <input name="bp" placeholder="120/80" value={assessmentData.vitals.bp} onChange={handleVitalsChange} />
+      <input name="heartRate" placeholder="72 bpm" value={assessmentData.vitals.heartRate} onChange={handleVitalsChange} />
+      <input name="temperature" placeholder="98.6°F" value={assessmentData.vitals.temperature} onChange={handleVitalsChange} />
+      <input name="respRate" placeholder="16/min" value={assessmentData.vitals.respRate} onChange={handleVitalsChange} />
+      <input name="spo2" placeholder="98%" value={assessmentData.vitals.spo2} onChange={handleVitalsChange} />
+      <input name="weight" placeholder="75 kg" value={assessmentData.vitals.weight} onChange={handleVitalsChange} />
+      <input name="height" placeholder="175 cm" value={assessmentData.vitals.height} onChange={handleVitalsChange} />
+    </div>
 
-                <div className="form-group">
-                    <label htmlFor="physicalExam">Physical Examination Findings</label>
-                    <textarea id="physicalExam" placeholder="Findings from physical examination"></textarea>
-                </div>
+    {/* ================= Text Sections ================= */}
+    <textarea
+      name="complaint"
+      placeholder="Chief Complaint"
+      value={assessmentData.complaint}
+      onChange={handleTextChange}
+      required
+    />
 
-                <div className="form-row">
-                    <div className="form-group">
-                        <label htmlFor="assessmentNotes">Assessment Notes</label>
-                        <textarea id="assessmentNotes" placeholder="Initial assessment and observations"></textarea>
-                    </div>
-                </div>
+    <textarea
+      name="medicalHistory"
+      placeholder="Relevant Medical History"
+      value={assessmentData.medicalHistory}
+      onChange={handleTextChange}
+    />
 
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
-                    <button
-                        type="button"
-                        className="btn btn-outline"
-                        id="cancelAssessmentBtn"
-                        onClick={() => setShowForm(false)}
-                    >
-                        Cancel
-                    </button>
-                    <button type="button" className="btn btn-primary" id="submitAssessmentBtn">Submit Assessment</button>
-                </div>
-            </div>
+    <textarea
+      name="physicalExam"
+      placeholder="Physical Examination Findings"
+      value={assessmentData.physicalExam}
+      onChange={handleTextChange}
+    />
+
+    <textarea
+      name="notes"
+      placeholder="Assessment Notes"
+      value={assessmentData.notes}
+      onChange={handleTextChange}
+    />
+
+    {/* ================= Actions ================= */}
+    <div style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
+      <button
+        type="button"
+        className="btn btn-outline"
+        onClick={() => {
+          setShowForm(false);
+          setSelectedPatient(null);
+        }}
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={() =>
+          console.log({
+            patientId: selectedPatient._id,
+            initialAssessment: assessmentData
+          })
+        }
+      >
+        Submit Assessment
+      </button>
+    </div>
+  </div>
+)}
+
         </div>
     );
 };

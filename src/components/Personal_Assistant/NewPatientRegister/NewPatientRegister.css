@@ -260,6 +260,19 @@ textarea.form-control {
     }
 }
 
+.form-control-show-sym{
+    height: 100px;
+    width: 100%;
+    display: flex;
+    padding: 10px;
+    border: 1px solid lightgrey;
+
+    p{
+        padding: 5px;
+    }
+
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-row {

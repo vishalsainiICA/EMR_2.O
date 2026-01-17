@@ -9,6 +9,7 @@ const personalAssitantApi = {
   fetchIllness: () => API.get("/common/patient/illness"),
   getUsers: () => API.get("/users"),
   getProfile: () => API.get("/profile"),
+  loadPatient : () => API.get("/assitant/all-patient-record"),
 
 };
 
