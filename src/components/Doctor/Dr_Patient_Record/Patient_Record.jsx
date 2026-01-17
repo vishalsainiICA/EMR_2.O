@@ -16,7 +16,7 @@ const PatientRecords = () => {
   ];
 
   return (
-    <div className="section" id="patientRecordsSection">
+    <div className="section active" id="patientRecordsSection">
       <div className="section-header">
         <h2 className="section-title">Patient Records</h2>
         <div style={{ display: 'flex', gap: '15px' }}>

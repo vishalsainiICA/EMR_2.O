@@ -1,0 +1,125 @@
+/* Prescription Management Component CSS (Extracted from Global CSS) */
+
+/* Section */
+
+.section.active {
+  display: block;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* Search Box */
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-light);
+  border-radius: 8px;
+  padding: 10px 16px;
+  width: 300px;
+  border: 1px solid var(--border-color);
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  padding-left: 10px;
+  font-size: 15px;
+  color: var(--text-dark);
+  outline: none;
+}
+
+.search-box i {
+  color: var(--text-light);
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-light);
+}
+
+td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-medium);
+}
+
+tr:hover {
+  background-color: var(--primary-light);
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+  background-color: var(--primary-light);
+}
+
+/* Final Prescription Preview */
+.final-prescription {
+  background-color: white;
+  padding: 25px;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  font-family: 'Georgia', serif;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  font-size: 12px;
+}

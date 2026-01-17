@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import "./Dashboard.css"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileMedical } from '@fortawesome/free-solid-svg-icons';
 
 const DashboardComponent = () => {
   // Revenue visibility state for the toggle functionality
@@ -27,7 +30,7 @@ const DashboardComponent = () => {
   ];
 
   return (
-    <div className="section active" id="dashboardSection" style={{ display: 'block' }}>
+    <div className="Dr_Dashboard_section section active" id="dashboardSection" style={{ display: 'block' }}>
       {/* Stats Cards */}
       <div className="stats-cards">
         <div className="card" id="todaysConsultationsCard">
@@ -72,8 +75,8 @@ const DashboardComponent = () => {
         <div className="card" id="revenueCard">
           <div className="card-header">
             <div>
-              <div 
-                className={`revenue-amount ${!showRevenue ? 'hidden' : ''}`} 
+              <div
+                className={`revenue-amount ${!showRevenue ? 'hidden' : ''}`}
                 id="revenueAmount"
                 style={!showRevenue ? { color: 'transparent', textShadow: '0 0 8px rgba(0, 0, 0, 0.2)' } : {}}
               >
@@ -88,9 +91,9 @@ const DashboardComponent = () => {
           <div className="revenue-toggle-container">
             <span className="toggle-label">Hide Amount</span>
             <label className="toggle-switch">
-              <input 
-                type="checkbox" 
-                id="revenueToggle" 
+              <input
+                type="checkbox"
+                id="revenueToggle"
                 checked={!showRevenue}
                 onChange={() => setShowRevenue(!showRevenue)}
               />
@@ -148,7 +151,10 @@ const DashboardComponent = () => {
                   <td>{patient.waitTime}</td>
                   <td>
                     <button className="action-btn">
-                      <i className="fas fa-file-medical"></i> Consult
+                      <i className="fas fa-file-medical">
+                        <FontAwesomeIcon icon={faFileMedical} />
+                      </i>
+                      Prescribe
                     </button>
                   </td>
                 </tr>

@@ -18,7 +18,7 @@ const PrescriptionManagement = () => {
   ];
 
   return (
-    <div className="section" id="prescriptionsSection">
+    <div className="section active" id="prescriptionsSection">
       <div className="section-header">
         <h2 className="section-title">Prescription Management</h2>
         <div style={{ display: 'flex', gap: '15px' }}>

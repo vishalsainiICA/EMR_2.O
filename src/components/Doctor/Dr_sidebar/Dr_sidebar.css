@@ -15,7 +15,7 @@
     --bg-light: #f9fafc;
     --border-color: #e1e5eb;
     --sidebar-width: 260px;
-    --header-height: 70px;
+    --header-height: 88.5px;
 }
 
 body {
@@ -139,8 +139,10 @@ body {
 }
 
 .header {
+    
     height: var(--header-height);
     background-color: white;
+    /* background-color: #e74c3c; */
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
@@ -215,7 +217,7 @@ body {
 
 .content{
     
-    padding: 20px;
+    padding: 20px 10px;
     text-align: center;
     color: #666 ;
 }

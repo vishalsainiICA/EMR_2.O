@@ -1,0 +1,168 @@
+/* ===== Scoped Theme Variables (only for this component) ===== */
+.consultation-queue-wrapper {
+  --primary-color: #2a6e8f;
+  --primary-light: #e8f4fc;
+  --secondary-color: #4a9bcc;
+  --accent-color: #36a18b;
+  --warning-color: #e67e22;
+  --danger-color: #e74c3c;
+  --success-color: #2ecc71;
+  --text-dark: #333333;
+  --text-medium: #555555;
+  --text-light: #777777;
+  --bg-light: #f9fafc;
+  --border-color: #e1e5eb;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+  color: var(--text-dark);
+}
+
+/* ===== Scoped Reset (only inside this component) ===== */
+.consultation-queue-wrapper * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* ===== Section Management (only for this component) ===== */
+/* .consultation-queue-wrapper.section {
+  display: none;
+} */
+
+.consultation-queue-wrapper.section.active {
+  display: block;
+}
+
+/* ===== Header of Section ===== */
+.consultation-queue-wrapper .section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.consultation-queue-wrapper .section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* ===== Controls ===== */
+.consultation-queue-wrapper .queue-controls {
+  display: flex;
+  align-items: center;
+}
+
+/* ===== Table Container ===== */
+.consultation-queue-wrapper .table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+/* ===== Table Styles ===== */
+.consultation-queue-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.consultation-queue-wrapper th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-light);
+}
+
+.consultation-queue-wrapper td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-medium);
+}
+
+.consultation-queue-wrapper tr:hover {
+  background-color: var(--primary-light);
+}
+
+/* ===== Priority ===== */
+.consultation-queue-wrapper .priority {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.consultation-queue-wrapper .priority.high {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.consultation-queue-wrapper .priority.medium {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.consultation-queue-wrapper .priority.low {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* ===== Buttons (same as global) ===== */
+.consultation-queue-wrapper .btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.consultation-queue-wrapper .btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.consultation-queue-wrapper .btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+.consultation-queue-wrapper .btn-outline {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.consultation-queue-wrapper .btn-outline:hover {
+  background-color: var(--primary-light);
+}
+
+/* Small Button (used in table: btn btn-sm btn-primary) */
+.consultation-queue-wrapper .btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .consultation-queue-wrapper .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .consultation-queue-wrapper .queue-controls {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}

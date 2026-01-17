@@ -17,7 +17,8 @@ const ConsultationQueue = () => {
   ];
 
   return (
-    <div className="section" id="consultationQueueSection">
+    <div className="consultation-queue-wrapper section active" id="consultationQueueSection">
+    {/* <div className="section" id="consultationQueueSection"> */}
       <div className="section-header">
         <h2 className="section-title">Consultation Queue</h2>
         <div className="queue-controls">
