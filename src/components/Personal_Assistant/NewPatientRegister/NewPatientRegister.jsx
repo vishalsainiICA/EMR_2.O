@@ -7,12 +7,14 @@ import { calculateAge, extractTextFromImage, indianStates, parseAadhaarText } fr
 import { toast } from 'react-toastify';
 import { useApi } from '../../../api/useApi';
 import personalAssitantApi from '../../../api/apiService';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const NewPatient = () => {
+
+
   const [categoryName, setCategoryName] = useState(null)
-    const [patient, setPatient] = useState({});
+
   const [files, setFiles] = useState([])
   const [aadhaarDoc, setAadhaarDoc] = useState([]);
   const [symtomps, setSymptopms] = useState([])
@@ -20,6 +22,45 @@ const [selectedSymtomps, setselectedSymtomps] = useState([]);
 const [searchTermforsymtoms, setsearchTermforsymtoms] = useState("");
 const [filteredsymtomps, setfilteredsymtomps] = useState([]);
 const [assinDoc, setAssignDoc] = useState([]);
+const [patient, setPatient] = useState({
+    name: "",
+    age: "",
+    gender: "",
+    contact: "",
+    state: "",
+    city: "",
+    permanentAddress: "",
+    attendeeName: "",
+    attendeePhone: "",
+    doctorId: "",
+    visitType: "consultation",
+    files: [],
+  });
+
+ const location = useLocation();
+
+  const editPatient = location.state?.patient || null;
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  useEffect(() => {
+    if (editPatient) {
+      setIsEditMode(true);
+      setPatient({
+        name: editPatient.name || "",
+        age: editPatient.age || "",
+        gender: editPatient.gender || "",
+        contact: editPatient.attendeePhone || "",
+        state: editPatient.state || "",
+        city: editPatient.city || "",
+        permanentAddress: editPatient.permanentAddress || "",
+        attendeeName: editPatient.attendeeName || "",
+        attendeePhone: editPatient.attendeePhone || "",
+        doctorId: editPatient.doctorId || "",
+        visitType: editPatient.visitType || "consultation",
+        files: editPatient.files || [],
+      });
+    }
+  }, [editPatient]);
 
   const navigate = useNavigate()
   const FileinputRef = useRef(null)
@@ -195,7 +236,7 @@ const handleChangeSymtomps = (e) => {
       </div>
 
       <div className="patient-details">
-        <form id="newPatientForm" onSubmit={handleRegisterPatient}>
+        <form id="newPatientForm">
           {/* Aadhar Scan Section */}
           <div onClick={()=>openFileDialog("addhar")} className="aadhar-scan" id="aadharScanBtnSection">
             <i className=" fa-id-card"><FontAwesomeIcon icon={faIdCard}/></i>
@@ -542,9 +583,15 @@ const handleChangeSymtomps = (e) => {
             <button type="button" className="btn btn-outline" id="cancelPatientBtn">
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
-              Register Patient
-            </button>
+<button
+  type="submit"
+  className="btn btn-primary"
+  onClick={handleRegisterPatient}
+  disabled={patientLoading} // disable while loading
+>
+  {patientLoading ? "Registering..." : isEditMode ? "Update Patient" : "Register Patient"}
+</button>
+
           </div>
 
         </form>

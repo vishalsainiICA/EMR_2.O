@@ -10,6 +10,7 @@ const personalAssitantApi = {
   getUsers: () => API.get("/users"),
   getProfile: () => API.get("/profile"),
   loadPatient : () => API.get("/assitant/all-patient-record"),
+  saveInitialAssessments : (patientId, data) => API.post(`/assitant/intital-assement` , { patientId :patientId, initialAssessment: data}),
 
 };
 

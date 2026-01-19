@@ -5,10 +5,11 @@ import { faEye, faFile, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
 import personalAssitantApi from '../../../api/apiService';
+import { toast } from 'react-toastify';
 
 const Initialassessment = () => {
     // State to toggle form visibility
-    const [patients, setPatients] = useState([]);
+ const [patients, setPatients] = useState([]);
     const [selectedPatient, setSelectedPatient] = useState(null);
 const [showForm, setShowForm] = useState(false);
 
@@ -24,11 +25,31 @@ const [assessmentData, setAssessmentData] = useState({
   },
   complaint: "",
   medicalHistory: "",
-  physicalExam: "",
+  // physicalExam: "",
   notes: ""
 });
 
-    const handleVitalsChange = (e) => {
+const resetInitialAssessment = () => {
+  setAssessmentData({
+    vitals: {
+      bp: "",
+      heartRate: "",
+      temperature: "",
+      respRate: "",
+      spo2: "",
+      weight: "",
+      height: ""
+    },
+    complaint: "",
+    medicalHistory: "",
+    // physicalExam: "",
+    notes: "",
+    selectedSym: []
+  });
+};
+
+
+  const handleVitalsChange = (e) => {
   const { name, value } = e.target;
   setAssessmentData(prev => ({
     ...prev,
@@ -45,35 +66,15 @@ const handleTextChange = (e) => {
 };
 
 
-    setTimeout(() => {
+ setTimeout(() => {
         document.getElementById("assessmentForm")?.scrollIntoView({ behavior: "smooth" });
     }, 100);
 
-    // Dummy Data for Table
-    const [assessments] = useState([
-        {
-            id: "#PT-2023-0012",
-            name: "Rajesh Kumar",
-            vitals: "120/80, 72 bpm, 98.6°F",
-            complaint: "Severe headache and mild fever since morning",
-            time: "10:30 AM",
-            status: "Completed"
-        },
-        {
-            id: "#PT-2023-0045",
-            name: "Anita Sharma",
-            vitals: "110/70, 80 bpm, 98.2°F",
-            complaint: "Routine checkup for diabetes management",
-            time: "11:15 AM",
-            status: "Completed"
-        }
-    ]);
-
+    // Dummy Data for Tabl
  const {request : loadpatient , loading , error} = useApi(personalAssitantApi.loadPatient)
+ const {request : saveIntialAssessment , loading : intiLoading , error : intialError} = useApi(personalAssitantApi.saveInitialAssessments)
 
-   useEffect(()=>{
-    
-  const handleLoadPatient = async()=>{
+ const handleLoadPatient = async()=>{
       try {
         const res = await loadpatient()
         setPatients(res?.data)
@@ -81,9 +82,27 @@ const handleTextChange = (e) => {
         console.log(error);  
       }
     } 
+
+  const handleSaveIntialAssement = async(patientId, data)=>{
+      try {
+       const res =  await saveIntialAssessment(patientId , data)
+        handleLoadPatient()
+        toast.success(res.message)
+      } catch (error) {
+        console.log(error);  
+      }
+    } 
+
+
+   useEffect(()=>{
     handleLoadPatient()
    
    },[])
+
+    useEffect(()=>{
+      if (intialError) toast.error(intialError)
+      if (error) toast.error(error)
+   },[intialError,error])
 
 
     return (
@@ -125,7 +144,19 @@ const handleTextChange = (e) => {
       <tr key={item._id}>
         <td>{index + 1}</td>
         <td>{item.name}</td>
-        <td>{item.gender}</td>
+ <td>
+  {item?.initialAssementId?.vitals ? (
+    <div className="vitals-important">
+      <span>BP: {item.initialAssementId.vitals.bp}</span>{" | "}
+      <span>HR: {item.initialAssementId.vitals.heartRate}</span>{" | "}
+      <span>Temp: {item.initialAssementId.vitals.temperature}</span>{" | "}
+      <span>SpO₂: {item.initialAssementId.vitals.spo2}</span>
+    </div>
+  ) : (
+    "—"
+  )}
+</td>
+
         <td>{item.age}</td>
         <td>{new Date(item.createdAt).toLocaleString()}</td>
         <td>
@@ -134,15 +165,23 @@ const handleTextChange = (e) => {
           </span>
         </td>
         <td className="action-handler">
-          <button className="action-btn">
-            <FontAwesomeIcon icon={faEye} /> View
-          </button>
           <button 
-            onClick={() => {
-                        setShowForm(true);
-                        setSelectedPatient(item)
+      onClick={() => {
+  setSelectedPatient(item);
+  setShowForm(true);
 
-                    }}
+  if (item?.initialAssementId) {
+    console.log("call");
+  
+    setAssessmentData(item?.initialAssementId);
+      console.log("call", assessmentData);
+    
+  } else {
+    // reset form for new assessment
+   resetInitialAssessment()
+  }
+}}
+
            className="action-btn">
             
             <FontAwesomeIcon icon={faFile} /> Assess
@@ -163,15 +202,15 @@ const handleTextChange = (e) => {
             </div>
 
             {/* Assessment Form (Conditionally rendered based on state) */}
+            {console.log("assessmentData",assessmentData)
+            }
 {showForm && selectedPatient && (
   <div
     className="assessment-form"
     id={`assessmentForm-${selectedPatient._id}`}
     style={{ marginTop: "30px" }}
   >
-    <div className="patient-detail-heading">
-      <h3 style={{ marginBottom: "40px" }}>Initial Assessment Form</h3>
-    </div>
+    <h3 style={{ marginBottom: "20px" }}>Initial Assessment Form</h3>
 
     {/* ================= Patient Info ================= */}
     <div className="patient-info" style={{ marginBottom: "30px" }}>
@@ -183,10 +222,11 @@ const handleTextChange = (e) => {
           .toUpperCase()}
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
+      <div>
         <h3>{selectedPatient.name}</h3>
         <p>
-          #{selectedPatient._id.slice(-6)} | {selectedPatient.age} years, {selectedPatient.gender}
+          #{selectedPatient._id.slice(-6)} | {selectedPatient.age} years,{" "}
+          {selectedPatient.gender}
         </p>
       </div>
     </div>
@@ -195,47 +235,143 @@ const handleTextChange = (e) => {
     <h4 style={{ marginBottom: "15px" }}>Vital Signs</h4>
 
     <div className="vitals-grid">
-      <input name="bp" placeholder="120/80" value={assessmentData.vitals.bp} onChange={handleVitalsChange} />
-      <input name="heartRate" placeholder="72 bpm" value={assessmentData.vitals.heartRate} onChange={handleVitalsChange} />
-      <input name="temperature" placeholder="98.6°F" value={assessmentData.vitals.temperature} onChange={handleVitalsChange} />
-      <input name="respRate" placeholder="16/min" value={assessmentData.vitals.respRate} onChange={handleVitalsChange} />
-      <input name="spo2" placeholder="98%" value={assessmentData.vitals.spo2} onChange={handleVitalsChange} />
-      <input name="weight" placeholder="75 kg" value={assessmentData.vitals.weight} onChange={handleVitalsChange} />
-      <input name="height" placeholder="175 cm" value={assessmentData.vitals.height} onChange={handleVitalsChange} />
+      <div className="vital-item">
+        <div className="vital-label">Blood Pressure</div>
+        <input
+          type="text"
+          className="vital-input"
+          name="bp"
+          placeholder="120/80"
+          value={assessmentData.vitals.bp}
+          onChange={handleVitalsChange}
+        />
+      </div>
+
+      <div className="vital-item">
+        <div className="vital-label">Heart Rate</div>
+        <input
+          type="text"
+          className="vital-input"
+          name="heartRate"
+          placeholder="72 bpm"
+          value={assessmentData.vitals.heartRate}
+          onChange={handleVitalsChange}
+        />
+      </div>
+
+      <div className="vital-item">
+        <div className="vital-label">Temperature</div>
+        <input
+          type="text"
+          className="vital-input"
+          name="temperature"
+          placeholder="98.6°F"
+          value={assessmentData.vitals.temperature}
+          onChange={handleVitalsChange}
+        />
+      </div>
+
+      <div className="vital-item">
+        <div className="vital-label">Respiratory Rate</div>
+        <input
+          type="text"
+          className="vital-input"
+          name="respRate"
+          placeholder="16/min"
+          value={assessmentData.vitals.respRate}
+          onChange={handleVitalsChange}
+        />
+      </div>
+
+      <div className="vital-item">
+        <div className="vital-label">SpO2</div>
+        <input
+          type="text"
+          className="vital-input"
+          name="spo2"
+          placeholder="98%"
+          value={assessmentData.vitals.spo2}
+          onChange={handleVitalsChange}
+        />
+      </div>
+
+      <div className="vital-item">
+        <div className="vital-label">Weight</div>
+        <input
+          type="text"
+          className="vital-input"
+          name="weight"
+          placeholder="75 kg"
+          value={assessmentData.vitals.weight}
+          onChange={handleVitalsChange}
+        />
+      </div>
+
+      <div className="vital-item">
+        <div className="vital-label">Height</div>
+        <input
+          type="text"
+          className="vital-input"
+          name="height"
+          placeholder="175 cm"
+          value={assessmentData.vitals.height}
+          onChange={handleVitalsChange}
+        />
+      </div>
     </div>
 
     {/* ================= Text Sections ================= */}
-    <textarea
-      name="complaint"
-      placeholder="Chief Complaint"
-      value={assessmentData.complaint}
-      onChange={handleTextChange}
-      required
-    />
+    <div className="form-group">
+      <label>Chief Complaint *</label>
+      <textarea
+        name="complaint"
+        placeholder="Describe the patient's main symptoms and duration"
+        value={assessmentData.complaint}
+        onChange={handleTextChange}
+        required
+      />
+    </div>
 
-    <textarea
-      name="medicalHistory"
-      placeholder="Relevant Medical History"
-      value={assessmentData.medicalHistory}
-      onChange={handleTextChange}
-    />
+    <div className="form-group">
+      <label>Relevant Medical History</label>
+      <textarea
+        name="medicalHistory"
+        placeholder="Any relevant medical history for current complaint"
+        value={assessmentData.medicalHistory}
+        onChange={handleTextChange}
+      />
+    </div>
 
-    <textarea
-      name="physicalExam"
-      placeholder="Physical Examination Findings"
-      value={assessmentData.physicalExam}
-      onChange={handleTextChange}
-    />
+    {/* <div className="form-group">
+      <label>Physical Examination Findings</label>
+      <textarea
+        name="physicalExam"
+        placeholder="Findings from physical examination"
+        value={assessmentData.physicalExam}
+        onChange={handleTextChange}
+      />
+    </div> */}
 
-    <textarea
-      name="notes"
-      placeholder="Assessment Notes"
-      value={assessmentData.notes}
-      onChange={handleTextChange}
-    />
+    <div className="form-group">
+      <label>Assessment Notes</label>
+      <textarea
+        name="notes"
+        placeholder="Initial assessment and observations"
+        value={assessmentData.notes}
+        onChange={handleTextChange}
+      />
+    </div>
 
     {/* ================= Actions ================= */}
-    <div style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
+    <div
+      className="form-group"
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "15px",
+        marginTop: "30px"
+      }}
+    >
       <button
         type="button"
         className="btn btn-outline"
@@ -247,21 +383,27 @@ const handleTextChange = (e) => {
         Cancel
       </button>
 
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={() =>
-          console.log({
-            patientId: selectedPatient._id,
-            initialAssessment: assessmentData
-          })
-        }
-      >
-        Submit Assessment
-      </button>
+    <button
+  type="button"
+  className="btn btn-primary"
+  disabled={intiLoading}
+  onClick={() =>
+    handleSaveIntialAssement(selectedPatient._id, assessmentData)
+  }
+>
+  {intiLoading ? (
+    <>
+      <span className="spinner" /> Submitting...
+    </>
+  ) : (
+    "Submit Assessment"
+  )}
+</button>
+
     </div>
   </div>
 )}
+
 
         </div>
     );
