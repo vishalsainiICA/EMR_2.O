@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faFile, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
-import personalAssitantApi from '../../../api/apiService';
+import {personalAssitantApi} from '../../../api/apiService';
 import { toast } from 'react-toastify';
 
 const Initialassessment = () => {

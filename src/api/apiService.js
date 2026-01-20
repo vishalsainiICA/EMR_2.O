@@ -4,7 +4,7 @@ export const CommonApi = {
   login : (data)=>COMMONAPI.post("api/login" ,data)
 }
 
-const personalAssitantApi = {
+export const personalAssitantApi = {
   registerPatient: (data) => API.post("/common/patient/register-patient", data),
   fetchIllness: () => API.get("/common/patient/illness"),
   getUsers: () => API.get("/users"),
@@ -14,4 +14,9 @@ const personalAssitantApi = {
 
 };
 
-export default personalAssitantApi;
+export const doctorApi = {
+   loadPatient : () => API.get("/doctor/today-Patient"),
+  getAllIllnessAndPharmacydata: async () =>  API.get('/doctor/all-illness-pharma'),
+  savePrescribtion: async (data) => doctorInstance.post('/doctor/save-prescribtion', data)
+}
+

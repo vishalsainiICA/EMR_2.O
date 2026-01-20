@@ -6,7 +6,7 @@ import { faIdCard } from '@fortawesome/free-regular-svg-icons';
 import { calculateAge, extractTextFromImage, indianStates, parseAadhaarText } from '../../../api/Ocr';
 import { toast } from 'react-toastify';
 import { useApi } from '../../../api/useApi';
-import personalAssitantApi from '../../../api/apiService';
+import {personalAssitantApi} from '../../../api/apiService';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 

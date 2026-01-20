@@ -1,18 +1,20 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
+import { useApi } from "../../../api/useApi";
+import { doctorApi } from "../../../api/apiService";
 
 const DashboardComponent = () => {
   const [showRevenue, setShowRevenue] = useState(true);
-
-  // ✅ Modal State
+  const [patients, setPatients] = useState([]);
+  //  Modal State
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const [currentPatientForPrescription, setCurrentPatientForPrescription] = useState(null);
 
-  // ✅ NEW: Form view OR Final view (same modal)
+  //  NEW: Form view OR Final view (same modal)
   const [isFinalPrescriptionView, setIsFinalPrescriptionView] = useState(false);
 
-  // ✅ NEW: Final Prescription Data
+  //  NEW: Final Prescription Data
   const [finalPrescriptionData, setFinalPrescriptionData] = useState({
     formattedDate: "",
     formattedTime: "",
@@ -25,85 +27,63 @@ const DashboardComponent = () => {
     advice: "",
   });
 
-  // ✅ Same type of patient data
-  const patients = [
-    {
-      id: "PT-2023-0012",
-      queueNo: "DQ-01",
-      name: "Rajesh Kumar",
-      age: 42,
-      gender: "Male",
-      phone: "+91 98765 43210",
-      lastVisit: "2023-10-15",
-      nextAppointment: "2023-11-15",
-      chiefComplaint: "Fever and cough for 3 days",
-      waitTime: "15 mins",
-      priority: "High",
-      paAssessment: {
-        paName: "John Mathew",
-        paTime: "10:00 AM",
-        assessment: "Probable upper respiratory infection. No breathing difficulty noted.",
-        allergies: "Penicillin (rash and itching)",
-        medicalHistory: "Hypertension - 5 years, controlled with medication",
-        vitals: {
-          temperature: "100.2°F",
-          bloodPressure: "130/85 mmHg",
-          pulseRate: "78/min",
-          respiratoryRate: "18/min",
-          oxygenSaturation: "98%",
-          height: "175 cm",
-          weight: "75 kg",
-          bmi: "24.5",
-          bloodGroup: "B+",
-        },
-      },
-    },
-    {
-      id: "PT-2023-0011",
-      queueNo: "DQ-02",
-      name: "Meena Desai",
-      age: 35,
-      gender: "Female",
-      phone: "+91 98765 43212",
-      lastVisit: "2023-10-15",
-      nextAppointment: "2023-10-22",
-      chiefComplaint: "Severe abdominal pain and nausea since morning",
-      waitTime: "10 mins",
-      priority: "Medium",
-      paAssessment: {
-        paName: "Sarah Johnson",
-        paTime: "10:15 AM",
-        assessment: "Acute abdominal pain, likely gastritis. No fever.",
-        allergies: "None known",
-        medicalHistory: "No chronic conditions. Last delivery: 2019 (C-section)",
-        vitals: {
-          temperature: "98.6°F",
-          bloodPressure: "120/80 mmHg",
-          pulseRate: "72/min",
-          respiratoryRate: "16/min",
-          oxygenSaturation: "99%",
-          height: "162 cm",
-          weight: "58 kg",
-          bmi: "22.1",
-          bloodGroup: "O+",
-        },
-      },
-    },
-  ];
+const [state, setState] = useState({
+        labTest: [],
+        illnessData: [],
+    medicieneData: [],
+    });
 
-  // ✅ Open Modal
+
+  const {request : loadpatient , loading , error} = useApi(doctorApi.loadPatient)
+  const {request :getAllIllnessAndPharmacydata  , loading:loadillnessAndMedicien , error:errorloadillnessAndMedicien} = useApi(doctorApi.getAllIllnessAndPharmacydata)
+
+     const handleLoadPatient = async()=>{
+        try {
+          const res = await loadpatient()
+          console.log(res)
+          
+          setPatients(res?.data?.todayPatient)
+        } catch (error) {
+          console.log(error);  
+        }
+      } 
+      
+  
+         useEffect(()=>{
+ const fetchIllness = async () => {
+       
+            try {
+                const res = await getAllIllnessAndPharmacydata();
+                const illnessData = res?.data?.data?.Illness || [];
+                const medicieneData = res?.data?.data?.Mediciene || [];
+                const labTest = res?.data?.data?.Labtest || [];
+                setState({
+                    illnessData,
+                    medicieneData,
+                    labTest
+                });
+            } catch (err) {
+          console.log(error);
+          
+            } 
+        };
+        fetchIllness()
+          handleLoadPatient()
+         
+         },[])
+  //  Open Modal
   const showPrescriptionModal = (patientId) => {
-    const patient = patients.find((p) => p.id === patientId);
+    const patient = patients.find((p) => p._id === patientId);
     setCurrentPatientForPrescription(patient || null);
     setIsPrescriptionModalOpen(true);
 
-    // 🔥 always open in edit mode first
+    // always open in edit mode first
     setIsFinalPrescriptionView(false);
 
     document.body.style.overflow = "hidden";
   };
 
-  // ✅ Close Modal
+  //  Close Modal
   const closePrescriptionModal = () => {
     setIsPrescriptionModalOpen(false);
     setCurrentPatientForPrescription(null);
@@ -111,7 +91,7 @@ const DashboardComponent = () => {
     document.body.style.overflow = "auto";
   };
 
-  // ✅ Generate Final Prescription (React version of your JS function)
+  //  Generate Final Prescription (React version of your JS function)
   const generateFinalPrescription = () => {
     if (!currentPatientForPrescription) return;
 
@@ -156,19 +136,71 @@ const DashboardComponent = () => {
       advice,
     });
 
-    // ✅ Switch modal view to final prescription
+    //  Switch modal view to final prescription
     setIsFinalPrescriptionView(true);
   };
 
-  // ✅ Back to Edit (same concept)
+  //  Back to Edit (same concept)
   const backToEditPrescription = () => {
     setIsFinalPrescriptionView(false);
   };
 
-  // ✅ Print
+  //  Print
   const printFinalPrescription = () => {
     window.print();
   };
+
+const {medicieneData , illnessData, labTest} = state
+      const handleChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        if (value.trim() === "") {
+            setFilteredIllness([]);
+            return;
+        }
+
+        // Filter illness (case-insensitive startsWith)
+        const filtered = illnessData.filter((ill) =>
+            ill.illnessName.toLowerCase().startsWith(value.toLowerCase())
+        );
+        setFilteredIllness(filtered);
+    };
+
+    const handleChangeSymtomps = (e) => {
+        const value = e.target.value;
+        setsearchTermforsymtoms(value);
+
+        if (value.trim() === "") {
+            setfilteredsymtomps([]);
+            return;
+        }
+
+        // Corrected filter logic
+        const filtered = illnessData.filter((ill) =>
+            ill.symptoms.some((sym) =>
+                sym.toLowerCase().startsWith(value.toLowerCase())
+            )
+        );
+
+        setfilteredsymtomps(filtered);
+    };
+
+
+const handleChangeMedicene = (e) => {
+        const value = e.target.value;
+        setsearchTermforMedicene(value);
+
+        if (value.trim() === "") {
+            setfilteredMediciene([]);
+            return;
+        }
+        // Corrected filter logic
+        const filtered = medicieneData.filter((med) =>
+                med.medicine_name.toLowerCase().startsWith(value.toLowerCase())
+            
+        );
+        setfilteredMediciene(filtered);
+    };
 
   return (
     <div className="Dr_Dashboard_section section active" id="dashboardSection" style={{ display: "block" }}>
@@ -276,58 +308,102 @@ const DashboardComponent = () => {
               </tr>
             </thead>
 
-            <tbody id="dashboardQueueTable">
-              {patients.map((patient) => (
-                <tr key={patient.id}>
-                  <td>
-                    <strong>{patient.queueNo}</strong>
-                  </td>
+<tbody id="dashboardQueueTable">
+  {/*Loading state */}
+ { console.log(patients)}
+  
+  {loading && (
+    <tr>
+      <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
+        <i className="fas fa-spinner fa-spin"></i> Loading patients...
+      </td>
+    </tr>
+  )}
 
-                  <td>
-                    <div>
-                      <strong>{patient.name}</strong>
-                    </div>
-                    <div style={{ fontSize: "11px", color: "var(--text-light)" }}>ID: {patient.id}</div>
-                  </td>
+  {/*  No data state */}
+  {!loading && patients?.length === 0 && (
+    <tr>
+      <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
+        No patients found for today
+      </td>
+    </tr>
+  )}
 
-                  <td>
-                    {patient.age} / {patient.gender}
-                  </td>
+  {/* Patient rows */}
+  {!loading &&
+    patients?.map((patient, index) => (
+      <tr key={patient._id}>
+        {/* Queue No */}
+        <td>
+          <strong>{index + 1}</strong>
+        </td>
 
-                  <td>{patient.chiefComplaint}</td>
+        {/* Patient Info */}
+        <td>
+          <div>
+            <strong>{patient.name}</strong>
+          </div>
+          <div style={{ fontSize: "11px", color: "var(--text-light)" }}>
+            UID: {patient.uid}
+          </div>
+        </td>
 
-                  <td>
-                    <div style={{ fontSize: "11px" }}>
-                      <div>
-                        <i className="fas fa-user-nurse"></i> {patient.paAssessment.paName}
-                      </div>
-                      <div>{patient.paAssessment.assessment.substring(0, 40)}...</div>
-                    </div>
-                  </td>
+        {/* Age / Gender */}
+        <td>
+          {patient.age} / {patient.gender}
+        </td>
 
-                  <td>
-                    <span className={`priority ${patient.priority.toLowerCase()}`}>{patient.priority}</span>
-                  </td>
+        {/* Chief Complaint */}
+        <td>
+          {patient.initialAssementId?.complaint || "-"}
+        </td>
 
-                  <td>{patient.waitTime}</td>
+        {/* Assessment */}
+        <td>
+          <div style={{ fontSize: "11px" }}>
+            <div>
+              <i className="fas fa-notes-medical"></i> Initial Assessment
+            </div>
+            <div>
+              {patient.initialAssementId?.notes
+                ? patient.initialAssementId.notes.substring(0, 40) + "..."
+                : "-"}
+            </div>
+          </div>
+        </td>
 
-                  <td>
-                    <button
-                      className="action-btn start-consult-btn"
-                      data-id={patient.id}
-                      onClick={() => showPrescriptionModal(patient.id)}
-                    >
-                      <i className="fas fa-prescription"></i> Prescribe
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+        {/* Priority / Status */}
+        <td>
+          <span className="priority normal">
+            {patient.status}
+          </span>
+        </td>
+
+        {/* Prescription Status */}
+        <td>
+          {patient.isPrescbribedDone ? "Completed" : "Pending"}
+        </td>
+
+        {/* Action */}
+        <td>
+          <button
+            className="action-btn start-consult-btn"
+            onClick={() => showPrescriptionModal(patient._id)}
+            disabled={patient.isPrescbribedDone}
+          >
+            <i className="fas fa-prescription"></i>{" "}
+            {patient.isPrescbribedDone ? "Done" : "Prescribe"}
+          </button>
+        </td>
+      </tr>
+    ))}
+</tbody>
+
           </table>
         </div>
       </div>
 
-      {/* ✅ Prescription Modal */}
+      {/*  Prescription Modal */}
       <div
         className="modal"
         id="prescriptionModal"
@@ -377,13 +453,13 @@ const DashboardComponent = () => {
 
                             <div className="prescription-field">
                               <span className="prescription-label">Patient ID:</span>
-                              <span className="prescription-value">{currentPatientForPrescription.id}</span>
+                              <span className="prescription-value">{currentPatientForPrescription?._id}</span>
                             </div>
 
                             <div className="prescription-field">
                               <span className="prescription-label">Blood Group:</span>
                               <span className="prescription-value">
-                                {currentPatientForPrescription.paAssessment.vitals.bloodGroup}
+                                {currentPatientForPrescription?.initialAssementId.vitals.bp}
                               </span>
                             </div>
                           </div>
@@ -407,8 +483,8 @@ const DashboardComponent = () => {
                             <div className="prescription-field">
                               <span className="prescription-label">Weight/Height:</span>
                               <span className="prescription-value">
-                                {currentPatientForPrescription.paAssessment.vitals.weight} /{" "}
-                                {currentPatientForPrescription.paAssessment.vitals.height}
+                                {currentPatientForPrescription?.initialAssementId?.vitals?.weight} /{" "}
+                                {currentPatientForPrescription?.initialAssementId?.vitals?.height}
                               </span>
                             </div>
                           </div>
@@ -421,32 +497,32 @@ const DashboardComponent = () => {
                           <div className="pa-info">
                             <div>
                               <span className="pa-name">
-                                PA Assessment by: {currentPatientForPrescription.paAssessment.paName}
+                                PA Assessment by: {currentPatientForPrescription?.registerarId?.name}
                               </span>
                             </div>
-                            <div className="pa-time">Time: {currentPatientForPrescription.paAssessment.paTime}</div>
+                            <div className="pa-time">Time: {currentPatientForPrescription?.registerarId?.updatedAt}</div>
                           </div>
 
                           <div className="assessment-findings">
                             <div className="assessment-section">
                               <span className="assessment-label">Chief Complaint:</span>
-                              <span>{currentPatientForPrescription.chiefComplaint}</span>
+                              <span>{currentPatientForPrescription.initialAssementId?.complaint}</span>
                             </div>
 
                             <div className="assessment-section">
                               <span className="assessment-label">Vitals:</span>
                               <span>
-                                Temp: {currentPatientForPrescription.paAssessment.vitals.temperature}, BP:{" "}
-                                {currentPatientForPrescription.paAssessment.vitals.bloodPressure}, Pulse:{" "}
-                                {currentPatientForPrescription.paAssessment.vitals.pulseRate}, RR:{" "}
-                                {currentPatientForPrescription.paAssessment.vitals.respiratoryRate}, SpO2:{" "}
-                                {currentPatientForPrescription.paAssessment.vitals.oxygenSaturation}
+                                Temp: {currentPatientForPrescription.initialAssementId.vitals.temperature}, BP:{" "}
+                                {currentPatientForPrescription.initialAssementId.vitals.bp}, Pulse:{" "}
+                                {currentPatientForPrescription.initialAssementId.vitals.heartRate}, RR:{" "}
+                                {currentPatientForPrescription.initialAssementId.vitals.respRate}, SpO2:{" "}
+                                {currentPatientForPrescription.initialAssementId.vitals.spo2}
                               </span>
                             </div>
 
                             <div className="assessment-section">
                               <span className="assessment-label">Allergies:</span>
-                              <span>{currentPatientForPrescription.paAssessment.allergies}</span>
+                              <span>{currentPatientForPrescription?.initialAssementId?.selectedSym?.join(",")}</span>
                             </div>
                           </div>
                         </div>
@@ -513,7 +589,7 @@ const DashboardComponent = () => {
                             fontSize: "11px",
                           }}
                         >
-                          <strong>ALLERGIES:</strong> {currentPatientForPrescription.paAssessment.allergies}
+                          <strong>ALLERGIES:</strong> {currentPatientForPrescription.initialAssementId?.medicalHistory}
                         </div>
 
                         <div className="doctor-signature">
@@ -588,7 +664,7 @@ const DashboardComponent = () => {
 
                           <div className="detail-row">
                             <div className="detail-label">Patient ID:</div>
-                            <div className="detail-value">{currentPatientForPrescription.id}</div>
+                            <div className="detail-value">{currentPatientForPrescription.uid}</div>
                           </div>
 
                           <div className="detail-row">
@@ -605,22 +681,22 @@ const DashboardComponent = () => {
 
                           <div className="detail-row">
                             <div className="detail-label">Last Consultation:</div>
-                            <div className="detail-value">{currentPatientForPrescription.lastVisit}</div>
+                            <div className="detail-value">{currentPatientForPrescription?.lastVisit || "0"}</div>
                           </div>
 
                           <div className="detail-row">
                             <div className="detail-label">Next Appointment:</div>
-                            <div className="detail-value">{currentPatientForPrescription.nextAppointment}</div>
+                            <div className="detail-value">{currentPatientForPrescription?.nextAppointment || "-/"}</div>
                           </div>
 
                           <div className="detail-row">
                             <div className="detail-label">Assessed by PA:</div>
-                            <div className="detail-value">{currentPatientForPrescription.paAssessment.paName}</div>
+                            <div className="detail-value">{currentPatientForPrescription.registerarId?.name}</div>
                           </div>
 
                           <div className="detail-row">
                             <div className="detail-label">Assessment Time:</div>
-                            <div className="detail-value">{currentPatientForPrescription.paAssessment.paTime}</div>
+                            <div className="detail-value">{currentPatientForPrescription.registerarId?.updatedAt}</div>
                           </div>
                         </div>
 
@@ -632,69 +708,69 @@ const DashboardComponent = () => {
                           <div className="vitals-grid-enhanced">
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.temperature}
+                                {currentPatientForPrescription.initialAssementId?.vitals.temperature}
                               </div>
                               <div className="vital-label-enhanced">Temperature</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.bloodPressure}
+                                {currentPatientForPrescription.initialAssementId.vitals.bloodPressure}
                               </div>
                               <div className="vital-label-enhanced">Blood Pressure</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.pulseRate}
+                                {currentPatientForPrescription.initialAssementId.vitals.pulseRate}
                               </div>
                               <div className="vital-label-enhanced">Pulse Rate</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.respiratoryRate}
+                                {currentPatientForPrescription.initialAssementId.vitals.respiratoryRate}
                               </div>
                               <div className="vital-label-enhanced">Resp. Rate</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.oxygenSaturation}
+                                {currentPatientForPrescription.initialAssementId.vitals.oxygenSaturation}
                               </div>
                               <div className="vital-label-enhanced">SpO₂</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.height}
+                                {currentPatientForPrescription.initialAssementId.vitals.height}
                               </div>
                               <div className="vital-label-enhanced">Height</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.weight}
+                                {currentPatientForPrescription.initialAssementId.vitals.weight}
                               </div>
                               <div className="vital-label-enhanced">Weight</div>
                             </div>
 
                             <div className="vital-card-enhanced">
-                              <div className="vital-value-enhanced">{currentPatientForPrescription.paAssessment.vitals.bmi}</div>
+                              <div className="vital-value-enhanced">{currentPatientForPrescription.initialAssementId.vitals.bmi}</div>
                               <div className="vital-label-enhanced">BMI</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.paAssessment.vitals.bloodGroup}
+                                {currentPatientForPrescription.initialAssementId.vitals.bg}
                               </div>
                               <div className="vital-label-enhanced">Blood Group</div>
                             </div>
                           </div>
 
                           <div style={{ marginTop: "10px", fontSize: "11px", color: "var(--text-light)", textAlign: "center" }}>
-                            Recorded by: {currentPatientForPrescription.paAssessment.paName} at{" "}
-                            {currentPatientForPrescription.paAssessment.paTime}
+                            Recorded by: {currentPatientForPrescription.registerarId.name} at{" "}
+                            {currentPatientForPrescription.registerarId.updatedAt}
                           </div>
                         </div>
                       </div>
@@ -782,7 +858,7 @@ Chest X-ray if cough persists beyond 5 days`}
                         <i className="fas fa-allergies"></i>
                         <div>
                           <div style={{ fontWeight: 600 }}>Allergy Alert</div>
-                          <div>{currentPatientForPrescription.paAssessment.allergies}</div>
+                          <div>{currentPatientForPrescription.initialAssementId.complaint}</div>
                         </div>
                       </div>
 
@@ -790,7 +866,7 @@ Chest X-ray if cough persists beyond 5 days`}
                         <i className="fas fa-history"></i>
                         <div>
                           <div style={{ fontWeight: 600 }}>Medical History</div>
-                          <div>{currentPatientForPrescription.paAssessment.medicalHistory}</div>
+                          <div>{currentPatientForPrescription?.initialAssementId?.medicalHistory}</div>
                         </div>
                       </div>
 
@@ -804,7 +880,7 @@ Chest X-ray if cough persists beyond 5 days`}
                           Save Draft
                         </button>
 
-                        {/* ✅ UPDATED: Generate Prescription opens Final View */}
+                        {/*  UPDATED: Generate Prescription opens Final View */}
                         <button className="btn btn-success" id="generatePrescriptionBtn" onClick={generateFinalPrescription}>
                           <i className="fas fa-prescription"></i>
                           Generate Prescription

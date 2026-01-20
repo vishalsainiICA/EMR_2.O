@@ -2,11 +2,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Dashbord.css"
 import { faClose, faClipboardList, faEdit, faPhoneAlt , faStethoscope ,faExclamationTriangle,faHospitalUser, faEye, faFolder, faHistory, faList, faMapMarkedAlt, faPrint, faSyncAlt, faUserMd, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 // import { faClose, faEdit, faExclamationTriangle, faHistory, faHospitalUser, faMapMarkedAlt, faNewspaper, faPrint, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
-import personalAssitantApi from "../../../api/apiService";
 import { useApi } from "../../../api/useApi";
 import { useEffect, useState } from "react";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { useNavigate } from "react-router-dom";
+import { personalAssitantApi } from "../../../api/apiService";
 function Personalassitant() {
   const [patients, setPatients] = useState([]);
       const [selectedPatient, setSelectedPatient] = useState(null);
