@@ -269,7 +269,7 @@ const DashboardComponent = () => {
       <div className="stats-cards">
         <div className="card" id="todaysConsultationsCard">
           <div className="card-header">
-            <div>
+            <div className="card-alignment">
               <div className="card-count">8</div>
               <div className="card-title">Today's Consultations</div>
             </div>
@@ -282,7 +282,7 @@ const DashboardComponent = () => {
 
         <div className="card" id="waitingPatientsCard">
           <div className="card-header">
-            <div>
+            <div className="card-alignment">
               <div className="card-count">3</div>
               <div className="card-title">Ready for Consultation</div>
             </div>
@@ -295,7 +295,7 @@ const DashboardComponent = () => {
 
         <div className="card" id="prescriptionsCard">
           <div className="card-header">
-            <div>
+            <div className="card-alignment" >
               <div className="card-count">12</div>
               <div className="card-title">Prescriptions Today</div>
             </div>
@@ -308,7 +308,7 @@ const DashboardComponent = () => {
 
         <div className="card" id="revenueCard">
           <div className="card-header">
-            <div>
+            <div className="card-alignment">
               <div
                 className={`revenue-amount ${!showRevenue ? "hidden" : ""}`}
                 id="revenueAmount"
@@ -355,8 +355,8 @@ const DashboardComponent = () => {
         </div>
 
         <div className="table-container">
-          <table>
-            <thead>
+          <table  >
+            <thead >
               <tr>
                 <th>Queue No.</th>
                 <th>Patient Name</th>
