@@ -1859,7 +1859,15 @@
         </div>
     </div>
 
+
+
+
+
+
+
     <!-- NEW: PA Documents Modal -->
+
+
     <div class="modal pa-documents-modal" id="paDocumentsModal">
         <div class="pa-documents-content">
             <div class="pa-docs-header">
@@ -2439,7 +2447,7 @@ Chest X-ray if cough persists beyond 5 days</textarea>
                 generateFinalPrescription(patient, diagnosisType, diagnosis, clinicalNotes, medications, tests, advice);
             });
         }
-
+        
         // NEW: Show PA Documents Modal
         function showPaDocumentsModal(patientId) {
             const patient = patientsWithPA.find(p => p.id === patientId);
@@ -2459,18 +2467,15 @@ Chest X-ray if cough persists beyond 5 days</textarea>
                         <div class="pa-doc-title">${doc.name}</div>
                         <div class="pa-doc-info">Type: ${doc.type}</div>
                         <div class="pa-doc-info">Uploaded by: ${doc.uploadedBy}</div>
-                        <div class="pa-doc-date">Date: ${doc.date}</div>
-                    `;
+                        <div class="pa-doc-date">Date: ${doc.date}</div>`;
                     paDocsGrid.appendChild(docCard);
                 });
             } else {
                 paDocsGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-light);">No documents uploaded by PA for this patient.</p>';
             }
-
             paDocumentsModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
         // Helper function to get document icon
         function getDocIcon(docType) {
             switch (docType.toLowerCase()) {
@@ -2498,16 +2503,7 @@ Chest X-ray if cough persists beyond 5 days</textarea>
                 return;
             }
 
-
-
-
-
-
-
             // Prescribe full contain
-
-
-
             const viewPrescriptionBody = document.getElementById('viewPrescriptionBody');
             const today = new Date();
             const formattedDate = today.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -2643,7 +2639,7 @@ Chest X-ray if cough persists beyond 5 days</textarea>
 
 
 
-        
+
 
         // Registered USer Full Prescribtion
 

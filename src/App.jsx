@@ -38,7 +38,7 @@ function App() {
         <Route path='patienthistory' element={<PatientHistory />} />
       </Route>
 
-      <Route path='/doctor' element={<Dr_Side_bar />}>
+      <Route path='/' element={<Dr_Side_bar />}>
 
          <Route index element={<Dr_Dashboard/>}/>
          <Route path='Dr_dashboard' element={<Dr_Dashboard/>}/>

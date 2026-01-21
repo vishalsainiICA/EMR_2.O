@@ -14,6 +14,11 @@ const DashboardComponent = () => {
   //  NEW: Form view OR Final view (same modal)
   const [isFinalPrescriptionView, setIsFinalPrescriptionView] = useState(false);
 
+
+  //  NEW: PA Documents Modal State
+  const [isPaDocumentsModalOpen, setIsPaDocumentsModalOpen] = useState(false);
+
+
   //  NEW: Final Prescription Data
   const [finalPrescriptionData, setFinalPrescriptionData] = useState({
     formattedDate: "",
@@ -27,57 +32,75 @@ const DashboardComponent = () => {
     advice: "",
   });
 
-const [state, setState] = useState({
-        labTest: [],
-        illnessData: [],
+
+
+  const [state, setState] = useState({
+    labTest: [],
+    illnessData: [],
     medicieneData: [],
-    });
+  });
 
 
-  const {request : loadpatient , loading , error} = useApi(doctorApi.loadPatient)
-  const {request :getAllIllnessAndPharmacydata  , loading:loadillnessAndMedicien , error:errorloadillnessAndMedicien} = useApi(doctorApi.getAllIllnessAndPharmacydata)
+  const { request: loadpatient, loading, error } = useApi(doctorApi.loadPatient)
+  const { request: getAllIllnessAndPharmacydata, loading: loadillnessAndMedicien, error: errorloadillnessAndMedicien } = useApi(doctorApi.getAllIllnessAndPharmacydata)
 
-     const handleLoadPatient = async()=>{
-        try {
-          const res = await loadpatient()
-          console.log(res)
-          
-          setPatients(res?.data?.todayPatient)
-        } catch (error) {
-          console.log(error);  
-        }
-      } 
-      
-  
-         useEffect(()=>{
- const fetchIllness = async () => {
-       
-            try {
-                const res = await getAllIllnessAndPharmacydata();
-                const illnessData = res?.data?.data?.Illness || [];
-                const medicieneData = res?.data?.data?.Mediciene || [];
-                const labTest = res?.data?.data?.Labtest || [];
-                setState({
-                    illnessData,
-                    medicieneData,
-                    labTest
-                });
-            } catch (err) {
-          console.log(error);
-          
-            } 
-        };
-        fetchIllness()
-          handleLoadPatient()
-         
-         },[])
+  const handleLoadPatient = async () => {
+    try {
+      const res = await loadpatient()
+      console.log(res)
+
+      setPatients(res?.data?.todayPatient)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  useEffect(() => {
+    const fetchIllness = async () => {
+
+      try {
+        const res = await getAllIllnessAndPharmacydata();
+        const illnessData = res?.data?.data?.Illness || [];
+        const medicieneData = res?.data?.data?.Mediciene || [];
+        const labTest = res?.data?.data?.Labtest || [];
+        setState({
+          illnessData,
+          medicieneData,
+          labTest
+        });
+      } catch (err) {
+        console.log(error);
+
+      }
+    };
+    fetchIllness()
+    handleLoadPatient()
+
+  }, [])
   //  Open Modal
   const showPrescriptionModal = (patientId) => {
     const patient = patients.find((p) => p._id === patientId);
-    setCurrentPatientForPrescription(patient || null);
+
+
+    // setCurrentPatientForPrescription(patient || null);
+
+    setCurrentPatientForPrescription({
+      ...(patient || {}),
+      paDocuments: [
+        { id: "DOC001", name: "Patient Consent Form", type: "Form", date: "2023-10-15", uploadedBy: "John Mathew" },
+        { id: "DOC002", name: "Lab Test Results", type: "Report", date: "2023-10-14", uploadedBy: "John Mathew" },
+        { id: "DOC003", name: "Previous Prescription", type: "Prescription", date: "2023-09-20", uploadedBy: "John Mathew" },
+        { id: "DOC004", name: "Insurance Card Copy", type: "Insurance", date: "2023-10-15", uploadedBy: "John Mathew" },
+        { id: "DOC005", name: "ECG Report", type: "Medical Report", date: "2023-10-10", uploadedBy: "John Mathew" },
+      ],
+    });
+
+
+
     setIsPrescriptionModalOpen(true);
 
-    // always open in edit mode first
+    // 🔥 always open in edit mode first
     setIsFinalPrescriptionView(false);
 
     document.body.style.overflow = "hidden";
@@ -89,7 +112,45 @@ const [state, setState] = useState({
     setCurrentPatientForPrescription(null);
     setIsFinalPrescriptionView(false);
     document.body.style.overflow = "auto";
+
+    // close PA DOCS model
+    setIsPaDocumentsModalOpen(false);
+
   };
+
+  //  Show PA Documents Modal (React version)
+  const showPaDocumentsModal = () => {
+    if (!currentPatientForPrescription) return;
+    setIsPaDocumentsModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  // ✅ Close PA Documents Modal
+  const closePaDocumentsModal = () => {
+    setIsPaDocumentsModalOpen(false);
+    document.body.style.overflow = "hidden"; // prescription modal still open
+  };
+
+  // ✅ Helper function to get document icon (same logic as JS)
+  const getDocIcon = (docType) => {
+    switch ((docType || "").toLowerCase()) {
+      case "form":
+        return "edit";
+      case "report":
+        return "chart-line";
+      case "prescription":
+        return "prescription";
+      case "insurance":
+        return "file-invoice-dollar";
+      case "medical report":
+        return "file-medical";
+      case "notes":
+        return "sticky-note";
+      default:
+        return "file";
+    }
+  };
+
 
   //  Generate Final Prescription (React version of your JS function)
   const generateFinalPrescription = () => {
@@ -150,57 +211,57 @@ const [state, setState] = useState({
     window.print();
   };
 
-const {medicieneData , illnessData, labTest} = state
-      const handleChange = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        if (value.trim() === "") {
-            setFilteredIllness([]);
-            return;
-        }
+  const { medicieneData, illnessData, labTest } = state
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (value.trim() === "") {
+      setFilteredIllness([]);
+      return;
+    }
 
-        // Filter illness (case-insensitive startsWith)
-        const filtered = illnessData.filter((ill) =>
-            ill.illnessName.toLowerCase().startsWith(value.toLowerCase())
-        );
-        setFilteredIllness(filtered);
-    };
+    // Filter illness (case-insensitive startsWith)
+    const filtered = illnessData.filter((ill) =>
+      ill.illnessName.toLowerCase().startsWith(value.toLowerCase())
+    );
+    setFilteredIllness(filtered);
+  };
 
-    const handleChangeSymtomps = (e) => {
-        const value = e.target.value;
-        setsearchTermforsymtoms(value);
+  const handleChangeSymtomps = (e) => {
+    const value = e.target.value;
+    setsearchTermforsymtoms(value);
 
-        if (value.trim() === "") {
-            setfilteredsymtomps([]);
-            return;
-        }
+    if (value.trim() === "") {
+      setfilteredsymtomps([]);
+      return;
+    }
 
-        // Corrected filter logic
-        const filtered = illnessData.filter((ill) =>
-            ill.symptoms.some((sym) =>
-                sym.toLowerCase().startsWith(value.toLowerCase())
-            )
-        );
+    // Corrected filter logic
+    const filtered = illnessData.filter((ill) =>
+      ill.symptoms.some((sym) =>
+        sym.toLowerCase().startsWith(value.toLowerCase())
+      )
+    );
 
-        setfilteredsymtomps(filtered);
-    };
+    setfilteredsymtomps(filtered);
+  };
 
 
-const handleChangeMedicene = (e) => {
-        const value = e.target.value;
-        setsearchTermforMedicene(value);
+  const handleChangeMedicene = (e) => {
+    const value = e.target.value;
+    setsearchTermforMedicene(value);
 
-        if (value.trim() === "") {
-            setfilteredMediciene([]);
-            return;
-        }
-        // Corrected filter logic
-        const filtered = medicieneData.filter((med) =>
-                med.medicine_name.toLowerCase().startsWith(value.toLowerCase())
-            
-        );
-        setfilteredMediciene(filtered);
-    };
+    if (value.trim() === "") {
+      setfilteredMediciene([]);
+      return;
+    }
+    // Corrected filter logic
+    const filtered = medicieneData.filter((med) =>
+      med.medicine_name.toLowerCase().startsWith(value.toLowerCase())
+
+    );
+    setfilteredMediciene(filtered);
+  };
 
   return (
     <div className="Dr_Dashboard_section section active" id="dashboardSection" style={{ display: "block" }}>
@@ -308,100 +369,101 @@ const handleChangeMedicene = (e) => {
               </tr>
             </thead>
 
-<tbody id="dashboardQueueTable">
-  {/*Loading state */}
- { console.log(patients)}
-  
-  {loading && (
-    <tr>
-      <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
-        <i className="fas fa-spinner fa-spin"></i> Loading patients...
-      </td>
-    </tr>
-  )}
+            <tbody id="dashboardQueueTable">
+              {/*Loading state */}
+              {console.log(patients)}
 
-  {/*  No data state */}
-  {!loading && patients?.length === 0 && (
-    <tr>
-      <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
-        No patients found for today
-      </td>
-    </tr>
-  )}
+              {loading && (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
+                    <i className="fas fa-spinner fa-spin"></i> Loading patients...
+                  </td>
+                </tr>
+              )}
 
-  {/* Patient rows */}
-  {!loading &&
-    patients?.map((patient, index) => (
-      <tr key={patient._id}>
-        {/* Queue No */}
-        <td>
-          <strong>{index + 1}</strong>
-        </td>
+              {/*  No data state */}
+              {!loading && patients?.length === 0 && (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
+                    No patients found for today
+                  </td>
+                </tr>
+              )}
 
-        {/* Patient Info */}
-        <td>
-          <div>
-            <strong>{patient.name}</strong>
-          </div>
-          <div style={{ fontSize: "11px", color: "var(--text-light)" }}>
-            UID: {patient.uid}
-          </div>
-        </td>
+              {/* Patient rows */}
+              {!loading &&
+                patients?.map((patient, index) => (
+                  <tr key={patient._id}>
+                    {/* Queue No */}
+                    <td>
+                      <strong>{index + 1}</strong>
+                    </td>
 
-        {/* Age / Gender */}
-        <td>
-          {patient.age} / {patient.gender}
-        </td>
+                    {/* Patient Info */}
+                    <td>
+                      <div>
+                        <strong>{patient.name}</strong>
+                      </div>
+                      <div style={{ fontSize: "11px", color: "var(--text-light)" }}>
+                        UID: {patient.uid}
+                      </div>
+                    </td>
 
-        {/* Chief Complaint */}
-        <td>
-          {patient.initialAssementId?.complaint || "-"}
-        </td>
+                    {/* Age / Gender */}
+                    <td>
+                      {patient.age} / {patient.gender}
+                    </td>
 
-        {/* Assessment */}
-        <td>
-          <div style={{ fontSize: "11px" }}>
-            <div>
-              <i className="fas fa-notes-medical"></i> Initial Assessment
-            </div>
-            <div>
-              {patient.initialAssementId?.notes
-                ? patient.initialAssementId.notes.substring(0, 40) + "..."
-                : "-"}
-            </div>
-          </div>
-        </td>
+                    {/* Chief Complaint */}
+                    <td>
+                      {patient.initialAssementId?.complaint || "-"}
+                    </td>
 
-        {/* Priority / Status */}
-        <td>
-          <span className="priority normal">
-            {patient.status}
-          </span>
-        </td>
+                    {/* Assessment */}
+                    <td>
+                      <div style={{ fontSize: "11px" }}>
+                        <div>
+                          <i className="fas fa-notes-medical"></i> Initial Assessment
+                        </div>
+                        <div>
+                          {patient.initialAssementId?.notes
+                            ? patient.initialAssementId.notes.substring(0, 40) + "..."
+                            : "-"}
+                        </div>
+                      </div>
+                    </td>
 
-        {/* Prescription Status */}
-        <td>
-          {patient.isPrescbribedDone ? "Completed" : "Pending"}
-        </td>
+                    {/* Priority / Status */}
+                    <td>
+                      <span className="priority normal">
+                        {patient.status}
+                      </span>
+                    </td>
 
-        {/* Action */}
-        <td>
-          <button
-            className="action-btn start-consult-btn"
-            onClick={() => showPrescriptionModal(patient._id)}
-            disabled={patient.isPrescbribedDone}
-          >
-            <i className="fas fa-prescription"></i>{" "}
-            {patient.isPrescbribedDone ? "Done" : "Prescribe"}
-          </button>
-        </td>
-      </tr>
-    ))}
-</tbody>
+                    {/* Prescription Status */}
+                    <td>
+                      {patient.isPrescbribedDone ? "Completed" : "Pending"}
+                    </td>
+
+                    {/* Action */}
+                    <td>
+                      <button
+                        className="action-btn start-consult-btn"
+                        onClick={() => showPrescriptionModal(patient._id)}
+                        disabled={patient.isPrescbribedDone}
+                      >
+                        <i className="fas fa-prescription"></i>{" "}
+                        {patient.isPrescbribedDone ? "Done" : "Prescribe"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
 
           </table>
         </div>
       </div>
+
 
       {/*  Prescription Modal */}
       <div
@@ -431,7 +493,7 @@ const handleChangeMedicene = (e) => {
                     <>
                       <div className="final-prescription" style={{ width: "100%", maxWidth: "800px", margin: "0 auto" }}>
                         <div className="prescription-header">
-                          <div className="hospital-name">APOLLO HOSPITALS</div>
+                          <div className="hospital-name">S.R. KALLA</div>
                           <div className="hospital-address">No. 21, Greams Road, Chennai - 600006, Tamil Nadu</div>
                           <div className="hospital-contact">Phone: 044-2829 3333 | Emergency: 044-2829 4444</div>
                           <div className="prescription-title">MEDICAL PRESCRIPTION</div>
@@ -440,7 +502,7 @@ const handleChangeMedicene = (e) => {
                         <div className="prescription-patient-info">
                           <div>
                             <div className="prescription-field">
-                              <span className="prescription-label">Patient Name:</span>
+                              <span className="prescription-label">Patient Name jjj:</span>
                               <span className="prescription-value">{currentPatientForPrescription.name}</span>
                             </div>
 
@@ -562,6 +624,9 @@ const handleChangeMedicene = (e) => {
                               borderRadius: "6px",
                               border: "1px solid #dee2e6",
                               fontSize: "11px",
+                              display:"flex",
+                              alignItems:"start",
+                              justifyItems:"start"
                             }}
                           >
                             {finalPrescriptionData.medications}
@@ -571,12 +636,12 @@ const handleChangeMedicene = (e) => {
                         {/* Investigations & Advice */}
                         <div className="compact-section">
                           <div className="compact-section-title">INVESTIGATIONS ADVISED</div>
-                          <div style={{ whiteSpace: "pre-line", fontSize: "11px" }}>{finalPrescriptionData.tests}</div>
+                          <div style={{  fontSize: "11px",display:"flex",alignItems:"start" }}>{finalPrescriptionData.tests}</div>
                         </div>
 
                         <div className="compact-section">
                           <div className="compact-section-title">GENERAL ADVICE</div>
-                          <div style={{ whiteSpace: "pre-line", fontSize: "11px" }}>{finalPrescriptionData.advice}</div>
+                          <div style={{ fontSize: "11px" }}>{finalPrescriptionData.advice}</div>
                         </div>
 
                         <div
@@ -587,6 +652,7 @@ const handleChangeMedicene = (e) => {
                             borderRadius: "6px",
                             border: "1px solid #ffeaa7",
                             fontSize: "11px",
+                            display:"flex"
                           }}
                         >
                           <strong>ALLERGIES:</strong> {currentPatientForPrescription.initialAssementId?.medicalHistory}
@@ -605,7 +671,7 @@ const handleChangeMedicene = (e) => {
                           </div>
                         </div>
 
-                        <div className="stamp-overlay">APOLLO HOSPITALS</div>
+                        <div className="stamp-overlay">S.R. KALLA</div>
 
                         <div className="footer-stamp">
                           This is a computer-generated prescription. Valid only with doctor's signature and hospital stamp.
@@ -640,7 +706,7 @@ const handleChangeMedicene = (e) => {
                   ) : (
                     <>
                       {/* ====================== EDIT PRESCRIPTION VIEW ====================== */}
-                      <div className="diagnosis-toggle-container">
+                      <div className="diagnosis-toggle-container" >
                         <span>Diagnosis Type:</span>
                         <label className="diagnosis-toggle">
                           <input type="checkbox" id="diagnosisToggle" defaultChecked />
@@ -649,6 +715,16 @@ const handleChangeMedicene = (e) => {
                             <span className="diagnosis-toggle-option">Final</span>
                           </span>
                         </label>
+
+                        <button
+                          className="view-pa-docs-btn"
+                          id="viewPaDocumentsBtn"
+                          onClick={showPaDocumentsModal}>
+
+                          <i class="fas fa-file-medical-alt"></i>
+                          View PA Documents
+                        </button>
+
                       </div>
 
                       <div className="prescription-cards-container">
@@ -846,9 +922,9 @@ Chest X-ray if cough persists beyond 5 days`}
                               id="advice"
                               placeholder="Add general advice for patient..."
                               defaultValue={`1. Take adequate rest for 3-5 days
-2. Drink plenty of warm fluids
-3. Follow up if symptoms worsen
-4. Next review in 7 days`}
+                                             2. Drink plenty of warm fluids
+                                             3. Follow up if symptoms worsen
+                                             4. Next review in 7 days`}
                             />
                           </div>
                         </div>
@@ -889,6 +965,53 @@ Chest X-ray if cough persists beyond 5 days`}
                     </>
                   )}
                 </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ===================== NEW: PA Documents Modal ===================== */}
+      <div
+        className="modal pa-documents-modal"
+        id="paDocumentsModal"
+        style={{ display: isPaDocumentsModalOpen ? "flex" : "none" }}
+        onClick={(e) => {
+          if (e.target.id === "paDocumentsModal") {
+            closePaDocumentsModal();
+          }
+        }}
+      >
+        <div className="pa-documents-content">
+          <div className="pa-docs-header">
+            <h2 className="pa-docs-title">
+              <i className="fas fa-file-medical-alt"></i> PA Uploaded Documents
+            </h2>
+            <button className="close-modal" id="closePaDocsModal" onClick={closePaDocumentsModal}>
+              &times;
+            </button>
+          </div>
+
+          <div className="pa-docs-body">
+            <p>Documents uploaded by the Physician Assistant for this patient:</p>
+
+            <div className="pa-docs-grid" id="paDocsGrid">
+              {currentPatientForPrescription?.paDocuments && currentPatientForPrescription.paDocuments.length > 0 ? (
+                currentPatientForPrescription.paDocuments.map((doc) => (
+                  <div className="pa-doc-card" key={doc.id}>
+                    <div className="pa-doc-icon">
+                      <i className={`fas fa-file-${getDocIcon(doc.type)}`}></i>
+                    </div>
+                    <div className="pa-doc-title">{doc.name}</div>
+                    <div className="pa-doc-info">Type: {doc.type}</div>
+                    <div className="pa-doc-info">Uploaded by: {doc.uploadedBy}</div>
+                    <div className="pa-doc-date">Date: {doc.date}</div>
+                  </div>
+                ))
+              ) : (
+                <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--text-light)" }}>
+                  No documents uploaded by PA for this patient.
+                </p>
               )}
             </div>
           </div>
