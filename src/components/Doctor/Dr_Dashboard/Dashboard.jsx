@@ -502,7 +502,7 @@ const DashboardComponent = () => {
                         <div className="prescription-patient-info">
                           <div>
                             <div className="prescription-field">
-                              <span className="prescription-label">Patient Name jjj:</span>
+                              <span className="prescription-label">Patient Name:</span>
                               <span className="prescription-value">{currentPatientForPrescription.name}</span>
                             </div>
 
