@@ -26,17 +26,17 @@ const Side_bar = () => {
             <span>Dashboard</span>
           </NavLink>
           <NavLink to="Consultation_Queue" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Consultation Queue")}>
-            <FontAwesomeIcon icon={faUserMd}/>
+            <FontAwesomeIcon icon={faUserMd} />
             <span>Consultation Queue</span>
           </NavLink>
           <NavLink to="PatientRecord" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Patient Records")}>
-            <FontAwesomeIcon icon={faUserInjured}/>
+            <FontAwesomeIcon icon={faUserInjured} />
             <span>Patient Records</span>
           </NavLink>
-          <NavLink to="Prescription" className="nav-item" data-page="patientHistory" onClick={() => setHeadline("Prescription Management")}>
+          {/* <NavLink to="Prescription" className="nav-item" data-page="patientHistory" onClick={() => setHeadline("Prescription Management")}>
             <FontAwesomeIcon icon={faPrescription} />
             <span>Prescription Management</span>
-          </NavLink>
+          </NavLink> */}
           <NavLink to="Setting" className="nav-item" data-page="settings" onClick={() => setHeadline(" Settings")} >
             <FontAwesomeIcon icon={faCog} />
             <span>Settings</span>

@@ -4,6 +4,11 @@ const API = axios.create({
   baseURL: "http://localhost:8000/", // backend url
 });
 
+export const PYTHONAPI = axios.create({
+  baseURL: "https://disease-rag-api-k12s.onrender.com",
+  withCredentials: true
+  // backend url
+});
 export const COMMONAPI = axios.create({
   baseURL: "http://localhost:8000/", // backend url
 });

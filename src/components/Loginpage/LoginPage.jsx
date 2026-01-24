@@ -14,37 +14,40 @@ const Loginpage = () => {
   const [value, setvalue] = useState(false);
   const [Eyelogo, setEyelogo] = useState(false);
 
-  
-  const {request:login , loading:isProcessing , error:error}  = useApi(CommonApi.login)
+
+  const { request: login, loading: isProcessing, error: error } = useApi(CommonApi.login)
   const handlelogin = async () => {
     try {
 
       console.log("Call");
-      
+
 
       if (validation()) {
         console.log("Call 1");
         const res = await login({ email, password });
-        console.log( "res",res);
-        
-          localStorage.setItem("token", res?.token);   // single token key
-          localStorage.setItem("role", res?.role);   // single token key
-          localStorage.setItem("profile", JSON.stringify(res?.profile));
-          // role saved
-          toast.success("Login success")
+        console.log("res", res);
 
-          // if (res.data?.role === "superadmin") {
-          //   navigate("/super-admin/dashboard", { replace: true });
-          // }
-          // else if (res.data?.role === "doctor") {
-          //   navigate("/doctor", { replace: true });
-          // }
-          // else if (res.data?.role === "medicalDirector") {
-          //   navigate("/md/dashboard", { replace: true });
-          // }
-          if (res?.role === "personalAssitant") {           
-           navigate("/pa")
-          }
+        localStorage.setItem("token", res?.token);   // single token key
+        localStorage.setItem("role", res?.role);   // single token key
+        localStorage.setItem("profile", JSON.stringify(res?.profile));
+        // role saved
+        toast.success("Login success")
+
+        // if (res.data?.role === "superadmin") {
+        //   navigate("/super-admin/dashboard", { replace: true });
+        // }
+        // else if (res.data?.role === "doctor") {
+        //   navigate("/doctor", { replace: true });
+        // }
+        // else if (res.data?.role === "medicalDirector") {
+        //   navigate("/md/dashboard", { replace: true });
+        // }
+        if (res?.role === "personalAssitant") {
+          navigate("/pa")
+        }
+        if (res?.role === "doctor") {
+          navigate("/")
+        }
 
       }
     } catch (error) {
@@ -94,18 +97,18 @@ const Loginpage = () => {
             </div>
             {error?.password && (<p>{error?.password}</p>)}
           </div>
-               <a style={{
-                  fontSize:'12px'
-               }} href="">forgot Password?</a>
-                    <button  style={{
-                      marginTop:'10px',
-              alignItems:'center',
-                 textAlign:'center',
-                 width:'90%',
-                 cursor:'pointer',
-                 justifyContent:"center"
+          <a style={{
+            fontSize: '12px'
+          }} href="">forgot Password?</a>
+          <button style={{
+            marginTop: '10px',
+            alignItems: 'center',
+            textAlign: 'center',
+            width: '90%',
+            cursor: 'pointer',
+            justifyContent: "center"
 
-            }} className="view-btn" disabled={isProcessing} onClick={handlelogin}> {`${isProcessing ? "login...." : "Log In"}`} </button>
+          }} className="view-btn" disabled={isProcessing} onClick={handlelogin}> {`${isProcessing ? "login...." : "Log In"}`} </button>
           {error?.error && (<p style={{
             fontSize: '10px',
             color: 'red'

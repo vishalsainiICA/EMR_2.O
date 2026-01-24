@@ -1,12 +1,40 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Dashboard.css";
 import { useApi } from "../../../api/useApi";
 import { doctorApi } from "../../../api/apiService";
+import { toast } from "react-toastify";
 
 const DashboardComponent = () => {
+  const [text, setText] = useState("");
+  const [textForLabtest, setextForLabtest] = useState("");
+  const [textForsymtomps, setextForsymtomps] = useState("");
+  const [textForIllness, setextForIllness] = useState("");
   const [showRevenue, setShowRevenue] = useState(true);
   const [patients, setPatients] = useState([]);
+  const [loadIllness, setloadIllness] = useState([]);
+  const [state, setState] = useState({
+    labTest: [],
+    illnessData: [],
+    medicieneData: [],
+  });
+  const [selectedState, setselectedState] = useState({
+    selectedLabTest: [],
+    selectedIllnessData: [],
+    selectedSymtompsData: [],
+    selectedMedicieneData: [],
+  });
+
+  const [filterState, setfilterState] = useState({
+    filterLabTest: [],
+    filterIllnessData: [],
+    filterMedicieneData: [],
+    filterSymtompsData: [],
+  });
+  const textareaRef = useRef(null);
+  const textareaRefForLabtest = useRef(null);
+  const textareaRefForSymtomps = useRef(null);
+  const textareaRefForIllness = useRef(null);
   //  Modal State
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const [currentPatientForPrescription, setCurrentPatientForPrescription] = useState(null);
@@ -32,17 +60,92 @@ const DashboardComponent = () => {
     advice: "",
   });
 
-
-
-  const [state, setState] = useState({
-    labTest: [],
-    illnessData: [],
-    medicieneData: [],
-  });
-
-
   const { request: loadpatient, loading, error } = useApi(doctorApi.loadPatient)
   const { request: getAllIllnessAndPharmacydata, loading: loadillnessAndMedicien, error: errorloadillnessAndMedicien } = useApi(doctorApi.getAllIllnessAndPharmacydata)
+  const {
+    request: savePriscribtion,
+    loading: loadingsavePriscribtion,
+    error: errorsavePriscribtion,
+  } = useApi(doctorApi.savePrescribtion);
+
+  const {
+    request: getLoadIllness,
+    loading: loadingIllnessBySymptoms,
+    error: errorIllnessBySymptoms,
+  } = useApi(doctorApi.getIllnessBySymtomps);
+
+
+  const handleLoadIllness = async () => {
+    if (selectedState.selectedSymtompsData.length === 0) return;
+    try {
+      const prompt = {
+        question: `This is my vitals: ${currentPatientForPrescription?.patient?.initialAssementId?.vitals || "N/A"
+          }
+Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
+      };
+
+      const res = await getLoadIllness(prompt);
+      setloadIllness(res?.data || []);
+    } catch (err) {
+      console.error("Load illness error:", err);
+    }
+  };
+  const handleSavePriscbrition = async () => {
+    try {
+      const formdata = new FormData();
+      // 🔹 IDs
+      formdata.append("patientId", currentPatientForPrescription?._id);
+      formdata.append("doctorId", currentPatientForPrescription?.doctorId);
+      formdata.append("hospitalId", currentPatientForPrescription?.hospitalId);
+      formdata.append("initialAssementId", currentPatientForPrescription?.initialAssementId?._id);
+
+      // 🔹 Prescription core fields
+      formdata.append(
+        "prescriptionType",
+        finalPrescriptionData?.diagnosisType || "Final"
+      );
+
+      formdata.append(
+        "illness",
+        finalPrescriptionData?.diagnosis || ""
+      );
+
+      formdata.append(
+        "symptoms",
+        finalPrescriptionData?.clinicalNotes || ""
+      );
+
+      formdata.append(
+        "prescriptionMediciene",
+        finalPrescriptionData?.medications || ""
+      );
+
+      // 🔹 labTest → Array expected in model
+      const labTests =
+        finalPrescriptionData?.tests
+          ?.split(",")
+          .map(t => t.trim())
+          .filter(Boolean) || [];
+
+      formdata.append("labTest", JSON.stringify(labTests));
+
+      // 🔹 Optional image
+
+      formdata.append("prescriptionImage", "");
+      await savePriscribtion(formdata);
+      toast.success("Prescription saved:");
+
+    } catch (error) {
+      console.error("Save prescription error:", error);
+    }
+  };
+
+
+
+  useEffect(() => {
+    handleLoadIllness();
+  }, [selectedState.selectedSymtompsData]);
+
 
   const handleLoadPatient = async () => {
     try {
@@ -55,19 +158,22 @@ const DashboardComponent = () => {
     }
   }
 
-
   useEffect(() => {
     const fetchIllness = async () => {
 
       try {
         const res = await getAllIllnessAndPharmacydata();
-        const illnessData = res?.data?.data?.Illness || [];
-        const medicieneData = res?.data?.data?.Mediciene || [];
-        const labTest = res?.data?.data?.Labtest || [];
+        const illnessData = res?.data?.Illness || [];
+        const medicieneData = res?.data?.Mediciene || [];
+        const labTest = res?.data?.Labtest || [];
+        console.log("illnessData", illnessData);
+        console.log("medicieneData", medicieneData);
+        console.log("labTest", labTest);
+
         setState({
-          illnessData,
-          medicieneData,
-          labTest
+          labTest: labTest,
+          illnessData: illnessData,
+          medicieneData: medicieneData,
         });
       } catch (err) {
         console.log(error);
@@ -100,7 +206,7 @@ const DashboardComponent = () => {
 
     setIsPrescriptionModalOpen(true);
 
-    // 🔥 always open in edit mode first
+    //always open in edit mode first
     setIsFinalPrescriptionView(false);
 
     document.body.style.overflow = "hidden";
@@ -125,13 +231,13 @@ const DashboardComponent = () => {
     document.body.style.overflow = "hidden";
   };
 
-  // ✅ Close PA Documents Modal
+  //Close PA Documents Modal
   const closePaDocumentsModal = () => {
     setIsPaDocumentsModalOpen(false);
     document.body.style.overflow = "hidden"; // prescription modal still open
   };
 
-  // ✅ Helper function to get document icon (same logic as JS)
+  // Helper function to get document icon (same logic as JS)
   const getDocIcon = (docType) => {
     switch ((docType || "").toLowerCase()) {
       case "form":
@@ -150,6 +256,7 @@ const DashboardComponent = () => {
         return "file";
     }
   };
+
 
 
   //  Generate Final Prescription (React version of your JS function)
@@ -210,57 +317,141 @@ const DashboardComponent = () => {
   const printFinalPrescription = () => {
     window.print();
   };
-
-  const { medicieneData, illnessData, labTest } = state
-  const handleChange = (e) => {
+  const handleChangeCommon = (
+    e,
+    dataArray,
+    setText,
+    setFilterState,
+    filterKey,
+    matchKey // ex: "medicine_name"
+  ) => {
     const value = e.target.value;
-    setSearchTerm(value);
-    if (value.trim() === "") {
-      setFilteredIllness([]);
-      return;
-    }
+    setText(value);
 
-    // Filter illness (case-insensitive startsWith)
-    const filtered = illnessData.filter((ill) =>
-      ill.illnessName.toLowerCase().startsWith(value.toLowerCase())
-    );
-    setFilteredIllness(filtered);
+    const lastWord = value.split(",").pop().trim();
+
+    if (lastWord.length > 0) {
+      const filtered = dataArray.filter((item) =>
+        item?.[matchKey]
+          ?.toLowerCase()
+          .startsWith(lastWord.toLowerCase())
+      );
+
+      setFilterState((prev) => ({
+        ...prev,
+        [filterKey]: filtered,
+      }));
+    } else {
+      setFilterState((prev) => ({
+        ...prev,
+        [filterKey]: [],
+      }));
+    }
   };
 
-  const handleChangeSymtomps = (e) => {
-    const value = e.target.value;
-    setsearchTermforsymtoms(value);
+  const handleSelectCommon = (
+    item,
+    textareaRef,
+    text,
+    setText,
+    setSelectedState,
+    selectedKey,
+    setFilterState,
+    filterKey
+  ) => {
+    const textarea = textareaRef.current;
+    const cursorPos = textarea.selectionStart;
 
-    if (value.trim() === "") {
-      setfilteredsymtomps([]);
-      return;
+    const beforeCursor = text.slice(0, cursorPos);
+    const afterCursor = text.slice(cursorPos);
+
+    const words = beforeCursor.split(",");
+    words.pop();
+
+    const newText =
+      words.join(", ").trim() +
+      (words.length ? ", " : "") +
+      item +
+      ", " +
+      afterCursor.trimStart();
+
+    setText(newText);
+
+    setSelectedState((prev) => ({
+      ...prev,
+      [selectedKey]: prev[selectedKey].includes(item)
+        ? prev[selectedKey]
+        : [...prev[selectedKey], item],
+    }));
+
+    setFilterState((prev) => ({
+      ...prev,
+      [filterKey]: [],
+    }));
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = newText.length;
+    }, 0);
+  };
+  const handleKeyDownCommon = (
+    e,
+    textareaRef,
+    text,
+    selectedValues,
+    setText,
+    setSelectedState,
+    selectedKey
+  ) => {
+    if (e.key === "Backspace") {
+      const textarea = textareaRef.current;
+      const cursorPos = textarea.selectionStart;
+      const beforeCursor = text.slice(0, cursorPos);
+
+      const words = beforeCursor.split(",");
+      const lastWord = words[words.length - 1]?.trim();
+
+      if (selectedValues.includes(lastWord)) {
+        e.preventDefault();
+        words.pop();
+
+        const newText =
+          words.join(", ").trim() + (words.length ? ", " : "");
+
+        setText(newText);
+
+        setSelectedState((prev) => ({
+          ...prev,
+          [selectedKey]: prev[selectedKey].filter(
+            (val) => val !== lastWord
+          ),
+        }));
+      }
     }
-
-    // Corrected filter logic
-    const filtered = illnessData.filter((ill) =>
-      ill.symptoms.some((sym) =>
-        sym.toLowerCase().startsWith(value.toLowerCase())
-      )
-    );
-
-    setfilteredsymtomps(filtered);
   };
 
-
-  const handleChangeMedicene = (e) => {
+  const handleChangeForSymtomps = (e) => {
     const value = e.target.value;
-    setsearchTermforMedicene(value);
+    setextForsymtomps(value);
 
-    if (value.trim() === "") {
-      setfilteredMediciene([]);
-      return;
+    const lastWord = value.split(",").pop().trim();
+    if (lastWord.length > 0) {
+      const filtered = state.illnessData.filter((item) =>
+        item?.symptoms?.some((sym) =>
+          sym?.toLowerCase().startsWith(lastWord.toLowerCase())
+        )
+      );
+
+      setfilterState((prev) => ({
+        ...prev,
+        filterSymtompsData: filtered,
+      }));
+    } else {
+      setfilterState((prev) => ({
+        ...prev,
+        filterSymtompsData: [],
+      }));
     }
-    // Corrected filter logic
-    const filtered = medicieneData.filter((med) =>
-      med.medicine_name.toLowerCase().startsWith(value.toLowerCase())
-
-    );
-    setfilteredMediciene(filtered);
   };
 
   return (
@@ -343,7 +534,7 @@ const DashboardComponent = () => {
         <div className="queue-header">
           <h2 className="queue-title">Patients Ready for Consultation</h2>
           <div className="queue-controls">
-            <button className="btn btn-outline" id="refreshQueueBtn">
+            <button onClick={handleLoadPatient} className="btn btn-outline" id="refreshQueueBtn">
               <i className="fas fa-sync-alt"></i>
               Refresh
             </button>
@@ -358,7 +549,7 @@ const DashboardComponent = () => {
           <table  >
             <thead >
               <tr>
-                <th>Queue No.</th>
+                <th>Patient ID</th>
                 <th>Patient Name</th>
                 <th>Age/Gender</th>
                 <th>Chief Complaint</th>
@@ -396,17 +587,12 @@ const DashboardComponent = () => {
                   <tr key={patient._id}>
                     {/* Queue No */}
                     <td>
-                      <strong>{index + 1}</strong>
+                      <strong>{patient.uid}</strong>
                     </td>
 
                     {/* Patient Info */}
                     <td>
-                      <div>
-                        <strong>{patient.name}</strong>
-                      </div>
-                      <div style={{ fontSize: "11px", color: "var(--text-light)" }}>
-                        UID: {patient.uid}
-                      </div>
+                      <strong>{patient.name}</strong>
                     </td>
 
                     {/* Age / Gender */}
@@ -624,9 +810,9 @@ const DashboardComponent = () => {
                               borderRadius: "6px",
                               border: "1px solid #dee2e6",
                               fontSize: "11px",
-                              display:"flex",
-                              alignItems:"start",
-                              justifyItems:"start"
+                              display: "flex",
+                              alignItems: "start",
+                              justifyItems: "start"
                             }}
                           >
                             {finalPrescriptionData.medications}
@@ -636,7 +822,7 @@ const DashboardComponent = () => {
                         {/* Investigations & Advice */}
                         <div className="compact-section">
                           <div className="compact-section-title">INVESTIGATIONS ADVISED</div>
-                          <div style={{  fontSize: "11px",display:"flex",alignItems:"start" }}>{finalPrescriptionData.tests}</div>
+                          <div style={{ fontSize: "11px", display: "flex", alignItems: "start" }}>{finalPrescriptionData.tests}</div>
                         </div>
 
                         <div className="compact-section">
@@ -652,7 +838,7 @@ const DashboardComponent = () => {
                             borderRadius: "6px",
                             border: "1px solid #ffeaa7",
                             fontSize: "11px",
-                            display:"flex"
+                            display: "flex"
                           }}
                         >
                           <strong>ALLERGIES:</strong> {currentPatientForPrescription.initialAssementId?.medicalHistory}
@@ -689,12 +875,23 @@ const DashboardComponent = () => {
                         </button>
 
                         <button
-                          className="btn btn-primary"
+                          type="button"
+                          disabled={loadingsavePriscribtion}
+                          className={`btn btn-primary ${loadingsavePriscribtion ? "disabled" : ""}`}
                           id="saveFinalPrescriptionBtn"
-                          onClick={() => alert("Final Prescription Saved!")}
+                          onClick={handleSavePriscbrition}
                         >
-                          <i className="fas fa-save"></i>
-                          Save Prescription
+                          {loadingsavePriscribtion ? (
+                            <>
+                              <i className="fas fa-spinner fa-spin me-2"></i>
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-save me-2"></i>
+                              Save Prescription
+                            </>
+                          )}
                         </button>
 
                         <button className="btn btn-success" id="printFinalPrescriptionBtn" onClick={printFinalPrescription}>
@@ -858,21 +1055,149 @@ const DashboardComponent = () => {
                           </h3>
 
                           <div className="form-group">
-                            <label htmlFor="doctorDiagnosis">Diagnosis</label>
+                            <label htmlFor="doctorDiagnosis">Symtomps</label>
                             <textarea
-                              id="doctorDiagnosis"
-                              placeholder="Enter diagnosis..."
-                              defaultValue="Acute Upper Respiratory Infection"
-                            />
-                          </div>
-
-                          <div className="form-group">
-                            <label htmlFor="clinicalNotes">Clinical Notes</label>
-                            <textarea
+                              ref={textareaRefForSymtomps}
+                              value={textForsymtomps}
+                              onChange={handleChangeForSymtomps}
+                              // onKeyDown={handleChangeForSymtomps}
                               id="clinicalNotes"
                               placeholder="Add clinical notes..."
-                              defaultValue="Confirmed PA findings. Mild pharyngeal erythema noted. No tonsillar exudate. Lung fields clear."
+                            // defaultValue="Confirmed PA findings. Mild pharyngeal erythema noted. No tonsillar exudate. Lung fields clear."
                             />
+                            {filterState.filterSymtompsData.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterSymtompsData.map((ill) => {
+
+                                  return ill?.symptoms.map((sym) => {
+                                    const isSelected =
+                                      selectedState.selectedSymtompsData.includes(
+                                        sym
+                                      );
+
+                                    return (
+                                      <div
+                                        key={sym}
+                                        className="illCard"
+                                        onClick={() => {
+                                          if (!isSelected) {
+                                            handleSelectCommon(
+                                              sym,
+                                              textareaRefForSymtomps,
+                                              textForsymtomps,
+                                              setextForsymtomps,
+                                              setselectedState,
+                                              "selectedSymtompsData",
+                                              setfilterState,
+                                              "filterSymtompsData"
+                                            );
+                                          }
+                                        }}
+                                      >
+                                        <div className="illCard-info">
+                                          <h5>{sym}</h5>
+                                          <p>{ill?.illnessName}</p>
+                                        </div>
+
+                                        {isSelected && (
+                                          <i
+                                            className="ri-check-line"
+                                            style={{
+                                              fontSize: "22px",
+                                              color: "green",
+                                            }}
+                                          />
+                                        )}
+                                      </div>
+                                    );
+                                  })
+
+                                })}
+                              </div>
+                            )}
+                          </div>
+                          <div>{
+
+                          }</div>
+                          <div className="form-group">
+                            <label htmlFor="doctorDiagnosis">Diagnosis</label>
+                            <textarea
+                              ref={textareaRefForIllness}
+                              value={textForIllness}
+                              onChange={(e) =>
+                                handleChangeCommon(
+                                  e,
+                                  state.illnessData,
+                                  setextForIllness,
+                                  setfilterState,
+                                  "filterIllnessData",
+                                  "illnessName"
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                handleKeyDownCommon(
+                                  e,
+                                  textareaRefForIllness,
+                                  textForIllness,
+                                  selectedState.selectedIllnessData,
+                                  setextForIllness,
+                                  setselectedState,
+                                  "selectedIllnessData"
+                                )
+                              }
+                              id="doctorDiagnosis"
+                              placeholder="Enter diagnosis..."
+                            // defaultValue="Acute Upper Respiratory Infection"
+                            />
+                            {filterState.filterIllnessData.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterIllnessData.map((ill) => {
+
+                                  const isSelected =
+                                    selectedState.selectedIllnessData.includes(
+                                      ill?.illnessName
+                                    );
+
+                                  return (
+                                    <div
+                                      key={ill?.illnessName}
+                                      className="illCard"
+                                      onClick={() => {
+                                        if (!isSelected) {
+                                          handleSelectCommon(
+                                            ill?.illnessName,
+                                            textareaRefForIllness,
+                                            textForIllness,
+                                            setextForIllness,
+                                            setselectedState,
+                                            "selectedIllnessData",
+                                            setfilterState,
+                                            "filterIllnessData"
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <div className="illCard-info">
+                                        <h5>{ill?.illnessName}</h5>
+                                        <p>{ill?.illnessName}</p>
+                                      </div>
+
+                                      {isSelected && (
+                                        <i
+                                          className="ri-check-line"
+                                          style={{
+                                            fontSize: "22px",
+                                            color: "green",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  );
+
+                                })}
+                              </div>
+                            )}
+
                           </div>
                         </div>
 
@@ -882,14 +1207,86 @@ const DashboardComponent = () => {
                           </h3>
 
                           <div className="form-group">
+
                             <label htmlFor="medications">Medications</label>
+
                             <textarea
                               id="medications"
+                              ref={textareaRef}
+                              value={text}
+                              onChange={(e) =>
+                                handleChangeCommon(
+                                  e,
+                                  state.medicieneData,
+                                  setText,
+                                  setfilterState,
+                                  "filterMedicieneData",
+                                  "medicine_name"
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                handleKeyDownCommon(
+                                  e,
+                                  textareaRef,
+                                  text,
+                                  selectedState.selectedMedicieneData,
+                                  setText,
+                                  setselectedState,
+                                  "selectedMedicieneData"
+                                )
+                              }
                               placeholder="List medications with dosage..."
-                              defaultValue={`Amoxicillin 500mg - Twice daily for 7 days
-Paracetamol 500mg - As needed for fever
-Vitamin C + Zinc - Once daily for immunity`}
                             />
+
+
+
+                            {filterState.filterMedicieneData.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterMedicieneData.map((ill) => {
+                                  const isSelected =
+                                    selectedState.selectedMedicieneData.includes(
+                                      ill.medicine_name
+                                    );
+
+                                  return (
+                                    <div
+                                      key={ill.medicine_name}
+                                      className="illCard"
+                                      onClick={() => {
+                                        if (!isSelected) {
+                                          handleSelectCommon(
+                                            ill.medicine_name,
+                                            textareaRef,
+                                            text,
+                                            setText,
+                                            setselectedState,
+                                            "selectedMedicieneData",
+                                            setfilterState,
+                                            "filterMedicieneData"
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <div className="illCard-info">
+                                        <h5>{ill.medicine_name}</h5>
+                                        <p>{ill.dosage}</p>
+                                      </div>
+
+                                      {isSelected && (
+                                        <i
+                                          className="ri-check-line"
+                                          style={{
+                                            fontSize: "22px",
+                                            color: "green",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+
                           </div>
                         </div>
                       </div>
@@ -903,11 +1300,86 @@ Vitamin C + Zinc - Once daily for immunity`}
                           <div className="form-group">
                             <label htmlFor="tests">Recommended Tests</label>
                             <textarea
+
                               id="tests"
                               placeholder="List recommended tests..."
-                              defaultValue={`Complete Blood Count (CBC) if fever persists beyond 3 days
-Chest X-ray if cough persists beyond 5 days`}
+                              //                               defaultValue={`Complete Blood Count (CBC) if fever persists beyond 3 days
+                              // Chest X-ray if cough persists beyond 5 days`}
+                              onChange={(e) =>
+                                handleChangeCommon(
+                                  e,
+                                  state.labTest,
+                                  setextForLabtest,
+                                  // filterState.filterLabTest
+                                  setfilterState,
+                                  "filterLabTest",
+                                  "test"
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                handleKeyDownCommon(
+                                  e,
+                                  textareaRefForLabtest,
+                                  textForLabtest,
+                                  selectedState.selectedLabTest,
+
+                                  setextForLabtest,
+                                  setselectedState,
+                                  "selectedLabTest"
+                                )
+                              }
+                              ref={textareaRefForLabtest}
+                              value={textForLabtest}
                             />
+
+                            {filterState.filterLabTest.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterLabTest.map((ill) => {
+
+                                  const isSelected =
+                                    selectedState.selectedLabTest.includes(
+                                      ill?.test
+                                    );
+
+                                  return (
+                                    <div
+                                      key={ill?.test}
+                                      className="illCard"
+                                      onClick={() => {
+                                        if (!isSelected) {
+                                          handleSelectCommon(
+                                            ill?.test,
+                                            textareaRefForLabtest,
+                                            textForLabtest,
+                                            setextForLabtest,
+                                            setselectedState,
+                                            "selectedLabTest",
+                                            setfilterState,
+                                            "filterLabTest"
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <div className="illCard-info">
+                                        <h5>{ill?.test}</h5>
+                                        <p>{ill?.disease?.join(",")}</p>
+                                      </div>
+
+                                      {isSelected && (
+                                        <i
+                                          className="ri-check-line"
+                                          style={{
+                                            fontSize: "22px",
+                                            color: "green",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  );
+
+                                })}
+                              </div>
+                            )}
                           </div>
                         </div>
 
