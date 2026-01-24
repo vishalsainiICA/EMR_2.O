@@ -149,7 +149,11 @@ const PatientRecords = () => {
           </tbody>
         </table>
       </div>
-      {selectedPatient !== null && (
+
+      {console.log("sele", selectedPatient)
+      }
+
+      {selectedPatient && (
         <div className="modal">
 
           <div className="modal-content">
