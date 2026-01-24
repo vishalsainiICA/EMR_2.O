@@ -1,5 +1,7 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Settings.css"
 import React from 'react';
+import { faSave, faUserCog } from "@fortawesome/free-solid-svg-icons";
 
 const SettingsComponent = () => {
   return (
@@ -11,8 +13,9 @@ const SettingsComponent = () => {
       <div className="consultation-container">
         {/* Account Settings */}
         <div className="patient-info-section">
-          <h3 style={{ marginBottom: '20px' }}>
-            <i className="fas fa-user-cog"></i> Account Settings
+          <h3 style={{ display:"flex",marginBottom: '20px', gap:"5px" }}>
+            < FontAwesomeIcon icon={faUserCog}/>
+             Account Settings
           </h3>
 
           <div className="form-group">
@@ -44,7 +47,8 @@ const SettingsComponent = () => {
           </div>
 
           <button className="btn btn-primary" style={{ marginTop: '20px', width: '100%' }}>
-            <i className="fas fa-save"></i> Save Changes
+            <FontAwesomeIcon icon={faSave}/>
+             Save Changes
           </button>
         </div>
       </div>

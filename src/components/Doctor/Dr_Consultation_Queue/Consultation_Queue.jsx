@@ -88,6 +88,10 @@ import "./Consultation_Queue.css";
 import React, { useEffect, useState } from "react";
 import { useApi } from "../../../api/useApi";
 import { doctorApi } from "../../../api/apiService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAllergies, faDiagnoses, faEyeDropper, faFileMedicalAlt, faHeartbeat, faHeartBroken, faHistory, faPills, faPrescription, faSave, faSpinner, faSyncAlt, faUserInjured, faUserPlus, faVial } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
+import { faCommentMedical } from "@fortawesome/free-solid-svg-icons/faCommentMedical";
 
 const ConsultationQueue = () => {
   const [patients, setPatients] = useState([]);
@@ -250,11 +254,14 @@ const ConsultationQueue = () => {
 
         <div className="queue-controls">
           <button className="btn btn-outline" id="refreshFullQueueBtn" onClick={handleLoadPatient}>
-            <i className="fas fa-sync-alt"></i> Refresh Queue
+            <FontAwesomeIcon icon={faSyncAlt} />
+            Refresh Queue
           </button>
 
           <button className="btn btn-primary" id="callNextFullBtn" style={{ marginLeft: "10px" }}>
-            <i className="fas fa-user-plus"></i> Call Next Patient
+            {/* <i className="fas fa-user-plus"></i> */}
+            <FontAwesomeIcon icon={faUserPlus} />
+            Call Next Patient
           </button>
         </div>
       </div>
@@ -280,7 +287,8 @@ const ConsultationQueue = () => {
             {loading && (
               <tr>
                 <td colSpan="9" style={{ textAlign: "center", padding: "20px" }}>
-                  <i className="fas fa-spinner fa-spin"></i> Loading patients...
+                  <FontAwesomeIcon icon={faSpinner} />
+                  Loading patients...
                 </td>
               </tr>
             )}
@@ -290,6 +298,7 @@ const ConsultationQueue = () => {
               <tr>
                 <td colSpan="9" style={{ textAlign: "center", padding: "20px" }}>
                   No patients found for today
+                  {/* < FontAwesomeIcon icon={faNull}/> */}
                 </td>
               </tr>
             )}
@@ -333,6 +342,7 @@ const ConsultationQueue = () => {
                   <td>
                     {/* ✅ View Details -> Opens Same Modal */}
                     <button className="btn btn-sm btn-primary" onClick={() => showPrescriptionModal(patient._id)}>
+                      <FontAwesomeIcon icon={faEye} />
                       View Details
                     </button>
                   </td>
@@ -501,9 +511,9 @@ const ConsultationQueue = () => {
                               borderRadius: "6px",
                               border: "1px solid #dee2e6",
                               fontSize: "11px",
-                              display:"flex",
-                              alignItems:"start",
-                              justifyItems:"start"
+                              display: "flex",
+                              alignItems: "start",
+                              justifyItems: "start"
                             }}
                           >
                             {finalPrescriptionData.medications}
@@ -513,7 +523,7 @@ const ConsultationQueue = () => {
                         {/* Investigations & Advice */}
                         <div className="compact-section">
                           <div className="compact-section-title">INVESTIGATIONS ADVISED</div>
-                          <div style={{  fontSize: "11px",display:"flex",alignItems:"start" }}>{finalPrescriptionData.tests}</div>
+                          <div style={{ fontSize: "11px", display: "flex", alignItems: "start" }}>{finalPrescriptionData.tests}</div>
                         </div>
 
                         <div className="compact-section">
@@ -529,7 +539,7 @@ const ConsultationQueue = () => {
                             borderRadius: "6px",
                             border: "1px solid #ffeaa7",
                             fontSize: "11px",
-                            display:"flex"
+                            display: "flex"
                           }}
                         >
                           <strong>ALLERGIES:</strong> {currentPatientForPrescription.initialAssementId?.medicalHistory}
@@ -599,6 +609,7 @@ const ConsultationQueue = () => {
                           onClick={showPaDocumentsModal}>
 
                           <i class="fas fa-file-medical-alt"></i>
+                          < FontAwesomeIcon icon={faFileMedicalAlt} />
                           View PA Documents
                         </button>
 
@@ -607,7 +618,8 @@ const ConsultationQueue = () => {
                       <div className="prescription-cards-container">
                         <div className="prescription-card patient-details-enhanced">
                           <h3>
-                            <i className="fas fa-user-injured"></i> Patient Details
+                            {/* <i className="fas fa-user-injured"></i> Patient Details */}
+                            <FontAwesomeIcon icon={faUserInjured} />
                           </h3>
 
                           <div className="detail-row">
@@ -655,7 +667,8 @@ const ConsultationQueue = () => {
 
                         <div className="prescription-card">
                           <h3>
-                            <i className="fas fa-heartbeat"></i> Patient Vitals
+                            < FontAwesomeIcon icon={faHeartbeat} />
+                            Patient Vitals
                           </h3>
 
                           <div className="vitals-grid-enhanced">
@@ -731,7 +744,8 @@ const ConsultationQueue = () => {
                       <div className="prescription-cards-container">
                         <div className="prescription-card diagnosis-card-enhanced">
                           <h3>
-                            <i className="fas fa-diagnoses"></i> Diagnosis
+                            < FontAwesomeIcon icon={faDiagnoses} />
+                            Diagnosis
                           </h3>
 
                           <div className="form-group">
@@ -755,7 +769,8 @@ const ConsultationQueue = () => {
 
                         <div className="prescription-card medicine-card-enhanced">
                           <h3>
-                            <i className="fas fa-pills"></i> Medicine Recommendations
+                            < FontAwesomeIcon icon={faPills} />
+                            Medicine Recommendations
                           </h3>
 
                           <div className="form-group">
@@ -764,8 +779,8 @@ const ConsultationQueue = () => {
                               id="medications"
                               placeholder="List medications with dosage..."
                               defaultValue={`Amoxicillin 500mg - Twice daily for 7 days
-Paracetamol 500mg - As needed for fever
-Vitamin C + Zinc - Once daily for immunity`}
+                                             Paracetamol 500mg - As needed for fever
+                                             Vitamin C + Zinc - Once daily for immunity`}
                             />
                           </div>
                         </div>
@@ -774,7 +789,8 @@ Vitamin C + Zinc - Once daily for immunity`}
                       <div className="prescription-cards-container">
                         <div className="prescription-card test-card-enhanced">
                           <h3>
-                            <i className="fas fa-vial"></i> Test Recommendations
+                            < FontAwesomeIcon icon={faVial} />
+                            Test Recommendations
                           </h3>
 
                           <div className="form-group">
@@ -783,14 +799,15 @@ Vitamin C + Zinc - Once daily for immunity`}
                               id="tests"
                               placeholder="List recommended tests..."
                               defaultValue={`Complete Blood Count (CBC) if fever persists beyond 3 days
-Chest X-ray if cough persists beyond 5 days`}
+                                             Chest X-ray if cough persists beyond 5 days`}
                             />
                           </div>
                         </div>
 
                         <div className="prescription-card advice-card-enhanced">
                           <h3>
-                            <i className="fas fa-comment-medical"></i> General Advice
+                            <FontAwesomeIcon icon={faCommentMedical}/>
+                            General Advice
                           </h3>
 
                           <div className="form-group">
@@ -808,7 +825,7 @@ Chest X-ray if cough persists beyond 5 days`}
                       </div>
 
                       <div className="alert-item danger" style={{ margin: "15px 0", padding: "12px", fontSize: "13px" }}>
-                        <i className="fas fa-allergies"></i>
+                        < FontAwesomeIcon icon={faAllergies}/>
                         <div>
                           <div style={{ fontWeight: 600 }}>Allergy Alert</div>
                           <div>{currentPatientForPrescription.initialAssementId.complaint}</div>
@@ -816,7 +833,7 @@ Chest X-ray if cough persists beyond 5 days`}
                       </div>
 
                       <div className="alert-item info" style={{ margin: "15px 0", padding: "12px", fontSize: "13px" }}>
-                        <i className="fas fa-history"></i>
+                        < FontAwesomeIcon icon={faHistory}/>
                         <div>
                           <div style={{ fontWeight: 600 }}>Medical History</div>
                           <div>{currentPatientForPrescription?.initialAssementId?.medicalHistory}</div>
@@ -829,13 +846,13 @@ Chest X-ray if cough persists beyond 5 days`}
                           id="saveDraftBtn"
                           onClick={() => alert("Prescription draft saved successfully!")}
                         >
-                          <i className="fas fa-save"></i>
+                          < FontAwesomeIcon icon={faSave}/>
                           Save Draft
                         </button>
 
                         {/*  UPDATED: Generate Prescription opens Final View */}
                         <button className="btn btn-success" id="generatePrescriptionBtn" onClick={generateFinalPrescription}>
-                          <i className="fas fa-prescription"></i>
+                          < FontAwesomeIcon icon={faPrescription}/>
                           Generate Prescription
                         </button>
                       </div>
@@ -862,7 +879,7 @@ Chest X-ray if cough persists beyond 5 days`}
         <div className="pa-documents-content">
           <div className="pa-docs-header">
             <h2 className="pa-docs-title">
-              <i className="fas fa-file-medical-alt"></i> PA Uploaded Documents
+              <FontAwesomeIcon icon={faFileMedicalAlt}/>PA Uploaded Documents
             </h2>
             <button className="close-modal" id="closePaDocsModal" onClick={closePaDocumentsModal}>
               &times;
@@ -877,7 +894,7 @@ Chest X-ray if cough persists beyond 5 days`}
                 currentPatientForPrescription.paDocuments.map((doc) => (
                   <div className="pa-doc-card" key={doc.id}>
                     <div className="pa-doc-icon">
-                      <i className={`fas fa-file-${getDocIcon(doc.type)}`}></i>
+                      <i className={`${getDocIcon(doc.type)}`}></i>
                     </div>
                     <div className="pa-doc-title">{doc.name}</div>
                     <div className="pa-doc-info">Type: {doc.type}</div>

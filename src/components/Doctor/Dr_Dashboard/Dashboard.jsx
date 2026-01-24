@@ -4,6 +4,8 @@ import "./Dashboard.css";
 import { useApi } from "../../../api/useApi";
 import { doctorApi } from "../../../api/apiService";
 import { toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock, faPrescription, faRupeeSign, faStethoscope, faSyncAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 const DashboardComponent = () => {
   const [text, setText] = useState("");
@@ -465,7 +467,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Today's Consultations</div>
             </div>
             <div className="card-icon consultation">
-              <i className="fas fa-stethoscope"></i>
+              <FontAwesomeIcon icon={faStethoscope}/>
             </div>
           </div>
           <div className="card-trend">+2 from yesterday</div>
@@ -478,7 +480,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Ready for Consultation</div>
             </div>
             <div className="card-icon waiting">
-              <i className="fas fa-clock"></i>
+              <FontAwesomeIcon icon={faClock}/>
             </div>
           </div>
           <div className="card-trend down">-1 from yesterday</div>
@@ -491,7 +493,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Prescriptions Today</div>
             </div>
             <div className="card-icon prescription">
-              <i className="fas fa-prescription"></i>
+              <FontAwesomeIcon icon={faPrescription}/>
             </div>
           </div>
           <div className="card-trend">+4 this week</div>
@@ -510,7 +512,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Monthly Revenue</div>
             </div>
             <div className="card-icon revenue">
-              <i className="fas fa-rupee-sign"></i>
+              <FontAwesomeIcon icon={faRupeeSign}/>
             </div>
           </div>
 
@@ -535,11 +537,11 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
           <h2 className="queue-title">Patients Ready for Consultation</h2>
           <div className="queue-controls">
             <button onClick={handleLoadPatient} className="btn btn-outline" id="refreshQueueBtn">
-              <i className="fas fa-sync-alt"></i>
+              <FontAwesomeIcon icon={faSyncAlt}/>
               Refresh
             </button>
             <button className="btn btn-primary" id="callNextPatientBtn">
-              <i className="fas fa-user-plus"></i>
+              <FontAwesomeIcon icon={faUserPlus}/>
               Call Next Patient
             </button>
           </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faClipboardList, faUser, faEye, faHospitalUser, faEdit, faPhoneAlt, faStethoscope, faFolder, faHistory, faMapMarkedAlt, faPrint, faSyncAlt, faUserMd, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faClipboardList, faUser, faEye, faHospitalUser, faEdit, faPhoneAlt, faStethoscope, faFolder, faHistory, faMapMarkedAlt, faPrint, faSyncAlt, faUserMd, faUserPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 import "./Patient_Record.css"
 import { useApi } from '../../../api/useApi';
 import { doctorApi } from '../../../api/apiService';
@@ -37,7 +37,7 @@ const PatientRecords = () => {
 
         <div style={{ display: "flex", gap: "15px" }}>
           <div className="search-box" style={{ width: "300px" }}>
-            <i className="fas fa-search"></i>
+            <FontAwesomeIcon icon={faSearch}/>
             <input
               type="text"
               id="patientSearch"
