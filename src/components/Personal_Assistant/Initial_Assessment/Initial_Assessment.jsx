@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import "./Initial_Assessment.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faFile, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faFile, faPlus, faSearch, faClose } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
 import { personalAssitantApi } from '../../../api/apiService';

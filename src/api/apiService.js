@@ -25,7 +25,13 @@ export const personalAssitantApi = {
 
 export const doctorApi = {
   loadPatient: () => API.get("/doctor/today-Patient"),
-  getAllPatient: () => API.get("/doctor/all-patient-record"),
+  getAllPatient: (date = null, status = null) => API.get("/doctor/all-patient-record", {
+    params: {
+      startDate: date?.startDate,
+      endDate: date?.endDate,
+      status
+    }
+  }),
   getAllIllnessAndPharmacydata: async () => API.get('/doctor/all-illness-pharma'),
   savePrescribtion: async (data) => API.post('/doctor/save-prescribtion', data),
 
