@@ -37,7 +37,7 @@ const PatientRecords = () => {
 
         <div style={{ display: "flex", gap: "15px" }}>
           <div className="search-box" style={{ width: "300px" }}>
-            <FontAwesomeIcon icon={faSearch}/>
+            <FontAwesomeIcon icon={faSearch} />
             <input
               type="text"
               id="patientSearch"
@@ -149,10 +149,6 @@ const PatientRecords = () => {
           </tbody>
         </table>
       </div>
-
-      {console.log("sele", selectedPatient)
-      }
-
       {selectedPatient && (
         <div className="modal">
 

@@ -68,6 +68,12 @@
   background-color: var(--secondary-color);
 }
 
+.filter-btn:disabled {
+
+  opacity: 0.5;
+
+}
+
 /* 3. Dashboard Stat Cards (Original Style & Animation) */
 .dashboard-cards {
   display: grid;

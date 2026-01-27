@@ -170,6 +170,8 @@ const NewPatient = () => {
       });
 
       /* ================= AADHAAR ================= */
+
+
       if (aadhaarDoc?.[0]) formdata.append("aadhaarFront", aadhaarDoc[0]);
       if (aadhaarDoc?.[1]) formdata.append("aadhaarBack", aadhaarDoc[1]);
 
@@ -193,6 +195,7 @@ const NewPatient = () => {
       toast.success("Patient Registered")
 
       console.log("Patient Registered:", res);
+      navigate("/pa/pa_initial_assessment")
 
     } catch (error) {
       console.error("Register Patient Error:", error);
@@ -227,6 +230,10 @@ const NewPatient = () => {
 
     setfilteredsymtomps(filtered);
   };
+
+  useEffect(() => {
+    console.log("aadhaarDoc", aadhaarDoc);
+  }, [aadhaarDoc])
   return (
     <div className="section active" id="newPatientSection">
       <div className="section-header">

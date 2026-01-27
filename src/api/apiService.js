@@ -10,7 +10,15 @@ export const personalAssitantApi = {
   getUsers: () => API.get("/users"),
   getProfile: () => API.get("/profile"),
   loadPatient: () => API.get("/assitant/no-assessment-patient"),
-  getAllPatient: () => API.get("/assitant/all-patient-record"),
+  getAllPatient: (date = null, status = null) =>
+    API.get("/assitant/all-patient-record", {
+      params: {
+        startDate: date?.startDate,
+        endDate: date?.endDate,
+        status
+      }
+    }),
+
   saveInitialAssessments: (patientId, data) => API.post(`/assitant/intital-assement`, { patientId: patientId, initialAssessment: data }),
 
 };

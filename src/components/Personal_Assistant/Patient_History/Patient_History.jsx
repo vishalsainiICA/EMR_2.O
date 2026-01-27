@@ -1,17 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Patient_History.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faEdit, faList, faStethoscope, faMapMarkedAlt, faEye, faHospitalUser, faUserMd, faPrint, faSearch, faUser, faHistory, faPhone, faPhoneAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useApi } from '../../../api/useApi'; faList
 import { personalAssitantApi } from '../../../api/apiService';
+import { toast } from 'react-toastify';
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { useNavigate } from 'react-router-dom';
 const PatientHistory = () => {
     const [patients, setPatients] = useState([]);
     const [selectedPatient, setSelectedPatient] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const [date, setDate] = useState({
+        startDate: "",
+        endDate: ""
+    })
+    const navigate = useNavigate()
     // Yeh mock data table structure ko maintain karne ke liye p.getAllPhai
     const { request: loadpatient, loading, error } = useApi(personalAssitantApi.getAllPatient)
+
     const handleLoadPatient = async () => {
         try {
-            const res = await loadpatient()
+            const res = await loadpatient(date)
             setPatients(res?.data || [])
         } catch (error) {
             console.log(error);
@@ -27,6 +39,66 @@ const PatientHistory = () => {
         return value !== undefined && value !== null && value !== ""
             ? value
             : "—";
+    };
+
+    const handleExportExcel = () => {
+        console.log("call_1");
+
+        if (!patients || patients.length === 0) {
+            return toast.error("No data to export");
+        }
+        console.log("call_2");
+        //  JSON ko clean Excel-friendly format me map karo
+        const excelData = patients.map((p, index) => ({
+            "Sr No": index + 1,
+            "Patient Name": p.name,
+            "Phone": p.phone,
+            "Gender": p.gender,
+            "Age": p.age,
+            "Doctor": p?.currentDoctorId?.name || "",
+            "Status": p.status,
+            "Updated At": new Date(p.updatedAt).toLocaleDateString()
+        }));
+
+        // Workbook & Sheet
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
+
+        // Excel buffer
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array"
+        });
+
+        const fileData = new Blob([excelBuffer], {
+            type:
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+
+        saveAs(fileData, `patients_${Date.now()}.xlsx`);
+    };
+
+    const filteredPatients = useMemo(() => {
+        if (!searchTerm) return patients;
+
+        return patients?.filter((item) =>
+            item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.uid?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [patients, searchTerm]);
+
+    const handleEditPatient = (patient) => {
+        const isConfirmed = window.confirm(
+            "Are you sure you want to edit this patient?"
+        );
+
+        if (isConfirmed) {
+            navigate("/pa/new_patientregister", {
+                state: { patient }
+            });
+        }
     };
 
     return (
@@ -47,8 +119,70 @@ const PatientHistory = () => {
                         type="text"
                         id="globalSearch"
                         placeholder="Search patients by name or id..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
+
                 </div>
+                <div className="filter-controls">
+                    <input
+                        type="date"
+                        className="date-input"
+                        id="startDate"
+                        value={date.startDate}
+                        onChange={(e) =>
+                            setDate(prev => ({
+                                ...prev,
+                                startDate: e.target.value
+                            }))
+                        }
+                    />
+
+                    <span>to</span>
+
+                    <input
+                        type="date"
+                        className="date-input"
+                        id="endDate"
+                        value={date.endDate}
+                        onChange={(e) =>
+                            setDate(prev => ({
+                                ...prev,
+                                endDate: e.target.value
+                            }))
+                        }
+                    />
+
+                    <div className="filter-btn-wrapper">
+                        <button
+                            className="filter-btn"
+                            id="applyFilterBtn"
+                            disabled={!date.startDate || !date.endDate || loading}
+                            onClick={handleLoadPatient}
+                        >
+                            {loading ? (
+                                <div className="loader-mini"></div>
+                            ) : (
+                                <>
+                                    <i className="fas fa-filter"></i> Apply Filter
+                                </>
+                            )}
+                        </button>
+
+                        {/* {(!date.startDate || !date.endDate) && (
+                            <span className="tooltip-text">
+                                Please select start & end date
+                            </span>
+                        )} */}
+                    </div>
+
+                </div>
+
+                <button className="export-btn" onClick={handleExportExcel}>
+                    <i className="ri-upload-2-line"></i> Export (.excel)
+                </button>
+
+
             </div>
 
             <div className="table-container">
@@ -92,7 +226,7 @@ const PatientHistory = () => {
                             </tr>
                         )}
                         {!loading &&
-                            patients?.map((item) => (
+                            filteredPatients?.map((item) => (
                                 <tr key={item._id}>
                                     <td>{item.uid}</td>
                                     <td>{item.name}</td>
@@ -152,7 +286,8 @@ const PatientHistory = () => {
                                 className="close-modal"
                                 onClick={() => setSelectedPatient(null)}
                             >
-                                &times;
+                                <FontAwesomeIcon icon={faClose} />
+
                             </button>
                         </div>
 
@@ -173,7 +308,9 @@ const PatientHistory = () => {
                                 </div>
 
                                 <div style={{ display: "flex", gap: "10px" }}>
-                                    <button className="btn btn-outline">
+                                    <button
+                                        onClick={() => handleEditPatient(selectedPatient)}
+                                        className="btn btn-outline">
                                         <FontAwesomeIcon icon={faEdit} /> Edit
                                     </button>
                                     <button className="btn btn-outline">
@@ -270,21 +407,21 @@ const PatientHistory = () => {
                                                 <p>
                                                     <strong>Medical History:</strong>{" "}
                                                     {showValue(
-                                                        selectedPatient.initialAssementId.medicalHistory
+                                                        his?.initialAssementId.medicalHistory
                                                     )}
                                                 </p>
 
                                                 <p>
                                                     <strong>Current Medications:</strong>{" "}
                                                     {showValue(
-                                                        selectedPatient?.currentPrescriptionId?.prescriptionMediciene
+                                                        his?.prescriptionId?.prescriptionMediciene
                                                     )}
                                                 </p>
 
                                                 <p>
                                                     <strong>Doctor Notes:</strong>{" "}
                                                     {showValue(
-                                                        selectedPatient.initialAssementId.notes
+                                                        his?.initialAssementId.notes
                                                     )}
                                                 </p>
                                             </div>

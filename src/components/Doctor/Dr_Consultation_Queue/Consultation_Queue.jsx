@@ -1,89 +1,3 @@
-// import "./Consultation_Queue.css"
-// import React from 'react';
-
-// const ConsultationQueue = () => {
-//   // Yeh mock data table ko render karne ke liye hai
-//   const queueData = [
-//     {
-//       queueNo: "Q-104",
-//       name: "Rajesh Kumar",
-//       ageGender: "45 / Male",
-//       complaint: "Persistent Cough",
-//       paAssessment: "Normal",
-//       vitals: "BP: 120/80, Temp: 98.6°F",
-//       priority: "High",
-//       waitTime: "12 mins"
-//     }
-//   ];
-
-//   return (
-//     <div className="consultation-queue-wrapper section active" id="consultationQueueSection">
-//     {/* <div className="section" id="consultationQueueSection"> */}
-//       <div className="section-header">
-//         <h2 className="section-title">Consultation Queue</h2>
-//         <div className="queue-controls">
-//           <button className="btn btn-outline" id="refreshFullQueueBtn">
-//             <i className="fas fa-sync-alt"></i> Refresh Queue
-//           </button>
-//           <button className="btn btn-primary" id="callNextFullBtn" style={{ marginLeft: '10px' }}>
-//             <i className="fas fa-user-plus"></i> Call Next Patient
-//           </button>
-//         </div>
-//       </div>
-
-//       <div className="table-container">
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Queue No.</th>
-//               <th>Patient Name</th>
-//               <th>Age/Gender</th>
-//               <th>Chief Complaint</th>
-//               <th>PA Assessment</th>
-//               <th>Vitals</th>
-//               <th>Priority</th>
-//               <th>Wait Time</th>
-//               <th>Actions</th>
-//             </tr>
-//           </thead>
-//           <tbody id="consultationQueueTable">
-//             {/* JavaScript logic ko React map function mein convert kiya gaya hai */}
-//             {queueData.map((patient, index) => (
-//               <tr key={index}>
-//                 <td>{patient.queueNo}</td>
-//                 <td><strong>{patient.name}</strong></td>
-//                 <td>{patient.ageGender}</td>
-//                 <td>{patient.complaint}</td>
-//                 <td>{patient.paAssessment}</td>
-//                 <td>{patient.vitals}</td>
-//                 <td>
-//                   <span className={`priority ${patient.priority.toLowerCase()}`}>
-//                     {patient.priority}
-//                   </span>
-//                 </td>
-//                 <td>{patient.waitTime}</td>
-//                 <td>
-//                   <button className="btn btn-sm btn-primary">
-//                     View Details 
-//                   </button>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ConsultationQueue;
-
-
-
-
-
-
-
 import "./Consultation_Queue.css";
 import React, { useEffect, useState } from "react";
 import { useApi } from "../../../api/useApi";
@@ -96,13 +10,13 @@ import { faCommentMedical } from "@fortawesome/free-solid-svg-icons/faCommentMed
 const ConsultationQueue = () => {
   const [patients, setPatients] = useState([]);
 
-  // ✅ 3 MODALS STATE
+  //  3 MODALS STATE
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const [currentPatientForPrescription, setCurrentPatientForPrescription] = useState(null);
   const [isFinalPrescriptionView, setIsFinalPrescriptionView] = useState(false);
   const [isPaDocumentsModalOpen, setIsPaDocumentsModalOpen] = useState(false);
 
-  // ✅ Final Prescription Data
+  //  Final Prescription Data
   const [finalPrescriptionData, setFinalPrescriptionData] = useState({
     formattedDate: "",
     formattedTime: "",
@@ -115,10 +29,10 @@ const ConsultationQueue = () => {
     advice: "",
   });
 
-  // ✅ API Hook
+  //  API Hook
   const { request: loadpatient, loading } = useApi(doctorApi.loadPatient);
 
-  // ✅ Load Patients (Same as Dashboard)
+  //  Load Patients (Same as Dashboard)
   const handleLoadPatient = async () => {
     try {
       const res = await loadpatient();
@@ -132,7 +46,7 @@ const ConsultationQueue = () => {
     handleLoadPatient();
   }, []);
 
-  // ✅ Open Prescription Modal (Same as Dashboard)
+  //  Open Prescription Modal (Same as Dashboard)
   const showPrescriptionModal = (patientId) => {
     const patient = patients.find((p) => p._id === patientId);
 
@@ -152,7 +66,7 @@ const ConsultationQueue = () => {
     document.body.style.overflow = "hidden";
   };
 
-  // ✅ Close Prescription Modal
+  //  Close Prescription Modal
   const closePrescriptionModal = () => {
     setIsPrescriptionModalOpen(false);
     setCurrentPatientForPrescription(null);
@@ -161,7 +75,7 @@ const ConsultationQueue = () => {
     document.body.style.overflow = "auto";
   };
 
-  // ✅ PA Documents Modal
+  //  PA Documents Modal
   const showPaDocumentsModal = () => {
     if (!currentPatientForPrescription) return;
     setIsPaDocumentsModalOpen(true);
@@ -173,7 +87,7 @@ const ConsultationQueue = () => {
     document.body.style.overflow = "hidden";
   };
 
-  // ✅ Helper function for icon
+  //  Helper function for icon
   const getDocIcon = (docType) => {
     switch ((docType || "").toLowerCase()) {
       case "form":
@@ -193,7 +107,7 @@ const ConsultationQueue = () => {
     }
   };
 
-  // ✅ Generate Final Prescription
+  //  Generate Final Prescription
   const generateFinalPrescription = () => {
     if (!currentPatientForPrescription) return;
 
@@ -270,14 +184,12 @@ const ConsultationQueue = () => {
         <table>
           <thead>
             <tr>
-              <th>Queue No.</th>
+              <th>Patient ID.</th>
               <th>Patient Name</th>
               <th>Age/Gender</th>
               <th>Chief Complaint</th>
               <th>PA Assessment</th>
               <th>Vitals</th>
-              <th>Priority</th>
-              <th>Wait Time</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -307,11 +219,10 @@ const ConsultationQueue = () => {
             {!loading &&
               patients?.map((patient, index) => (
                 <tr key={patient._id}>
-                  <td>{`Q-${String(index + 1).padStart(3, "0")}`}</td>
+                  <td>{`${String(patient.uid).padStart(3, "0")}`}</td>
 
                   <td>
                     <strong>{patient.name}</strong>
-                    <div style={{ fontSize: "11px", color: "var(--text-light)" }}>UID: {patient.uid}</div>
                   </td>
 
                   <td>
@@ -340,7 +251,7 @@ const ConsultationQueue = () => {
                   <td>{patient.isPrescbribedDone ? "Completed" : "Pending"}</td>
 
                   <td>
-                    {/* ✅ View Details -> Opens Same Modal */}
+                    {/*  View Details -> Opens Same Modal */}
                     <button className="btn btn-sm btn-primary" onClick={() => showPrescriptionModal(patient._id)}>
                       <FontAwesomeIcon icon={faEye} />
                       View Details
