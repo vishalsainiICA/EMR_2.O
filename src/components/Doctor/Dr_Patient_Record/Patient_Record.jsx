@@ -152,10 +152,6 @@ const PatientRecords = () => {
           </tbody>
         </table>
       </div>
-
-      {console.log("sele", selectedPatient)
-      }
-
       {selectedPatient && (
         <div className="modal">
 

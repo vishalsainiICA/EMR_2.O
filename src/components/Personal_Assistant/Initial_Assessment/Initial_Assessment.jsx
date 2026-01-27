@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import "./Initial_Assessment.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faFile, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { NavLink, useLocation } from 'react-router-dom';
+import { faEye, faFile, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApi } from '../../../api/useApi';
 import { personalAssitantApi } from '../../../api/apiService';
 import { toast } from 'react-toastify';
@@ -12,6 +12,8 @@ const Initialassessment = () => {
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  // const navigate = useNavigate()
 
   const [assessmentData, setAssessmentData] = useState({
     vitals: {
@@ -100,6 +102,8 @@ const Initialassessment = () => {
       const res = await saveIntialAssessment(patientId, data)
       handleLoadPatient()
       toast.success(res.message)
+      setSelectedPatient(null)
+      setShowForm(false)
     } catch (error) {
       console.log(error);
     }
@@ -116,19 +120,30 @@ const Initialassessment = () => {
     if (error) toast.error(error)
   }, [intialError, error])
 
+  const filteredPatients = useMemo(() => {
+    if (!searchTerm) return patients;
+
+    return patients?.filter((item) =>
+      item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.uid?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [patients, searchTerm]);
 
   return (
     <div className="section" id="initialAssessmentSection" style={{ display: 'block' }}>
       <div className="section-header">
         <h2 className="section-title">Initial Patient Assessments</h2>
-        <button
+        <div className="search-box1">
+          <FontAwesomeIcon icon={faSearch} />
+          <input
+            type="text"
+            id="globalSearch"
+            placeholder="Search patients by name or id..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
 
-          className="btn btn-primary"
-          id="newAssessmentBtn"
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          New Assessment
-        </button>
+        </div>
       </div>
 
       <div className="table-container">
@@ -152,7 +167,7 @@ const Initialassessment = () => {
             )}
 
             {!loading && patients.length > 0 &&
-              patients.map((item, index) => (
+              filteredPatients.map((item, index) => (
                 <tr key={item._id}>
                   <td>{index + 1}</td>
                   <td>{item.name}</td>
@@ -222,7 +237,19 @@ const Initialassessment = () => {
           id={`assessmentForm-${selectedPatient._id}`}
           style={{ marginTop: "30px" }}
         >
-          <h3 style={{ marginBottom: "20px" }}>Initial Assessment Form</h3>
+          <div className="modal-header">
+            <h3 style={{ marginBottom: "20px" }}>Initial Assessment Form</h3>
+            <button
+              className="close-modal"
+              onClick={() => {
+                setShowForm(false)
+                setSelectedPatient(null)
+              }}
+            >
+              <FontAwesomeIcon icon={faClose} />
+
+            </button>
+          </div>
 
           {/* ================= Patient Info ================= */}
           <div className="patient-info" style={{ marginBottom: "30px" }}>

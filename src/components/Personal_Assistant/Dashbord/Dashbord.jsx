@@ -27,6 +27,10 @@ function Personalassitant() {
 
   }, [])
 
+  // useEffect(() => {
+  //   navigate("/login")
+  // }, [error])
+
   const showValue = (value) => {
     return value !== undefined && value !== null && value !== ""
       ? value
@@ -56,7 +60,7 @@ function Personalassitant() {
 
   return (
     <div className="section active" id="dashboardSection">
-      {/* UPDATED: Date Filter */}
+      {/* UPDATED: Date Filter
       <div className="date-filter">
         <h3>Dashboard Overview</h3>
         <div className="filter-controls">
@@ -67,7 +71,7 @@ function Personalassitant() {
             <i className="fas fa-filter"></i> Apply Filter
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* UPDATED: Dashboard Cards - Smaller */}
       <div className="dashboard-cards">
@@ -110,7 +114,7 @@ function Personalassitant() {
           <div className="card-trend">+12 this week</div>
         </div>
 
-        <div className="card" id="doctorQueueCard">
+        {/* <div className="card" id="doctorQueueCard">
           <div className="card-header">
             <div className="card-alignment">
               <div className="card-count">5</div>
@@ -121,7 +125,7 @@ function Personalassitant() {
             </div>
           </div>
           <div className="card-trend">+1 in queue</div>
-        </div>
+        </div> */}
       </div>
 
       {/* UPDATED: Recent Patients Table */}
@@ -235,192 +239,187 @@ function Personalassitant() {
       </div>
 
       {/* Doctor Queue Section */}
-      {
-        selectedPatient !== null && (
-          <div className="modal">
+      {selectedPatient !== null && (
+        <div className="modal">
 
-            <div className="modal-content">
-              <div className="modal-header">
-                <h2 className="modal-title">Patient Details</h2>
-                <button
-                  className="close-modal"
-                  onClick={() => setSelectedPatient(null)}
-                >
-                  &times;
-                </button>
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2 className="modal-title">Patient Details</h2>
+              <button
+                className="close-modal"
+                onClick={() => setSelectedPatient(null)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="patient-details">
+              {/* ================= Header ================= */}
+              <div className="patient-header">
+                <div className="patient-info">
+                  <div className="patient-avatar">
+                    {showValue(selectedPatient.name)?.charAt(0)}
+                  </div>
+
+                  <div className="patient-name">
+                    <h2>{showValue(selectedPatient.name)}</h2>
+                    <p className="patient-id">
+                      Patient ID: {showValue(selectedPatient.uid)}
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button className="btn btn-outline">
+                    <FontAwesomeIcon icon={faEdit} /> Edit
+                  </button>
+                  <button className="btn btn-outline">
+                    <FontAwesomeIcon icon={faPrint} /> Print
+                  </button>
+                </div>
               </div>
 
-              <div className="patient-details">
-                {/* ================= Header ================= */}
-                <div className="patient-header">
-                  <div className="patient-info">
-                    <div className="patient-avatar">
-                      {showValue(selectedPatient.name)?.charAt(0)}
-                    </div>
+              {/* ================= Info Grid ================= */}
+              <div className="patient-grid">
 
-                    <div className="patient-name">
-                      <h2>{showValue(selectedPatient.name)}</h2>
-                      <p className="patient-id">
-                        Patient ID: {showValue(selectedPatient.uid)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <button className="btn btn-outline">
-                      <FontAwesomeIcon icon={faEdit} /> Edit
-                    </button>
-                    <button className="btn btn-outline">
-                      <FontAwesomeIcon icon={faPrint} /> Print
-                    </button>
-                  </div>
+                {/* Basic Info */}
+                <div className="info-card">
+                  <h3><FontAwesomeIcon icon={faUser} /> Basic Info</h3>
+                  <p><strong>Age:</strong> {showValue(selectedPatient.age)}</p>
+                  <p><strong>Gender:</strong> {showValue(selectedPatient.gender)}</p>
+                  <p><strong>Phone:</strong> {showValue(selectedPatient.attendeePhone)}</p>
                 </div>
 
-                {/* ================= Info Grid ================= */}
-                <div className="patient-grid">
-
-                  {/* Basic Info */}
-                  <div className="info-card">
-                    <h3><FontAwesomeIcon icon={faUser} /> Basic Info</h3>
-                    <p><strong>Age:</strong> {showValue(selectedPatient.age)}</p>
-                    <p><strong>Gender:</strong> {showValue(selectedPatient.gender)}</p>
-                    <p><strong>Phone:</strong> {showValue(selectedPatient.attendeePhone)}</p>
-                  </div>
-
-                  {/* Address */}
-                  <div className="info-card">
-                    <h3><FontAwesomeIcon icon={faMapMarkedAlt} /> Address</h3>
-                    <p>
-                      {showValue(
-                        `${selectedPatient.city || ""}, ${selectedPatient.state || ""}`
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Emergency Contact */}
-                  <div className="info-card">
-                    <h3><FontAwesomeIcon icon={faPhoneAlt} /> Emergency Contact</h3>
-                    <p><strong>Name:</strong> {showValue(selectedPatient.attendeeName)}</p>
-                    <p><strong>Phone:</strong> {showValue(selectedPatient.attendeePhone)}</p>
-                  </div>
-
-                  {/* Medical Info */}
-                  <div className="info-card">
-                    <h3><FontAwesomeIcon icon={faUserMd} /> Medical Info</h3>
-                    <p><strong>Blood Group:</strong> {showValue(selectedPatient.bloodGroup)}</p>
-                    <p><strong>Category:</strong> {showValue(selectedPatient.patientCategory)}</p>
-                  </div>
-
-                  {/* Current Visit */}
-                  <div className="info-card">
-                    <h3><FontAwesomeIcon icon={faStethoscope} /> Current Visit</h3>
-
-                    <p><strong>Status:</strong> {showValue(selectedPatient.status)}</p>
-
-                    <p>
-                      <strong>Chief Complaint:</strong>{" "}
-                      {showValue(selectedPatient.initialAssementId?.complaint)}
-                    </p>
-
-                    <p>
-                      <strong>Vitals:</strong>{" "}
-                      {selectedPatient.initialAssementId?.vitals ? (
-                        <>
-                          BP {showValue(selectedPatient.initialAssementId.vitals.bp)},{" "}
-                          HR {showValue(selectedPatient.initialAssementId.vitals.heartRate)},{" "}
-                          Temp {showValue(selectedPatient.initialAssementId.vitals.temperature)}°F,{" "}
-                          SpO₂ {showValue(selectedPatient.initialAssementId.vitals.spo2)}%
-                        </>
-                      ) : (
-                        "—"
-                      )}
-                    </p>
-
-                    <p>
-                      <strong>Registration Time:</strong>{" "}
-                      {selectedPatient.createdAt
-                        ? new Date(selectedPatient.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                        : "—"}
-                    </p>
-                  </div>
+                {/* Address */}
+                <div className="info-card">
+                  <h3><FontAwesomeIcon icon={faMapMarkedAlt} /> Address</h3>
+                  <p>
+                    {showValue(
+                      `${selectedPatient.city || ""}, ${selectedPatient.state || ""}`
+                    )}
+                  </p>
                 </div>
 
-                {/* ================= Medical History ================= */}
-                <div className="medical-history">
-                  <h3 className="section-title">
-                    <FontAwesomeIcon icon={faHistory} /> Medical History
-                  </h3>
+                {/* Emergency Contact */}
+                <div className="info-card">
+                  <h3><FontAwesomeIcon icon={faPhoneAlt} /> Emergency Contact</h3>
+                  <p><strong>Name:</strong> {showValue(selectedPatient.attendeeName)}</p>
+                  <p><strong>Phone:</strong> {showValue(selectedPatient.attendeePhone)}</p>
+                </div>
 
-                  {selectedPatient.initialAssementId ? (
-                    <div className="history-item">
+                {/* Medical Info */}
+                {/* Current Visit */}
+                <div className="info-card">
+                  <h3><FontAwesomeIcon icon={faStethoscope} /> Current Visit</h3>
+
+                  <p><strong>Status:</strong> {showValue(selectedPatient.status)}</p>
+
+                  <p>
+                    <strong>Chief Complaint:</strong>{" "}
+                    {showValue(selectedPatient.initialAssementId?.complaint)}
+                  </p>
+
+                  <p>
+                    <strong>Vitals:</strong>{" "}
+                    {selectedPatient.initialAssementId?.vitals ? (
+                      <>
+                        BP {showValue(selectedPatient.initialAssementId.vitals.bp)},{" "}
+                        HR {showValue(selectedPatient.initialAssementId.vitals.heartRate)},{" "}
+                        Temp {showValue(selectedPatient.initialAssementId.vitals.temperature)}°F,{" "}
+                        SpO₂ {showValue(selectedPatient.initialAssementId.vitals.spo2)}%
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </p>
+
+                  <p>
+                    <strong>Registration Time:</strong>{" "}
+                    {selectedPatient.createdAt
+                      ? new Date(selectedPatient.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                      : "—"}
+                  </p>
+                </div>
+              </div>
+
+              {/* ================= Medical History ================= */}
+              <div className="medical-history">
+                <h3 className="section-title">
+                  <FontAwesomeIcon icon={faHistory} /> Medical History
+                </h3>
+
+                {selectedPatient.initialAssementId ? (
+                  selectedPatient?.treatmentHistory?.map((his, index) => {
+                    return <div key={index} className="history-item">
                       <div className="history-header">
                         <span className="history-date">
                           {new Date(
-                            selectedPatient.initialAssementId.createdAt
+                            his.treatedAt
                           ).toLocaleDateString()}
                         </span>
-                        <span className="history-doctor">Initial Assessment</span>
+                        <span className="history-doctor">{`Dr. ${his?.doctorId?.name}`}</span>
                       </div>
 
                       <div className="history-details">
                         <p>
                           <strong>Medical History:</strong>{" "}
                           {showValue(
-                            selectedPatient.initialAssementId.medicalHistory
+                            his.initialAssementId.medicalHistory
                           )}
                         </p>
 
                         <p>
-                          <strong>Physical Exam:</strong>{" "}
+                          <strong>Medications:</strong>{" "}
                           {showValue(
-                            selectedPatient.initialAssementId.physicalExam
+                            his?.prescriptionId?.prescriptionMediciene
                           )}
                         </p>
 
                         <p>
                           <strong>Doctor Notes:</strong>{" "}
                           {showValue(
-                            selectedPatient.initialAssementId.notes
+                            his.initialAssementId.notes
                           )}
                         </p>
                       </div>
                     </div>
-                  ) : (
-                    <p style={{ textAlign: "center" }}>No medical history found</p>
-                  )}
-                </div>
+                  })
 
-                {/* ================= Footer ================= */}
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: "10px",
-                  }}
+                ) : (
+                  <p style={{ textAlign: "center" }}>No medical history found</p>
+                )}
+              </div>
+
+              {/* ================= Footer ================= */}
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "10px",
+                }}
+              >
+                <button
+                  className="btn btn-outline"
+                  onClick={() => setSelectedPatient(null)}
                 >
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => setSelectedPatient(null)}
-                  >
-                    <FontAwesomeIcon icon={faClose} /> Close
-                  </button>
+                  <FontAwesomeIcon icon={faClose} /> Close
+                </button>
 
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => navigate("/pa/pa_initial_assessment", { state: { patient: selectedPatient } })}
-                  >
-                    <FontAwesomeIcon icon={faHospitalUser} /> Create New Assessment
-                  </button>
-                </div>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => navigate("/pa/pa_initial_assessment", { state: { patient: selectedPatient } })}
+                >
+                  <FontAwesomeIcon icon={faHospitalUser} /> Create New Assessment
+                </button>
               </div>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
 
     </div >
   )
