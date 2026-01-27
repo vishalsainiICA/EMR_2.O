@@ -92,6 +92,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAllergies, faDiagnoses, faEyeDropper, faFileMedicalAlt, faHeartbeat, faHeartBroken, faHistory, faPills, faPrescription, faSave, faSpinner, faSyncAlt, faUserInjured, faUserPlus, faVial } from "@fortawesome/free-solid-svg-icons";
 import { faComment, faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faCommentMedical } from "@fortawesome/free-solid-svg-icons/faCommentMedical";
+import moment from "moment";
 
 const ConsultationQueue = () => {
   const [patients, setPatients] = useState([]);
@@ -270,7 +271,7 @@ const ConsultationQueue = () => {
         <table>
           <thead>
             <tr>
-              <th>Queue No.</th>
+              <th>Patient ID</th>
               <th>Patient Name</th>
               <th>Age/Gender</th>
               <th>Chief Complaint</th>
@@ -307,11 +308,13 @@ const ConsultationQueue = () => {
             {!loading &&
               patients?.map((patient, index) => (
                 <tr key={patient._id}>
-                  <td>{`Q-${String(index + 1).padStart(3, "0")}`}</td>
+                  <td>
+                    {/* {`Q-${String(index + 1).padStart(3, "0")}`} */}
+                    <div style={{ fontSize: "11px", color: "var(--text-light)" }}> {patient.uid}</div>
+                    </td>
 
                   <td>
-                    <strong>{patient.name}</strong>
-                    <div style={{ fontSize: "11px", color: "var(--text-light)" }}>UID: {patient.uid}</div>
+                    {patient.name}
                   </td>
 
                   <td>
@@ -594,75 +597,94 @@ const ConsultationQueue = () => {
                     <>
                       {/* ====================== EDIT PRESCRIPTION VIEW ====================== */}
                       <div className="diagnosis-toggle-container" >
-                        <span>Diagnosis Type:</span>
-                        <label className="diagnosis-toggle">
-                          <input type="checkbox" id="diagnosisToggle" defaultChecked />
-                          <span className="diagnosis-toggle-slider">
-                            <span className="diagnosis-toggle-option">Provisional</span>
-                            <span className="diagnosis-toggle-option">Final</span>
-                          </span>
-                        </label>
+                        <div className="diagnosis-div">
+                          <div style={{ alignItems: "center", display: "flex" }}>
 
-                        <button
-                          className="view-pa-docs-btn"
-                          id="viewPaDocumentsBtn"
-                          onClick={showPaDocumentsModal}>
+                            <span>Diagnosis Type:</span>
+                            <label className="diagnosis-toggle">
+                              <input type="checkbox" id="diagnosisToggle" defaultChecked />
+                              <span className="diagnosis-toggle-slider">
+                                <span className="diagnosis-toggle-option">Provisional</span>
+                                <span className="diagnosis-toggle-option">Final</span>
+                              </span>
+                            </label>
 
-                          <i class="fas fa-file-medical-alt"></i>
-                          < FontAwesomeIcon icon={faFileMedicalAlt} />
-                          View PA Documents
-                        </button>
+                          </div>
+                          <button
+                            className="view-pa-docs-btn"
+                            id="viewPaDocumentsBtn"
+                            onClick={showPaDocumentsModal}>
+
+                            <i class="fas fa-file-medical-alt"></i>
+                            < FontAwesomeIcon icon={faFileMedicalAlt} />
+                            View PA Documents
+                          </button>
+                        </div>
 
                       </div>
 
                       <div className="prescription-cards-container">
                         <div className="prescription-card patient-details-enhanced">
                           <h3>
-                            {/* <i className="fas fa-user-injured"></i> Patient Details */}
+                            {/* <i className="fas fa-user-injured"></i>  */}
                             <FontAwesomeIcon icon={faUserInjured} />
+                            Patient Details
                           </h3>
 
-                          <div className="detail-row">
-                            <div className="detail-label">Patient Name:</div>
-                            <div className="detail-value">{currentPatientForPrescription.name}</div>
-                          </div>
 
-                          <div className="detail-row">
-                            <div className="detail-label">Patient ID:</div>
-                            <div className="detail-value">{currentPatientForPrescription.uid}</div>
-                          </div>
+                          <div className="patient-detail-main">
+                            <div className="patient-detail-section" >
+                              <div className="detail-row">
+                                <div className="detail-label">Patient Name:</div>
+                                <div className="detail-value">{currentPatientForPrescription.name}</div>
+                              </div>
 
-                          <div className="detail-row">
-                            <div className="detail-label">Age & Gender:</div>
-                            <div className="detail-value">
-                              {currentPatientForPrescription.age} years / {currentPatientForPrescription.gender}
+                              <div className="detail-row">
+                                <div className="detail-label">Patient ID:</div>
+                                <div className="detail-value">{currentPatientForPrescription.uid}</div>
+                              </div>
+
+                              <div className="detail-row">
+                                <div className="detail-label">Age & Gender:</div>
+                                <div className="detail-value">
+                                  {currentPatientForPrescription.age} years / {currentPatientForPrescription.gender}
+                                </div>
+                              </div>
+
+                              <div className="detail-row">
+                                <div className="detail-label">Contact Number:</div>
+                                <div className="detail-value">{currentPatientForPrescription.phone}</div>
+                              </div>
+                            </div>
+
+                            <div className="patient-detail-section" >
+                              <div className="detail-row">
+                                <div className="detail-label">Last Consultation:</div>
+                                <div className="detail-value">{currentPatientForPrescription?.lastVisit || "0"}</div>
+                              </div>
+
+                              <div className="detail-row">
+                                <div className="detail-label">Next Appointment:</div>
+                                <div className="detail-value">{currentPatientForPrescription?.nextAppointment || "-/"}</div>
+                              </div>
+
+                              <div className="detail-row">
+                                <div className="detail-label">Assessed by PA:</div>
+                                <div className="detail-value">{currentPatientForPrescription.registerarId?.name}</div>
+                              </div>
+
+                              <div className="detail-row">
+                                <div className="detail-label">Assessment Time:</div>
+                                <div className="detail-value">
+                                  {currentPatientForPrescription.registerarId?.updatedAt
+                                    ? moment(currentPatientForPrescription.registerarId.updatedAt)
+                                      .format("DD MMM YYYY, hh:mm A")
+                                    : "--"}
+                                </div>
+                              </div>
                             </div>
                           </div>
 
-                          <div className="detail-row">
-                            <div className="detail-label">Contact Number:</div>
-                            <div className="detail-value">{currentPatientForPrescription.phone}</div>
-                          </div>
-
-                          <div className="detail-row">
-                            <div className="detail-label">Last Consultation:</div>
-                            <div className="detail-value">{currentPatientForPrescription?.lastVisit || "0"}</div>
-                          </div>
-
-                          <div className="detail-row">
-                            <div className="detail-label">Next Appointment:</div>
-                            <div className="detail-value">{currentPatientForPrescription?.nextAppointment || "-/"}</div>
-                          </div>
-
-                          <div className="detail-row">
-                            <div className="detail-label">Assessed by PA:</div>
-                            <div className="detail-value">{currentPatientForPrescription.registerarId?.name}</div>
-                          </div>
-
-                          <div className="detail-row">
-                            <div className="detail-label">Assessment Time:</div>
-                            <div className="detail-value">{currentPatientForPrescription.registerarId?.updatedAt}</div>
-                          </div>
                         </div>
 
                         <div className="prescription-card">
@@ -806,7 +828,7 @@ const ConsultationQueue = () => {
 
                         <div className="prescription-card advice-card-enhanced">
                           <h3>
-                            <FontAwesomeIcon icon={faCommentMedical}/>
+                            <FontAwesomeIcon icon={faCommentMedical} />
                             General Advice
                           </h3>
 
@@ -825,7 +847,7 @@ const ConsultationQueue = () => {
                       </div>
 
                       <div className="alert-item danger" style={{ margin: "15px 0", padding: "12px", fontSize: "13px" }}>
-                        < FontAwesomeIcon icon={faAllergies}/>
+                        < FontAwesomeIcon icon={faAllergies} />
                         <div>
                           <div style={{ fontWeight: 600 }}>Allergy Alert</div>
                           <div>{currentPatientForPrescription.initialAssementId.complaint}</div>
@@ -833,7 +855,7 @@ const ConsultationQueue = () => {
                       </div>
 
                       <div className="alert-item info" style={{ margin: "15px 0", padding: "12px", fontSize: "13px" }}>
-                        < FontAwesomeIcon icon={faHistory}/>
+                        < FontAwesomeIcon icon={faHistory} />
                         <div>
                           <div style={{ fontWeight: 600 }}>Medical History</div>
                           <div>{currentPatientForPrescription?.initialAssementId?.medicalHistory}</div>
@@ -846,13 +868,13 @@ const ConsultationQueue = () => {
                           id="saveDraftBtn"
                           onClick={() => alert("Prescription draft saved successfully!")}
                         >
-                          < FontAwesomeIcon icon={faSave}/>
+                          < FontAwesomeIcon icon={faSave} />
                           Save Draft
                         </button>
 
                         {/*  UPDATED: Generate Prescription opens Final View */}
                         <button className="btn btn-success" id="generatePrescriptionBtn" onClick={generateFinalPrescription}>
-                          < FontAwesomeIcon icon={faPrescription}/>
+                          < FontAwesomeIcon icon={faPrescription} />
                           Generate Prescription
                         </button>
                       </div>
@@ -879,7 +901,7 @@ const ConsultationQueue = () => {
         <div className="pa-documents-content">
           <div className="pa-docs-header">
             <h2 className="pa-docs-title">
-              <FontAwesomeIcon icon={faFileMedicalAlt}/>PA Uploaded Documents
+              <FontAwesomeIcon icon={faFileMedicalAlt} />PA Uploaded Documents
             </h2>
             <button className="close-modal" id="closePaDocsModal" onClick={closePaDocumentsModal}>
               &times;

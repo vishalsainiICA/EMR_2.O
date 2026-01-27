@@ -4,6 +4,7 @@ import { faClose, faClipboardList, faUser, faEye, faHospitalUser, faEdit, faPhon
 import "./Patient_Record.css"
 import { useApi } from '../../../api/useApi';
 import { doctorApi } from '../../../api/apiService';
+import ReadMoreReadLess from "react-read-more-read-less";
 
 const PatientRecords = () => {
   const [patients, setPatients] = useState([]);
@@ -37,7 +38,7 @@ const PatientRecords = () => {
 
         <div style={{ display: "flex", gap: "15px" }}>
           <div className="search-box" style={{ width: "300px" }}>
-            <FontAwesomeIcon icon={faSearch}/>
+            <FontAwesomeIcon icon={faSearch} />
             <input
               type="text"
               id="patientSearch"
@@ -108,7 +109,9 @@ const PatientRecords = () => {
 
                   {/* Status */}
                   <td>
-                    {item?.currentPrescriptionId?.prescriptionMediciene}
+
+                    
+                     {item?.currentPrescriptionId?.prescriptionMediciene}
                   </td>
 
                   <td>
