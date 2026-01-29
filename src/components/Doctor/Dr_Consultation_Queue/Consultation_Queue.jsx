@@ -246,13 +246,13 @@ const ConsultationQueue = () => {
                     {patient.initialAssementId?.vitals?.temperature || "-"}
                   </td>
 
-                  <td>
+                  {/* <td>
                     <span className={`priority ${(patient.status || "normal").toLowerCase()}`}>
                       {patient.status || "Normal"}
                     </span>
-                  </td>
+                  </td> */}
 
-                  <td>{patient.isPrescbribedDone ? "Completed" : "Pending"}</td>
+                  {/* <td>{patient.isPrescbribedDone ? "Completed" : "Pending"}</td> */}
 
                   <td>
                     {/*  View Details -> Opens Same Modal */}
@@ -712,9 +712,9 @@ const ConsultationQueue = () => {
                             <textarea
                               id="medications"
                               placeholder="List medications with dosage..."
-                              defaultValue={`Amoxicillin 500mg - Twice daily for 7 days
-                                             Paracetamol 500mg - As needed for fever
-                                             Vitamin C + Zinc - Once daily for immunity`}
+                              // defaultValue={`Amoxicillin 500mg - Twice daily for 7 days
+                              //                Paracetamol 500mg - As needed for fever
+                              //                Vitamin C + Zinc - Once daily for immunity`}
                             />
                           </div>
                         </div>
@@ -732,8 +732,8 @@ const ConsultationQueue = () => {
                             <textarea
                               id="tests"
                               placeholder="List recommended tests..."
-                              defaultValue={`Complete Blood Count (CBC) if fever persists beyond 3 days
-                                             Chest X-ray if cough persists beyond 5 days`}
+                              // defaultValue={`Complete Blood Count (CBC) if fever persists beyond 3 days
+                              //                Chest X-ray if cough persists beyond 5 days`}
                             />
                           </div>
                         </div>
@@ -749,10 +749,10 @@ const ConsultationQueue = () => {
                             <textarea
                               id="advice"
                               placeholder="Add general advice for patient..."
-                              defaultValue={`1. Take adequate rest for 3-5 days
-                                             2. Drink plenty of warm fluids
-                                             3. Follow up if symptoms worsen
-                                             4. Next review in 7 days`}
+//                               defaultValue={`1. Take adequate rest for 3-5 days
+// 2. Drink plenty of warm fluids
+// 3. Follow up if symptoms worsen
+// 4. Next review in 7 days`}
                             />
                           </div>
                         </div>

@@ -86,6 +86,7 @@ tr{
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-medium);
+  /* background-color: #17a2b8; */
 }
 
 .consultation-queue-wrapper tr:hover {
@@ -338,6 +339,10 @@ align-items: center;
 justify-content: space-between;
 }
 
+.patient-detail-section
+{
+  width: 100%;
+}
 
 
 .patient-details-enhanced .detail-row {
@@ -349,6 +354,7 @@ justify-content: space-between;
 }
 
 .patient-details-enhanced .detail-label {
+  width: 50%;
   display: flex;
   justify-content: start;
   font-size: 12px;
@@ -359,9 +365,10 @@ justify-content: space-between;
 }
 
 .patient-details-enhanced .detail-value {
+  width: 50%;
   display: flex;
   justify-content: start;
-  padding: 0px 10px;
+  /* padding: 0px 10px; */
   font-size: 13px;
   font-weight: 500;
   color: var(--text-dark);

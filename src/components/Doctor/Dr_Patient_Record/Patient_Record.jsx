@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faClipboardList, faUser, faEye, faHospitalUser, faEdit, faPhoneAlt, faStethoscope, faFolder, faHistory, faMapMarkedAlt, faPrint, faSyncAlt, faUserMd, faUserPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faClose,faFileMedicalAlt , faClipboardList, faUser, faEye, faHospitalUser, faEdit, faPhoneAlt, faStethoscope, faFolder, faHistory, faMapMarkedAlt, faPrint, faSyncAlt, faUserMd, faUserPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 import "./Patient_Record.css"
 import { useApi } from '../../../api/useApi';
 import { doctorApi } from '../../../api/apiService';

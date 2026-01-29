@@ -5,7 +5,7 @@ import { useApi } from "../../../api/useApi";
 import { doctorApi } from "../../../api/apiService";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faLink, faPrescription, faRupeeSign, faStethoscope, faSyncAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faLink, faFileMedicalAlt, faPrescription, faRupeeSign, faStethoscope, faSyncAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 const DashboardComponent = () => {
   const [text, setText] = useState("");
@@ -908,23 +908,27 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                     <>
                       {/* ====================== EDIT PRESCRIPTION VIEW ====================== */}
                       <div className="diagnosis-toggle-container" >
-                        <span>Diagnosis Type:</span>
-                        <label className="diagnosis-toggle">
-                          <input type="checkbox" id="diagnosisToggle" defaultChecked />
-                          <span className="diagnosis-toggle-slider">
-                            <span className="diagnosis-toggle-option">Provisional</span>
-                            <span className="diagnosis-toggle-option">Final</span>
-                          </span>
-                        </label>
+                        <div className="diagnosis-div">
+                          <div style={{ alignItems: "center", display: "flex" }}>
+                            <span>Diagnosis Type:</span>
+                            <label className="diagnosis-toggle">
+                              <input type="checkbox" id="diagnosisToggle" defaultChecked />
+                              <span className="diagnosis-toggle-slider">
+                                <span className="diagnosis-toggle-option">Provisional</span>
+                                <span className="diagnosis-toggle-option">Final</span>
+                              </span>
+                            </label>
+                          </div>
+                          <button
+                            className="view-pa-docs-btn"
+                            id="viewPaDocumentsBtn"
+                            onClick={showPaDocumentsModal}>
 
-                        <button
-                          className="view-pa-docs-btn"
-                          id="viewPaDocumentsBtn"
-                          onClick={showPaDocumentsModal}>
-
-                          <i class="fas fa-file-medical-alt"></i>
-                          View PA Documents
-                        </button>
+                            <i class="fas fa-file-medical-alt"></i>
+                            < FontAwesomeIcon icon={faFileMedicalAlt} />
+                            View PA Documents
+                          </button>
+                        </div>
 
                       </div>
 
