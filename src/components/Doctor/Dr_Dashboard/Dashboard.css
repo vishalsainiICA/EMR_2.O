@@ -718,6 +718,39 @@ textarea {
   color: white;
 }
 
+.illness-grid {
+  display: grid;
+
+}
+
+.illness-card {
+  height: 50px;
+  width: 180px;
+  border: 0.4px solid lightgray;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.illness-card p {
+  font-size: 12px;
+}
+
+.illness-header {
+  display: flex;
+}
+
+.illness-header input {
+  height: 12px;
+  width: 30px;
+}
+
+.illness-header p {
+  width: 100%;
+  font-weight: bold;
+  font-size: 12px;
+}
+
 /* ===========================
    RESPONSIVE (Modal + Cards)
    =========================== */

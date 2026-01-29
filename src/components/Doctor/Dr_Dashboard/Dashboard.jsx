@@ -5,7 +5,7 @@ import { useApi } from "../../../api/useApi";
 import { doctorApi } from "../../../api/apiService";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faPrescription, faRupeeSign, faStethoscope, faSyncAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faLink, faPrescription, faRupeeSign, faStethoscope, faSyncAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 const DashboardComponent = () => {
   const [text, setText] = useState("");
@@ -87,7 +87,9 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
       };
 
       const res = await getLoadIllness(prompt);
-      setloadIllness(res?.data || []);
+      console.log("res", res?.answer?.possibleIllnesses);
+
+      setloadIllness(res?.answer?.possibleIllnesses || []);
     } catch (err) {
       console.error("Load illness error:", err);
     }
@@ -144,9 +146,9 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
 
 
-  useEffect(() => {
-    handleLoadIllness();
-  }, [selectedState.selectedSymtompsData]);
+  // useEffect(() => {
+  //   handleLoadIllness();
+  // }, [selectedState.selectedSymtompsData]);
 
 
   const handleLoadPatient = async () => {
@@ -467,7 +469,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Today's Consultations</div>
             </div>
             <div className="card-icon consultation">
-              <FontAwesomeIcon icon={faStethoscope}/>
+              <FontAwesomeIcon icon={faStethoscope} />
             </div>
           </div>
           <div className="card-trend">+2 from yesterday</div>
@@ -480,7 +482,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Ready for Consultation</div>
             </div>
             <div className="card-icon waiting">
-              <FontAwesomeIcon icon={faClock}/>
+              <FontAwesomeIcon icon={faClock} />
             </div>
           </div>
           <div className="card-trend down">-1 from yesterday</div>
@@ -493,7 +495,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Prescriptions Today</div>
             </div>
             <div className="card-icon prescription">
-              <FontAwesomeIcon icon={faPrescription}/>
+              <FontAwesomeIcon icon={faPrescription} />
             </div>
           </div>
           <div className="card-trend">+4 this week</div>
@@ -512,7 +514,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               <div className="card-title">Monthly Revenue</div>
             </div>
             <div className="card-icon revenue">
-              <FontAwesomeIcon icon={faRupeeSign}/>
+              <FontAwesomeIcon icon={faRupeeSign} />
             </div>
           </div>
 
@@ -537,11 +539,11 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
           <h2 className="queue-title">Patients Ready for Consultation</h2>
           <div className="queue-controls">
             <button onClick={handleLoadPatient} className="btn btn-outline" id="refreshQueueBtn">
-              <FontAwesomeIcon icon={faSyncAlt}/>
+              <FontAwesomeIcon icon={faSyncAlt} />
               Refresh
             </button>
             <button className="btn btn-primary" id="callNextPatientBtn">
-              <FontAwesomeIcon icon={faUserPlus}/>
+              <FontAwesomeIcon icon={faUserPlus} />
               Call Next Patient
             </button>
           </div>
@@ -1057,7 +1059,20 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                           </h3>
 
                           <div className="form-group">
-                            <label htmlFor="doctorDiagnosis">Symtomps</label>
+
+                            <div style={{
+                              width: "100%",
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: '10px'
+
+
+                            }}>
+                              <label htmlFor="doctorDiagnosis">Symtomps</label>
+
+                              <button onClick={handleLoadIllness} className="btn btn-primary"><FontAwesomeIcon icon={faLink} ></FontAwesomeIcon>Generate</button>
+                            </div>
                             <textarea
                               ref={textareaRefForSymtomps}
                               value={textForsymtomps}
@@ -1118,9 +1133,46 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                               </div>
                             )}
                           </div>
-                          <div>{
+                          <div className="ai-genDiv">
+                            <p>Ai Generated: </p>
+                            {loadingIllnessBySymptoms && (
+                              <div className="loader-mini">
 
-                          }</div>
+                              </div>
+                            )}
+
+                            {!loadingIllnessBySymptoms && loadIllness?.length > 0 && (
+                              <div className="illness-grid">
+                                {loadIllness.map((item, index) => (
+                                  <div className="illness-card" key={index}>
+
+                                    <div className="illness-header">
+                                      <input type="checkbox" />
+                                      <p>{item.illness}</p>
+                                    </div>
+
+                                    <p
+                                      className="confidence"
+                                      style={{
+                                        color:
+                                          item.confidence_score > 0.80
+                                            ? "green"
+                                            : item.confidence_score > 0.50
+                                              ? "orange"
+                                              : "red",
+                                      }}
+                                    >
+                                      Confidence: <b>{item.confidence_score}%</b>
+                                    </p>
+
+
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+
+                          </div>
                           <div className="form-group">
                             <label htmlFor="doctorDiagnosis">Diagnosis</label>
                             <textarea

@@ -99,11 +99,16 @@ const Initialassessment = () => {
 
   const handleSaveIntialAssement = async (patientId, data) => {
     try {
+      console.log("Call");
+
       const res = await saveIntialAssessment(patientId, data)
       handleLoadPatient()
       toast.success(res.message)
       setSelectedPatient(null)
       setShowForm(false)
+      console.log(showForm);
+      console.log(selectedPatient);
+      loadpatient()
     } catch (error) {
       console.log(error);
     }
