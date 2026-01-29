@@ -638,12 +638,12 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                     {/* Action */}
                     <td>
                       <button
-                        className="action-btn start-consult-btn"
+                        className="btn btn-primary"
                         onClick={() => showPrescriptionModal(patient._id)}
-                        disabled={patient.isPrescbribedDone}
+
                       >
                         <i className="fas fa-prescription"></i>{" "}
-                        {patient.isPrescbribedDone ? "Done" : "Prescribe"}
+                        {"Prescribe"}
                       </button>
                     </td>
                   </tr>

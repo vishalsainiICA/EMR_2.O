@@ -62,7 +62,7 @@
   border: 1px solid var(--border-color);
 }
 
-tr{
+tr {
   font-size: 13px;
 }
 
@@ -195,7 +195,38 @@ tr{
 
 
 
+.illness-grid {
+  display: grid;
 
+}
+
+.illness-card {
+  height: 50px;
+  width: 180px;
+  border: 0.4px solid lightgray;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.illness-card p {
+  font-size: 12px;
+}
+
+.illness-header {
+  display: flex;
+}
+
+.illness-header input {
+  height: 12px;
+  width: 30px;
+}
+
+.illness-header p {
+  width: 100%;
+  font-weight: bold;
+  font-size: 12px;
+}
 
 
 /* Model css proper css */
@@ -332,15 +363,13 @@ tr{
 }
 
 
-.patient-detail-main
-{
-display: flex;
-align-items: center;
-justify-content: space-between;
+.patient-detail-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.patient-detail-section
-{
+.patient-detail-section {
   width: 100%;
 }
 
@@ -465,8 +494,7 @@ justify-content: space-between;
 }
 
 
-.diagnosis-div
-{
+.diagnosis-div {
   width: 100%;
   display: flex;
   align-items: center;
@@ -475,8 +503,7 @@ justify-content: space-between;
 }
 
 
-.view-pa-docs-btn
-{
+.view-pa-docs-btn {
   padding: 5px;
   color: white;
   border: none;

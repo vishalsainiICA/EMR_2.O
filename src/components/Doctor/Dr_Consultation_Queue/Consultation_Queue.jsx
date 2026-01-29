@@ -1,16 +1,20 @@
 import "./Consultation_Queue.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useApi } from "../../../api/useApi";
 import { doctorApi } from "../../../api/apiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAllergies, faDiagnoses, faEyeDropper, faFileMedicalAlt, faHeartbeat, faHeartBroken, faHistory, faPills, faPrescription, faSave, faSpinner, faSyncAlt, faUserInjured, faUserPlus, faVial } from "@fortawesome/free-solid-svg-icons";
+import { faFileMedicalAlt, faLink, faHeartbeat, faHeartBroken, faHistory, faPills, faPrescription, faSave, faSpinner, faSyncAlt, faUserInjured, faUserPlus, faVial } from "@fortawesome/free-solid-svg-icons";
 import { faComment, faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faCommentMedical } from "@fortawesome/free-solid-svg-icons/faCommentMedical";
 import moment from "moment";
 
 const ConsultationQueue = () => {
   const [patients, setPatients] = useState([]);
-
+  const [text, setText] = useState("");
+  const [textForLabtest, setextForLabtest] = useState("");
+  const [textForsymtomps, setextForsymtomps] = useState("");
+  const [textForIllness, setextForIllness] = useState("");
+  const [loadIllness, setloadIllness] = useState([]);
   //  3 MODALS STATE
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const [currentPatientForPrescription, setCurrentPatientForPrescription] = useState(null);
@@ -29,7 +33,28 @@ const ConsultationQueue = () => {
     tests: "",
     advice: "",
   });
+  const [selectedState, setselectedState] = useState({
+    selectedLabTest: [],
+    selectedIllnessData: [],
+    selectedSymtompsData: [],
+    selectedMedicieneData: [],
+  });
 
+  const [filterState, setfilterState] = useState({
+    filterLabTest: [],
+    filterIllnessData: [],
+    filterMedicieneData: [],
+    filterSymtompsData: [],
+  });
+  const [state, setState] = useState({
+    labTest: [],
+    illnessData: [],
+    medicieneData: [],
+  });
+  const textareaRef = useRef(null);
+  const textareaRefForLabtest = useRef(null);
+  const textareaRefForSymtomps = useRef(null);
+  const textareaRefForIllness = useRef(null);
   //  API Hook
   const { request: loadpatient, loading } = useApi(doctorApi.loadPatient);
 
@@ -51,6 +76,9 @@ const ConsultationQueue = () => {
   const showPrescriptionModal = (patientId) => {
     const patient = patients.find((p) => p._id === patientId);
 
+
+    // setCurrentPatientForPrescription(patient || null);
+
     setCurrentPatientForPrescription({
       ...(patient || {}),
       paDocuments: [
@@ -62,10 +90,16 @@ const ConsultationQueue = () => {
       ],
     });
 
+
+
     setIsPrescriptionModalOpen(true);
+
+    //always open in edit mode first
     setIsFinalPrescriptionView(false);
+
     document.body.style.overflow = "hidden";
   };
+
 
   //  Close Prescription Modal
   const closePrescriptionModal = () => {
@@ -158,9 +192,251 @@ const ConsultationQueue = () => {
     setIsFinalPrescriptionView(false);
   };
 
+
   const printFinalPrescription = () => {
     window.print();
   };
+
+  const { request: getAllIllnessAndPharmacydata, loading: loadillnessAndMedicien, error: errorloadillnessAndMedicien } = useApi(doctorApi.getAllIllnessAndPharmacydata)
+  const {
+    request: savePriscribtion,
+    loading: loadingsavePriscribtion,
+    error: errorsavePriscribtion,
+  } = useApi(doctorApi.savePrescribtion);
+
+  const {
+    request: getLoadIllness,
+    loading: loadingIllnessBySymptoms,
+    error: errorIllnessBySymptoms,
+  } = useApi(doctorApi.getIllnessBySymtomps);
+  useEffect(() => {
+    const fetchIllness = async () => {
+
+      try {
+        const res = await getAllIllnessAndPharmacydata();
+        const illnessData = res?.data?.Illness || [];
+        const medicieneData = res?.data?.Mediciene || [];
+        const labTest = res?.data?.Labtest || [];
+        console.log("illnessData", illnessData);
+        console.log("medicieneData", medicieneData);
+        console.log("labTest", labTest);
+
+        setState({
+          labTest: labTest,
+          illnessData: illnessData,
+          medicieneData: medicieneData,
+        });
+      } catch (err) {
+        console.log(error);
+
+      }
+    };
+    fetchIllness()
+    handleLoadPatient()
+
+  }, [])
+  const handleLoadIllness = async () => {
+    if (selectedState.selectedSymtompsData.length === 0) return;
+    try {
+      const prompt = {
+        question: `This is my vitals: ${currentPatientForPrescription?.patient?.initialAssementId?.vitals || "N/A"
+          }
+  Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
+      };
+
+      const res = await getLoadIllness(prompt);
+      console.log("res", res?.answer?.possibleIllnesses);
+
+      setloadIllness(res?.answer?.possibleIllnesses || []);
+    } catch (err) {
+      console.error("Load illness error:", err);
+    }
+  };
+  const handleSavePriscbrition = async () => {
+    try {
+      const formdata = new FormData();
+      // 🔹 IDs
+      formdata.append("patientId", currentPatientForPrescription?._id);
+      formdata.append("doctorId", currentPatientForPrescription?.doctorId);
+      formdata.append("hospitalId", currentPatientForPrescription?.hospitalId);
+      formdata.append("initialAssementId", currentPatientForPrescription?.initialAssementId?._id);
+
+      // 🔹 Prescription core fields
+      formdata.append(
+        "prescriptionType",
+        finalPrescriptionData?.diagnosisType || "Final"
+      );
+
+      formdata.append(
+        "illness",
+        finalPrescriptionData?.diagnosis || ""
+      );
+
+      formdata.append(
+        "symptoms",
+        finalPrescriptionData?.clinicalNotes || ""
+      );
+
+      formdata.append(
+        "prescriptionMediciene",
+        finalPrescriptionData?.medications || ""
+      );
+
+      // 🔹 labTest → Array expected in model
+      const labTests =
+        finalPrescriptionData?.tests
+          ?.split(",")
+          .map(t => t.trim())
+          .filter(Boolean) || [];
+
+      formdata.append("labTest", JSON.stringify(labTests));
+
+      // 🔹 Optional image
+
+      formdata.append("prescriptionImage", "");
+      await savePriscribtion(formdata);
+      toast.success("Prescription saved:");
+
+    } catch (error) {
+      console.error("Save prescription error:", error);
+    }
+  };
+  const handleChangeCommon = (
+    e,
+    dataArray,
+    setText,
+    setFilterState,
+    filterKey,
+    matchKey // ex: "medicine_name"
+  ) => {
+    const value = e.target.value;
+    setText(value);
+
+    const lastWord = value.split(",").pop().trim();
+
+    if (lastWord.length > 0) {
+      const filtered = dataArray.filter((item) =>
+        item?.[matchKey]
+          ?.toLowerCase()
+          .startsWith(lastWord.toLowerCase())
+      );
+
+      setFilterState((prev) => ({
+        ...prev,
+        [filterKey]: filtered,
+      }));
+    } else {
+      setFilterState((prev) => ({
+        ...prev,
+        [filterKey]: [],
+      }));
+    }
+  };
+  const handleSelectCommon = (
+    item,
+    textareaRef,
+    text,
+    setText,
+    setSelectedState,
+    selectedKey,
+    setFilterState,
+    filterKey
+  ) => {
+    const textarea = textareaRef.current;
+    const cursorPos = textarea.selectionStart;
+
+    const beforeCursor = text.slice(0, cursorPos);
+    const afterCursor = text.slice(cursorPos);
+
+    const words = beforeCursor.split(",");
+    words.pop();
+
+    const newText =
+      words.join(", ").trim() +
+      (words.length ? ", " : "") +
+      item +
+      ", " +
+      afterCursor.trimStart();
+
+    setText(newText);
+
+    setSelectedState((prev) => ({
+      ...prev,
+      [selectedKey]: prev[selectedKey].includes(item)
+        ? prev[selectedKey]
+        : [...prev[selectedKey], item],
+    }));
+
+    setFilterState((prev) => ({
+      ...prev,
+      [filterKey]: [],
+    }));
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = newText.length;
+    }, 0);
+  };
+  const handleKeyDownCommon = (
+    e,
+    textareaRef,
+    text,
+    selectedValues,
+    setText,
+    setSelectedState,
+    selectedKey
+  ) => {
+    if (e.key === "Backspace") {
+      const textarea = textareaRef.current;
+      const cursorPos = textarea.selectionStart;
+      const beforeCursor = text.slice(0, cursorPos);
+
+      const words = beforeCursor.split(",");
+      const lastWord = words[words.length - 1]?.trim();
+
+      if (selectedValues.includes(lastWord)) {
+        e.preventDefault();
+        words.pop();
+
+        const newText =
+          words.join(", ").trim() + (words.length ? ", " : "");
+
+        setText(newText);
+
+        setSelectedState((prev) => ({
+          ...prev,
+          [selectedKey]: prev[selectedKey].filter(
+            (val) => val !== lastWord
+          ),
+        }));
+      }
+    }
+  };
+
+  const handleChangeForSymtomps = (e) => {
+    const value = e.target.value;
+    setextForsymtomps(value);
+
+    const lastWord = value.split(",").pop().trim();
+    if (lastWord.length > 0) {
+      const filtered = state.illnessData.filter((item) =>
+        item?.symptoms?.some((sym) =>
+          sym?.toLowerCase().startsWith(lastWord.toLowerCase())
+        )
+      );
+
+      setfilterState((prev) => ({
+        ...prev,
+        filterSymtompsData: filtered,
+      }));
+    } else {
+      setfilterState((prev) => ({
+        ...prev,
+        filterSymtompsData: [],
+      }));
+    }
+  };
+
 
   return (
     <div className="consultation-queue-wrapper section active" id="consultationQueueSection">
@@ -223,7 +499,7 @@ const ConsultationQueue = () => {
                   <td>
                     {/* {`Q-${String(index + 1).padStart(3, "0")}`} */}
                     <div style={{ fontSize: "11px", color: "var(--text-light)" }}> {patient.uid}</div>
-                    </td>
+                  </td>
 
                   <td>
                     {patient.name}
@@ -256,9 +532,8 @@ const ConsultationQueue = () => {
 
                   <td>
                     {/*  View Details -> Opens Same Modal */}
-                    <button className="btn btn-sm btn-primary" onClick={() => showPrescriptionModal(patient._id)}>
-                      <FontAwesomeIcon icon={faEye} />
-                      View Details
+                    <button className="btn btn-primary" onClick={() => showPrescriptionModal(patient._id)}>
+                      Prescribe
                     </button>
                   </td>
                 </tr>
@@ -304,7 +579,7 @@ const ConsultationQueue = () => {
                         <div className="prescription-patient-info">
                           <div>
                             <div className="prescription-field">
-                              <span className="prescription-label">Patient Name jjj:</span>
+                              <span className="prescription-label">Patient Name:</span>
                               <span className="prescription-value">{currentPatientForPrescription.name}</span>
                             </div>
 
@@ -491,12 +766,23 @@ const ConsultationQueue = () => {
                         </button>
 
                         <button
-                          className="btn btn-primary"
+                          type="button"
+                          disabled={loadingsavePriscribtion}
+                          className={`btn btn-primary ${loadingsavePriscribtion ? "disabled" : ""}`}
                           id="saveFinalPrescriptionBtn"
-                          onClick={() => alert("Final Prescription Saved!")}
+                          onClick={handleSavePriscbrition}
                         >
-                          <i className="fas fa-save"></i>
-                          Save Prescription
+                          {loadingsavePriscribtion ? (
+                            <>
+                              <i className="fas fa-spinner fa-spin me-2"></i>
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-save me-2"></i>
+                              Save Prescription
+                            </>
+                          )}
                         </button>
 
                         <button className="btn btn-success" id="printFinalPrescriptionBtn" onClick={printFinalPrescription}>
@@ -511,7 +797,6 @@ const ConsultationQueue = () => {
                       <div className="diagnosis-toggle-container" >
                         <div className="diagnosis-div">
                           <div style={{ alignItems: "center", display: "flex" }}>
-
                             <span>Diagnosis Type:</span>
                             <label className="diagnosis-toggle">
                               <input type="checkbox" id="diagnosisToggle" defaultChecked />
@@ -520,7 +805,6 @@ const ConsultationQueue = () => {
                                 <span className="diagnosis-toggle-option">Final</span>
                               </span>
                             </label>
-
                           </div>
                           <button
                             className="view-pa-docs-btn"
@@ -538,71 +822,55 @@ const ConsultationQueue = () => {
                       <div className="prescription-cards-container">
                         <div className="prescription-card patient-details-enhanced">
                           <h3>
-                            {/* <i className="fas fa-user-injured"></i>  */}
-                            <FontAwesomeIcon icon={faUserInjured} />
-                            Patient Details
+                            <i className="fas fa-user-injured"></i> Patient Details
                           </h3>
 
+                          <div className="detail-row">
+                            <div className="detail-label">Patient Name:</div>
+                            <div className="detail-value">{currentPatientForPrescription.name}</div>
+                          </div>
 
-                          <div className="patient-detail-main">
-                            <div className="patient-detail-section" >
-                              <div className="detail-row">
-                                <div className="detail-label">Patient Name:</div>
-                                <div className="detail-value">{currentPatientForPrescription.name}</div>
-                              </div>
+                          <div className="detail-row">
+                            <div className="detail-label">Patient ID:</div>
+                            <div className="detail-value">{currentPatientForPrescription.uid}</div>
+                          </div>
 
-                              <div className="detail-row">
-                                <div className="detail-label">Patient ID:</div>
-                                <div className="detail-value">{currentPatientForPrescription.uid}</div>
-                              </div>
-
-                              <div className="detail-row">
-                                <div className="detail-label">Age & Gender:</div>
-                                <div className="detail-value">
-                                  {currentPatientForPrescription.age} years / {currentPatientForPrescription.gender}
-                                </div>
-                              </div>
-
-                              <div className="detail-row">
-                                <div className="detail-label">Contact Number:</div>
-                                <div className="detail-value">{currentPatientForPrescription.phone}</div>
-                              </div>
-                            </div>
-
-                            <div className="patient-detail-section" >
-                              <div className="detail-row">
-                                <div className="detail-label">Last Consultation:</div>
-                                <div className="detail-value">{currentPatientForPrescription?.lastVisit || "0"}</div>
-                              </div>
-
-                              <div className="detail-row">
-                                <div className="detail-label">Next Appointment:</div>
-                                <div className="detail-value">{currentPatientForPrescription?.nextAppointment || "-/"}</div>
-                              </div>
-
-                              <div className="detail-row">
-                                <div className="detail-label">Assessed by PA:</div>
-                                <div className="detail-value">{currentPatientForPrescription.registerarId?.name}</div>
-                              </div>
-
-                              <div className="detail-row">
-                                <div className="detail-label">Assessment Time:</div>
-                                <div className="detail-value">
-                                  {currentPatientForPrescription.registerarId?.updatedAt
-                                    ? moment(currentPatientForPrescription.registerarId.updatedAt)
-                                      .format("DD MMM YYYY, hh:mm A")
-                                    : "--"}
-                                </div>
-                              </div>
+                          <div className="detail-row">
+                            <div className="detail-label">Age & Gender:</div>
+                            <div className="detail-value">
+                              {currentPatientForPrescription.age} years / {currentPatientForPrescription.gender}
                             </div>
                           </div>
 
+                          <div className="detail-row">
+                            <div className="detail-label">Contact Number:</div>
+                            <div className="detail-value">{currentPatientForPrescription.phone}</div>
+                          </div>
+
+                          <div className="detail-row">
+                            <div className="detail-label">Last Consultation:</div>
+                            <div className="detail-value">{currentPatientForPrescription?.lastVisit || "0"}</div>
+                          </div>
+
+                          <div className="detail-row">
+                            <div className="detail-label">Next Appointment:</div>
+                            <div className="detail-value">{currentPatientForPrescription?.nextAppointment || "-/"}</div>
+                          </div>
+
+                          <div className="detail-row">
+                            <div className="detail-label">Assessed by PA:</div>
+                            <div className="detail-value">{currentPatientForPrescription.registerarId?.name}</div>
+                          </div>
+
+                          <div className="detail-row">
+                            <div className="detail-label">Assessment Time:</div>
+                            <div className="detail-value">{currentPatientForPrescription.registerarId?.updatedAt}</div>
+                          </div>
                         </div>
 
                         <div className="prescription-card">
                           <h3>
-                            < FontAwesomeIcon icon={faHeartbeat} />
-                            Patient Vitals
+                            <i className="fas fa-heartbeat"></i> Patient Vitals
                           </h3>
 
                           <div className="vitals-grid-enhanced">
@@ -678,44 +946,292 @@ const ConsultationQueue = () => {
                       <div className="prescription-cards-container">
                         <div className="prescription-card diagnosis-card-enhanced">
                           <h3>
-                            < FontAwesomeIcon icon={faDiagnoses} />
-                            Diagnosis
+                            <i className="fas fa-diagnoses"></i> Diagnosis
                           </h3>
 
                           <div className="form-group">
-                            <label htmlFor="doctorDiagnosis">Diagnosis</label>
-                            <textarea
-                              id="doctorDiagnosis"
-                              placeholder="Enter diagnosis..."
-                              defaultValue="Acute Upper Respiratory Infection"
-                            />
-                          </div>
 
-                          <div className="form-group">
-                            <label htmlFor="clinicalNotes">Clinical Notes</label>
+                            <div style={{
+                              width: "100%",
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: '10px'
+
+
+                            }}>
+                              <label htmlFor="doctorDiagnosis">Symtomps</label>
+
+                              <button onClick={handleLoadIllness} className="btn btn-primary"><FontAwesomeIcon icon={faLink} ></FontAwesomeIcon>Generate</button>
+                            </div>
                             <textarea
+                              ref={textareaRefForSymtomps}
+                              value={textForsymtomps}
+                              onChange={handleChangeForSymtomps}
+                              // onKeyDown={handleChangeForSymtomps}
                               id="clinicalNotes"
                               placeholder="Add clinical notes..."
-                              defaultValue="Confirmed PA findings. Mild pharyngeal erythema noted. No tonsillar exudate. Lung fields clear."
+                            // defaultValue="Confirmed PA findings. Mild pharyngeal erythema noted. No tonsillar exudate. Lung fields clear."
                             />
+                            {filterState.filterSymtompsData.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterSymtompsData.map((ill) => {
+
+                                  return ill?.symptoms.map((sym) => {
+                                    const isSelected =
+                                      selectedState.selectedSymtompsData.includes(
+                                        sym
+                                      );
+
+                                    return (
+                                      <div
+                                        key={sym}
+                                        className="illCard"
+                                        onClick={() => {
+                                          if (!isSelected) {
+                                            handleSelectCommon(
+                                              sym,
+                                              textareaRefForSymtomps,
+                                              textForsymtomps,
+                                              setextForsymtomps,
+                                              setselectedState,
+                                              "selectedSymtompsData",
+                                              setfilterState,
+                                              "filterSymtompsData"
+                                            );
+                                          }
+                                        }}
+                                      >
+                                        <div className="illCard-info">
+                                          <h5>{sym}</h5>
+                                          <p>{ill?.illnessName}</p>
+                                        </div>
+
+                                        {isSelected && (
+                                          <i
+                                            className="ri-check-line"
+                                            style={{
+                                              fontSize: "22px",
+                                              color: "green",
+                                            }}
+                                          />
+                                        )}
+                                      </div>
+                                    );
+                                  })
+
+                                })}
+                              </div>
+                            )}
+                          </div>
+                          <div className="ai-genDiv">
+                            <p>Ai Generated: </p>
+                            {loadingIllnessBySymptoms && (
+                              <div className="loader-mini">
+
+                              </div>
+                            )}
+
+                            {!loadingIllnessBySymptoms && loadIllness?.length > 0 && (
+                              <div className="illness-grid">
+                                {loadIllness.map((item, index) => (
+                                  <div className="illness-card" key={index}>
+
+                                    <div className="illness-header">
+                                      <input type="checkbox" />
+                                      <p>{item.illness}</p>
+                                    </div>
+
+                                    <p
+                                      className="confidence"
+                                      style={{
+                                        color:
+                                          item.confidence_score > 0.80
+                                            ? "green"
+                                            : item.confidence_score > 0.50
+                                              ? "orange"
+                                              : "red",
+                                      }}
+                                    >
+                                      Confidence: <b>{item.confidence_score}%</b>
+                                    </p>
+
+
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="doctorDiagnosis">Diagnosis</label>
+                            <textarea
+                              ref={textareaRefForIllness}
+                              value={textForIllness}
+                              onChange={(e) =>
+                                handleChangeCommon(
+                                  e,
+                                  state.illnessData,
+                                  setextForIllness,
+                                  setfilterState,
+                                  "filterIllnessData",
+                                  "illnessName"
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                handleKeyDownCommon(
+                                  e,
+                                  textareaRefForIllness,
+                                  textForIllness,
+                                  selectedState.selectedIllnessData,
+                                  setextForIllness,
+                                  setselectedState,
+                                  "selectedIllnessData"
+                                )
+                              }
+                              id="doctorDiagnosis"
+                              placeholder="Enter diagnosis..."
+                            // defaultValue="Acute Upper Respiratory Infection"
+                            />
+                            {filterState.filterIllnessData.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterIllnessData.map((ill) => {
+
+                                  const isSelected =
+                                    selectedState.selectedIllnessData.includes(
+                                      ill?.illnessName
+                                    );
+
+                                  return (
+                                    <div
+                                      key={ill?.illnessName}
+                                      className="illCard"
+                                      onClick={() => {
+                                        if (!isSelected) {
+                                          handleSelectCommon(
+                                            ill?.illnessName,
+                                            textareaRefForIllness,
+                                            textForIllness,
+                                            setextForIllness,
+                                            setselectedState,
+                                            "selectedIllnessData",
+                                            setfilterState,
+                                            "filterIllnessData"
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <div className="illCard-info">
+                                        <h5>{ill?.illnessName}</h5>
+                                        <p>{ill?.illnessName}</p>
+                                      </div>
+
+                                      {isSelected && (
+                                        <i
+                                          className="ri-check-line"
+                                          style={{
+                                            fontSize: "22px",
+                                            color: "green",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  );
+
+                                })}
+                              </div>
+                            )}
+
                           </div>
                         </div>
 
                         <div className="prescription-card medicine-card-enhanced">
                           <h3>
-                            < FontAwesomeIcon icon={faPills} />
-                            Medicine Recommendations
+                            <i className="fas fa-pills"></i> Medicine Recommendations
                           </h3>
 
                           <div className="form-group">
+
                             <label htmlFor="medications">Medications</label>
+
                             <textarea
                               id="medications"
+                              ref={textareaRef}
+                              value={text}
+                              onChange={(e) =>
+                                handleChangeCommon(
+                                  e,
+                                  state.medicieneData,
+                                  setText,
+                                  setfilterState,
+                                  "filterMedicieneData",
+                                  "medicine_name"
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                handleKeyDownCommon(
+                                  e,
+                                  textareaRef,
+                                  text,
+                                  selectedState.selectedMedicieneData,
+                                  setText,
+                                  setselectedState,
+                                  "selectedMedicieneData"
+                                )
+                              }
                               placeholder="List medications with dosage..."
-                              // defaultValue={`Amoxicillin 500mg - Twice daily for 7 days
-                              //                Paracetamol 500mg - As needed for fever
-                              //                Vitamin C + Zinc - Once daily for immunity`}
                             />
+
+
+
+                            {filterState.filterMedicieneData.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterMedicieneData.map((ill) => {
+                                  const isSelected =
+                                    selectedState.selectedMedicieneData.includes(
+                                      ill.medicine_name
+                                    );
+
+                                  return (
+                                    <div
+                                      key={ill.medicine_name}
+                                      className="illCard"
+                                      onClick={() => {
+                                        if (!isSelected) {
+                                          handleSelectCommon(
+                                            ill.medicine_name,
+                                            textareaRef,
+                                            text,
+                                            setText,
+                                            setselectedState,
+                                            "selectedMedicieneData",
+                                            setfilterState,
+                                            "filterMedicieneData"
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <div className="illCard-info">
+                                        <h5>{ill.medicine_name}</h5>
+                                        <p>{ill.dosage}</p>
+                                      </div>
+
+                                      {isSelected && (
+                                        <i
+                                          className="ri-check-line"
+                                          style={{
+                                            fontSize: "22px",
+                                            color: "green",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+
                           </div>
                         </div>
                       </div>
@@ -723,25 +1239,98 @@ const ConsultationQueue = () => {
                       <div className="prescription-cards-container">
                         <div className="prescription-card test-card-enhanced">
                           <h3>
-                            < FontAwesomeIcon icon={faVial} />
-                            Test Recommendations
+                            <i className="fas fa-vial"></i> Test Recommendations
                           </h3>
 
                           <div className="form-group">
                             <label htmlFor="tests">Recommended Tests</label>
                             <textarea
+
                               id="tests"
                               placeholder="List recommended tests..."
-                              // defaultValue={`Complete Blood Count (CBC) if fever persists beyond 3 days
-                              //                Chest X-ray if cough persists beyond 5 days`}
+                              //                               defaultValue={`Complete Blood Count (CBC) if fever persists beyond 3 days
+                              // Chest X-ray if cough persists beyond 5 days`}
+                              onChange={(e) =>
+                                handleChangeCommon(
+                                  e,
+                                  state.labTest,
+                                  setextForLabtest,
+                                  // filterState.filterLabTest
+                                  setfilterState,
+                                  "filterLabTest",
+                                  "test"
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                handleKeyDownCommon(
+                                  e,
+                                  textareaRefForLabtest,
+                                  textForLabtest,
+                                  selectedState.selectedLabTest,
+
+                                  setextForLabtest,
+                                  setselectedState,
+                                  "selectedLabTest"
+                                )
+                              }
+                              ref={textareaRefForLabtest}
+                              value={textForLabtest}
                             />
+
+                            {filterState.filterLabTest.length > 0 && (
+                              <div className="illnessSuggenstion">
+                                {filterState.filterLabTest.map((ill) => {
+
+                                  const isSelected =
+                                    selectedState.selectedLabTest.includes(
+                                      ill?.test
+                                    );
+
+                                  return (
+                                    <div
+                                      key={ill?.test}
+                                      className="illCard"
+                                      onClick={() => {
+                                        if (!isSelected) {
+                                          handleSelectCommon(
+                                            ill?.test,
+                                            textareaRefForLabtest,
+                                            textForLabtest,
+                                            setextForLabtest,
+                                            setselectedState,
+                                            "selectedLabTest",
+                                            setfilterState,
+                                            "filterLabTest"
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <div className="illCard-info">
+                                        <h5>{ill?.test}</h5>
+                                        <p>{ill?.disease?.join(",")}</p>
+                                      </div>
+
+                                      {isSelected && (
+                                        <i
+                                          className="ri-check-line"
+                                          style={{
+                                            fontSize: "22px",
+                                            color: "green",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  );
+
+                                })}
+                              </div>
+                            )}
                           </div>
                         </div>
 
                         <div className="prescription-card advice-card-enhanced">
                           <h3>
-                            <FontAwesomeIcon icon={faCommentMedical} />
-                            General Advice
+                            <i className="fas fa-comment-medical"></i> General Advice
                           </h3>
 
                           <div className="form-group">
@@ -749,17 +1338,17 @@ const ConsultationQueue = () => {
                             <textarea
                               id="advice"
                               placeholder="Add general advice for patient..."
-//                               defaultValue={`1. Take adequate rest for 3-5 days
-// 2. Drink plenty of warm fluids
-// 3. Follow up if symptoms worsen
-// 4. Next review in 7 days`}
+                              defaultValue={`1. Take adequate rest for 3-5 days
+                                             2. Drink plenty of warm fluids
+                                             3. Follow up if symptoms worsen
+                                             4. Next review in 7 days`}
                             />
                           </div>
                         </div>
                       </div>
 
                       <div className="alert-item danger" style={{ margin: "15px 0", padding: "12px", fontSize: "13px" }}>
-                        < FontAwesomeIcon icon={faAllergies} />
+                        <i className="fas fa-allergies"></i>
                         <div>
                           <div style={{ fontWeight: 600 }}>Allergy Alert</div>
                           <div>{currentPatientForPrescription.initialAssementId.complaint}</div>
@@ -767,7 +1356,7 @@ const ConsultationQueue = () => {
                       </div>
 
                       <div className="alert-item info" style={{ margin: "15px 0", padding: "12px", fontSize: "13px" }}>
-                        < FontAwesomeIcon icon={faHistory} />
+                        <i className="fas fa-history"></i>
                         <div>
                           <div style={{ fontWeight: 600 }}>Medical History</div>
                           <div>{currentPatientForPrescription?.initialAssementId?.medicalHistory}</div>
@@ -780,13 +1369,13 @@ const ConsultationQueue = () => {
                           id="saveDraftBtn"
                           onClick={() => alert("Prescription draft saved successfully!")}
                         >
-                          < FontAwesomeIcon icon={faSave} />
+                          <i className="fas fa-save"></i>
                           Save Draft
                         </button>
 
                         {/*  UPDATED: Generate Prescription opens Final View */}
                         <button className="btn btn-success" id="generatePrescriptionBtn" onClick={generateFinalPrescription}>
-                          < FontAwesomeIcon icon={faPrescription} />
+                          <i className="fas fa-prescription"></i>
                           Generate Prescription
                         </button>
                       </div>
