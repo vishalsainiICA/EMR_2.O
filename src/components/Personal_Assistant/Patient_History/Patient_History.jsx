@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './Patient_History.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faEdit, faList, faStethoscope, faMapMarkedAlt, faEye, faHospitalUser, faUserMd, faPrint, faSearch, faUser, faHistory, faPhone, faPhoneAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faFilter,faEdit, faList, faStethoscope, faMapMarkedAlt, faEye, faHospitalUser, faUserMd, faPrint, faSearch, faUser, faHistory, faPhone, faPhoneAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useApi } from '../../../api/useApi'; faList
 import { personalAssitantApi } from '../../../api/apiService';
 import { toast } from 'react-toastify';
@@ -103,17 +103,10 @@ const PatientHistory = () => {
 
     return (
         <div className="section active" id="patientHistorySection">
+
             <div className="date-filter">
-                <h2 className="section-title">Patient History</h2>
-                {/* <div className="filter-controls">
-                    <input type="date" className="date-input" id="startDate" defaultValue="2023-10-01" />
-                    <span>to</span>
-                    <input type="date" className="date-input" id="endDate" defaultValue="2023-10-15" />
-                    <button className="filter-btn" id="applyFilterBtn">
-                        <i className="fas fa-filter"></i> Apply Filter
-                    </button>
-                </div> */}
-                {/* <div className="search-box1">
+                <h2 className="section-title">Patient Records</h2>
+                <div className="search-box1">
                     <FontAwesomeIcon icon={faSearch} />
                     <input
                         type="text"
@@ -123,67 +116,78 @@ const PatientHistory = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
 
-                </div> */}
+                </div>
                 <div className="filter-controls">
-                    <input
-                        type="date"
-                        className="date-input"
-                        id="startDate"
-                        value={date.startDate}
-                        onChange={(e) =>
-                            setDate(prev => ({
-                                ...prev,
-                                startDate: e.target.value
-                            }))
-                        }
-                    />
 
-                    <span>to</span>
+                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: "0px 0px" }}>
 
-                    <input
-                        type="date"
-                        className="date-input"
-                        id="endDate"
-                        value={date.endDate}
-                        onChange={(e) =>
-                            setDate(prev => ({
-                                ...prev,
-                                endDate: e.target.value
-                            }))
-                        }
-                    />
+                        <div className="filter-btn-wrapper">
+                            <button
+                                className="filter-btn"
+                                id="applyFilterBtn"
+                                disabled={!date.startDate || !date.endDate || loading}
+                                onClick={handleLoadPatient}
+                            >
+                                {loading ? (
+                                    <div className="loader-mini"></div>
+                                ) : (
+                                    <>
+                                        <i className="fas fa-filter"></i>
+                                        <FontAwesomeIcon icon={faFilter} />
+                                        Apply Filter
+                                    </>
+                                )}
+                            </button>
 
-                    <div className="filter-btn-wrapper">
-                        <button
-                            className="filter-btn"
-                            id="applyFilterBtn"
-                            disabled={!date.startDate || !date.endDate || loading}
-                            onClick={handleLoadPatient}
-                        >
-                            {loading ? (
-                                <div className="loader-mini"></div>
-                            ) : (
-                                <>
-                                    <i className="fas fa-filter"></i> Apply Filter
-                                </>
-                            )}
+                            {/* {(!date.startDate || !date.endDate) && (
+                                             <span className="tooltip-text">
+                                                 Please select start & end date
+                                             </span>
+                                         )} */}
+                        </div>
+
+
+                        <button className="export-btn" onClick={handleExportExcel}>
+                            <i className="ri-upload-2-line"></i> Export (.excel)
                         </button>
-
-                        {/* {(!date.startDate || !date.endDate) && (
-                            <span className="tooltip-text">
-                                Please select start & end date
-                            </span>
-                        )} */}
                     </div>
+                    <div style={{ justifyContent: "space-between" }}>
+
+                        <input
+                            type="date"
+                            className="date-input"
+                            id="startDate"
+                            value={date.startDate}
+                            onChange={(e) =>
+                                setDate(prev => ({
+                                    ...prev,
+                                    startDate: e.target.value
+                                }))
+                            }
+                        />
+
+                        <span>to</span>
+
+                        <input
+                            type="date"
+                            className="date-input"
+                            id="endDate"
+                            value={date.endDate}
+                            onChange={(e) =>
+                                setDate(prev => ({
+                                    ...prev,
+                                    endDate: e.target.value
+                                }))
+                            }
+                        />
+                    </div>
+
 
                 </div>
 
-                <button className="export-btn" onClick={handleExportExcel}>
-                    <i className="ri-upload-2-line"></i> Export (.excel)
-                </button>
-
 
             </div>
+
 
             <div className="table-container">
                 <table>

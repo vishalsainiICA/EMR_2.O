@@ -1,22 +1,25 @@
 :root {
-    --primary-color: #0052cc;
-    --bg-color: #f4f7f9;
+    /* --primary-color: #0052cc; */
+    /* --bg-color: #f4f7f9;
     --text-dark: #2c3e50;
-    --border-color: #dcdfe3;
+    --border-color: #dcdfe3; */
 }
 
-.healthcare-login-container {
-    min-height: 100vh;
+.healthcare-login-container {   
+    height: 100vh;
     display: flex;
+    padding: 180px;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     font-family: 'Inter', sans-serif;
 }
 
+
+
 .login-card {
     background: white;
-    padding: 40px;
+    padding: 20px 30px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     width: 100%;
@@ -109,11 +112,11 @@
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.1s;
 }
 
 .login-submit-btn:hover {
-    background-color: #0041a3;
+    background-color: #206e70;
 }
 
 .login-footer {

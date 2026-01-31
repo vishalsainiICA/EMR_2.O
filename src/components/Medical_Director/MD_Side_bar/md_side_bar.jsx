@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import Dashboard from '../Dashbord/Dashbord';
-import Newdashbord from '../NewPatientRegister/NewPatientRegister.jsx';
-import "./Side-bar.css"
+import "./md_side_bar.css"
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboard, faCog, faDashboard, faHistory, faSearch, faUserInjured } from '@fortawesome/free-solid-svg-icons';
@@ -29,20 +27,20 @@ const Side_bar = () => {
         </div>
 
         <div className="nav-menu">
-          <NavLink to="/pa/dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("PA Dashboard")}>
+          <NavLink to="" className="nav-item " data-page="dashboard" onClick={() => setHeadline("PA Dashboard")}>
             <FontAwesomeIcon icon={faDashboard} />
             <span>Dashboard</span>
           </NavLink>
-          <NavLink to="/pa/new_patientregister" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Patient Registration")}>
+          <NavLink to="" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Patient Registration")}>
             <FontAwesomeIcon icon={faUserInjured} />
             <span>Patient Registration</span>
           </NavLink>
-          <NavLink to="/pa/pa_initial_assessment" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Initial Assessments")}>
+          <NavLink to="" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Initial Assessments")}>
             {/* <i className="fas fa-clipboard-check"></i> */}
             <FontAwesomeIcon icon={faClipboard} />
             <span>Initial Assessments</span>
           </NavLink>
-          <NavLink to="/pa/patienthistory" className="nav-item" data-page="patientHistory" onClick={() => setHeadline("Patient History")}>
+          <NavLink to="" className="nav-item" data-page="patientHistory" onClick={() => setHeadline("Patient History")}>
             {/* <i className="fas fa-history"></i> */}
             <FontAwesomeIcon icon={faHistory} />
             <span>Patient History</span>
@@ -55,7 +53,7 @@ const Side_bar = () => {
             <i className="fas fa-user-md"></i>
             <span>Doctor Queue</span>
           </NavLink> */}
-          <NavLink to="/pa/pa_setting" className="nav-item" data-page="settings" onClick={() => setHeadline("PA Settings")} >
+          <NavLink to="" className="nav-item" data-page="settings" onClick={() => setHeadline("PA Settings")} >
             {/* <i className="fas fa-cog"></i> */}
             <FontAwesomeIcon icon={faCog} />
             <span>Settings</span>

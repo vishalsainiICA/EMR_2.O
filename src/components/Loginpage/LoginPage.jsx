@@ -51,7 +51,7 @@ const Loginpage = () => {
     <div className="healthcare-login-container">
       <div className="login-card">
         <div className="brand-section">
-          <div className="medical-logo">✚</div>
+          <div className="medical-logo"></div>
           <h2>HealthPortal</h2>
           <p>Secure Professional Access</p>
         </div>
@@ -103,8 +103,8 @@ const Loginpage = () => {
         </form>
 
         <div className="login-footer">
-          <p>Don't have an account? <a href="/signup">Contact Administrator</a></p>
-          <p className="security-note">🔒 End-to-end encrypted HIPAA compliant portal</p>
+          <p>Don't have an account? <a href="/signup">sign up</a></p>
+          {/* <p className="security-note">🔒 End-to-end encrypted HIPAA compliant portal</p> */}
         </div>
       </div>
     </div>

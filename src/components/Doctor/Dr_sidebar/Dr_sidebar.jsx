@@ -27,19 +27,19 @@ const Side_bar = () => {
       <div className="sidebar" id="sidebar">
         <div className="sidebar-header">
           <div className="logo">EMR</div>
-          <div className="logo-text">IntelliEMR </div>
+          <div className="logo-text">Dr.Parcha</div>
         </div>
 
         <div className="nav-menu">
-          <NavLink to="Dr_dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("Dashboard")}>
+          <NavLink to="/Dr/Dr_dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("Dashboard")}>
             <FontAwesomeIcon icon={faDashboard} />
             <span>Dashboard</span>
           </NavLink>
-          <NavLink to="Consultation_Queue" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Consultation Queue")}>
+          <NavLink to="/Dr/Consultation_Queue" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Consultation Queue")}>
             <FontAwesomeIcon icon={faUserMd} />
             <span>Consultation Queue</span>
           </NavLink>
-          <NavLink to="PatientRecord" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Patient Records")}>
+          <NavLink to="/Dr/PatientRecord" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Patient Records")}>
             <FontAwesomeIcon icon={faUserInjured} />
             <span>Patient Records</span>
           </NavLink>
@@ -47,7 +47,7 @@ const Side_bar = () => {
             <FontAwesomeIcon icon={faPrescription} />
             <span>Prescription Management</span>
           </NavLink> */}
-          <NavLink to="Setting" className="nav-item" data-page="settings" onClick={() => setHeadline(" Settings")} >
+          <NavLink to="/Dr/Setting" className="nav-item" data-page="settings" onClick={() => setHeadline(" Settings")} >
             <FontAwesomeIcon icon={faCog} />
             <span>Settings</span>
           </NavLink>

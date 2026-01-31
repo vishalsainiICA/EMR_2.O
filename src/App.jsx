@@ -20,6 +20,13 @@ import Consultation_Queue from './components/Doctor/Dr_Consultation_Queue/Consul
 import PatientRecords from './components/Doctor/Dr_Patient_Record/Patient_Record.jsx'
 import PrescriptionManagement from './components/Doctor/Dr_Priscription/Priscription.jsx'
 import Settings from './components/Doctor/Dr_Settings/Settings.jsx'
+
+
+//Medical_Director
+import MD_side_bar from "./components/Medical_Director/MD_Side_bar/md_side_bar.jsx"
+
+
+// Login page
 import Loginpage from './components/Loginpage/LoginPage.jsx'
 
 
@@ -28,7 +35,11 @@ function App() {
 
   return (
     <Routes>
+
+     {/* Loginpage-Routes */}
       <Route path='/login' element={<Loginpage />}></Route>
+
+      {/* PA-Routes */}
       <Route path='/pa' element={<Pa_Side_bar />}>
         <Route index='dashboard' element={<Pa_Dashboard />} />
         <Route path='dashboard' element={<Pa_Dashboard />} />
@@ -38,7 +49,8 @@ function App() {
         <Route path='patienthistory' element={<PatientHistory />} />
       </Route>
 
-      <Route path='/' element={<Dr_Side_bar />}>
+      {/* Dr-Routes */}
+      <Route path='/Dr' element={<Dr_Side_bar />}>
 
          <Route index element={<Dr_Dashboard/>}/>
          <Route path='Dr_dashboard' element={<Dr_Dashboard/>}/>
@@ -46,6 +58,18 @@ function App() {
          <Route path='PatientRecord' element={<PatientRecords/>}/>
          <Route path='Prescription' element={<PrescriptionManagement/>}/>
          <Route path='Setting' element={<Settings/>}/>
+
+      </Route>
+
+      {/* MD-Routes */}
+      <Route path='/' element={<MD_side_bar />}>
+
+         {/* <Route index element={<Dr_Dashboard/>}/>
+         <Route path='Dr_dashboard' element={<Dr_Dashboard/>}/>
+         <Route path='Consultation_Queue' element={<Consultation_Queue/>}/>
+         <Route path='PatientRecord' element={<PatientRecords/>}/>
+         <Route path='Prescription' element={<PrescriptionManagement/>}/>
+         <Route path='Setting' element={<Settings/>}/> */}
 
       </Route>
 
