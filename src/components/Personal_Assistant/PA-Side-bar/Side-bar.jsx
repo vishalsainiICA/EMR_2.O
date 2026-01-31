@@ -2,11 +2,20 @@ import React, { useState } from 'react';
 import Dashboard from '../Dashbord/Dashbord';
 import Newdashbord from '../NewPatientRegister/NewPatientRegister.jsx';
 import "./Side-bar.css"
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboard, faCog, faDashboard, faHistory, faSearch, faUserInjured } from '@fortawesome/free-solid-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
+import { LogOut } from 'lucide-react';
 const Side_bar = () => {
+
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      localStorage.clear();
+      navigate("/login");
+    }
+  };
 
   const [headline, setHeadline] = useState("PA Dashboard")
   return (
@@ -35,7 +44,7 @@ const Side_bar = () => {
           </NavLink>
           <NavLink to="/pa/patienthistory" className="nav-item" data-page="patientHistory" onClick={() => setHeadline("Patient History")}>
             {/* <i className="fas fa-history"></i> */}
-            <FontAwesomeIcon icon={faHistory}/>
+            <FontAwesomeIcon icon={faHistory} />
             <span>Patient History</span>
           </NavLink>
           {/* <NavLink to="/" className="nav-item" data-page="medicalRecords">
@@ -48,16 +57,22 @@ const Side_bar = () => {
           </NavLink> */}
           <NavLink to="/pa/pa_setting" className="nav-item" data-page="settings" onClick={() => setHeadline("PA Settings")} >
             {/* <i className="fas fa-cog"></i> */}
-            <FontAwesomeIcon icon={faCog}/>
+            <FontAwesomeIcon icon={faCog} />
             <span>Settings</span>
           </NavLink>
+          <hr />
+          <div className="menu-item logout-item" onClick={handleLogout}>
+            <LogOut size={16} /> <span>Sign Out</span>
+          </div>
+
         </div>
 
+
         <div className="sidebar-footer">
-          <div className="user-avatar">PA</div>
+          <div className="user-avatar">AB</div>
           <div className="user-info">
-            <h4>Priya Sharma</h4>
-            <p>Physician Assistant</p>
+            <h4>Ajay Barman</h4>
+            <p></p>
           </div>
         </div>
       </div>
@@ -74,18 +89,18 @@ const Side_bar = () => {
           </div>
 
           <div className="header-actions">
-            <div className="search-box">
-              <FontAwesomeIcon icon={faSearch}/>
+            {/* <div className="search-box">
+              <FontAwesomeIcon icon={faSearch} />
               <input
                 type="text"
                 id="globalSearch"
                 placeholder="Search patients, records..."
               />
-            </div>
+            </div> */}
 
             <div className="notification" id="notificationBtn">
               <i className="far fa-bell"></i>
-              <FontAwesomeIcon icon={faBell}/>
+              <FontAwesomeIcon icon={faBell} />
               <div className="notification-badge">3</div>
             </div>
           </div>

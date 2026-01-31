@@ -113,7 +113,7 @@ const PatientHistory = () => {
                         <i className="fas fa-filter"></i> Apply Filter
                     </button>
                 </div> */}
-                <div className="search-box1">
+                {/* <div className="search-box1">
                     <FontAwesomeIcon icon={faSearch} />
                     <input
                         type="text"
@@ -123,7 +123,7 @@ const PatientHistory = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
 
-                </div>
+                </div> */}
                 <div className="filter-controls">
                     <input
                         type="date"

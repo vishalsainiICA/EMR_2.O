@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8000/", // backend url
+  baseURL: import.meta.env.VITE_BACKEND_URL, // backend url
 });
 
 export const PYTHONAPI = axios.create({
@@ -10,7 +10,7 @@ export const PYTHONAPI = axios.create({
   // backend url
 });
 export const COMMONAPI = axios.create({
-  baseURL: "http://localhost:8000/", // backend url
+  baseURL: import.meta.env.VITE_BACKEND_URL, // backend url
 });
 
 API.interceptors.request.use((req) => {

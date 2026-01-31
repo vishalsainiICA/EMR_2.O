@@ -1,131 +1,114 @@
-import "./LoginPage.css"
+import "./LoginPage.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApi } from "../../api/useApi";
 import { CommonApi } from "../../api/apiService";
-
-
+import { Eye, EyeOff, Lock, Mail } from "lucide-react"; // Using lucide-react for professional icons
 
 const Loginpage = () => {
-  const navigate = useNavigate()
-  const [password, setPassword] = useState(null)
-  const [email, setemail] = useState(null)
-  const [value, setvalue] = useState(false);
-  const [Eyelogo, setEyelogo] = useState(false);
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
+  const { request: login, loading: isProcessing, error: apiError } = useApi(CommonApi.login);
 
-  const { request: login, loading: isProcessing, error: error } = useApi(CommonApi.login)
-  const handlelogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault(); // Prevent page reload
+    if (!validation()) return;
+
     try {
+      const res = await login({ email, password });
 
-      console.log("Call");
+      localStorage.setItem("token", res?.token);
+      localStorage.setItem("role", res?.role);
+      localStorage.setItem("profile", JSON.stringify(res?.profile));
 
+      toast.success("Welcome back, Doctor");
 
-      if (validation()) {
-        console.log("Call 1");
-        const res = await login({ email, password });
-        console.log("res", res);
+      if (res?.role === "personalAssitant") navigate("/pa");
+      else if (res?.role === "doctor") navigate("/");
 
-        localStorage.setItem("token", res?.token);   // single token key
-        localStorage.setItem("role", res?.role);   // single token key
-        localStorage.setItem("profile", JSON.stringify(res?.profile));
-        // role saved
-        toast.success("Login success")
-
-        // if (res.data?.role === "superadmin") {
-        //   navigate("/super-admin/dashboard", { replace: true });
-        // }
-        // else if (res.data?.role === "doctor") {
-        //   navigate("/doctor", { replace: true });
-        // }
-        // else if (res.data?.role === "medicalDirector") {
-        //   navigate("/md/dashboard", { replace: true });
-        // }
-        if (res?.role === "personalAssitant") {
-          navigate("/pa")
-        }
-        if (res?.role === "doctor") {
-          navigate("/")
-        }
-
-      }
-    } catch (error) {
-      console.log("ererfv", error);
-      toast.error({ error: error.response?.data?.message || "Internal Server Error" });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Authentication failed");
     }
   };
 
-
   const validation = () => {
-    if (!email) {
-      toast.info({ email: "Please Enter Email" });
+    if (!email.includes("@")) {
+      toast.warning("Please enter a valid professional email");
       return false;
     }
-    if (!password) {
-      toast.info({ password: "Please Enter Password" });
-      return false;
-    }
-    if (email.trim() === "") {
-      toast.info({ email: "Email Can't be Empty" });
-      return false;
-    }
-    if (password.trim() === "") {
-      toast.info({ password: "Password Can't be Empty" });
+    if (password.length < 4) {
+      toast.warning("Password security check failed");
       return false;
     }
     return true;
   };
 
-
   return (
-    <div className="Login_page">
-      <div className="login-page-detail">
-        <div className="login">
-          <span>Log in</span>
+    <div className="healthcare-login-container">
+      <div className="login-card">
+        <div className="brand-section">
+          <div className="medical-logo">✚</div>
+          <h2>HealthPortal</h2>
+          <p>Secure Professional Access</p>
         </div>
 
-        <div className="all-detai">
-          <div className="detail">
-            <label htmlFor="">Email</label>
-            <input onChange={(e) => setemail(e.target.value)} style={{ width: "100%", color: "black", cursor: "auto" }} type="email" placeholder="Enter your email" />
-            {error?.email && (<p>{error?.email}</p>)}
-            <label htmlFor="">Password</label>
-            <div style={{ display: "flex", width: '100%', padding: '0 5px', border: "0.3px solid lightgray ", borderRadius: "7px" }} >
-              <input onChange={(e) => setPassword(e.target.value)} style={{ color: "black", cursor: "auto", border: "none" }} type={value ? 'text' : 'password'} placeholder="Enter your password" />
-              {/* <span onClick={() => { setvalue(!value); setEyelogo(!Eyelogo) }}>{Eyelogo ? <BsEyeSlash /> : <BsEye />}</span> */}
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="input-group">
+            <label>Email Address</label>
+            <div className="input-wrapper">
+              <Mail size={18} className="input-icon" />
+              <input
+                type="email"
+                placeholder="dr.smith@hospital.com"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
-            {error?.password && (<p>{error?.password}</p>)}
           </div>
-          <a style={{
-            fontSize: '12px'
-          }} href="">forgot Password?</a>
-          <button style={{
-            marginTop: '10px',
-            alignItems: 'center',
-            textAlign: 'center',
-            width: '90%',
-            cursor: 'pointer',
-            justifyContent: "center"
 
-          }} className="view-btn" disabled={isProcessing} onClick={handlelogin}> {`${isProcessing ? "login...." : "Log In"}`} </button>
-          {error?.error && (<p style={{
-            fontSize: '10px',
-            color: 'red'
-          }}>{error?.error}</p>)}
-        </div>
-
-        <div className="other-detail">
-          <span> Or continue with </span>
-          <div style={{ display: "flex", gap: "5px" }}>
-            <span>Don't have account? </span>
-            {/* <span>Sign up</span> */}
-            <a href="">Sign up</a>
+          <div className="input-group">
+            <label>Password</label>
+            <div className="input-wrapper">
+              <Lock size={18} className="input-icon" />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="eye-btn"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
+
+          <div className="form-options">
+            <label className="checkbox-container">
+              <input type="checkbox" /> Remember me
+            </label>
+            <a href="/forgot" className="forgot-link">Forgot Password?</a>
+          </div>
+
+          <button type="submit" className="login-submit-btn" disabled={isProcessing}>
+            {isProcessing ? <div className="spinner"></div> : "Sign In to Dashboard"}
+          </button>
+        </form>
+
+        <div className="login-footer">
+          <p>Don't have an account? <a href="/signup">Contact Administrator</a></p>
+          <p className="security-note">🔒 End-to-end encrypted HIPAA compliant portal</p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Loginpage;

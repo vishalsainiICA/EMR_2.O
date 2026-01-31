@@ -1337,6 +1337,7 @@ textarea {
 }
 
 
+
 /* ===================== Responsive ===================== */
 @media (max-width: 768px) {
   .pa-documents-content {
@@ -1355,4 +1356,246 @@ textarea {
   .pa-docs-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.pa-docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.pa-doc-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+  padding: 16px;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.pa-doc-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary-color, #4a90e2);
+}
+
+.pa-doc-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f0f7ff;
+  color: #007bff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.pa-doc-icon-wrapper {
+  font-size: 2.5rem;
+  color: #6c757d;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.pa-doc-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.pa-doc-meta,
+.pa-doc-date {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pa-view-btn {
+  margin-top: 15px;
+  background: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.pa-doc-card:hover .pa-view-btn {
+  background: var(--primary-color, #4a90e2);
+  color: white;
+  border-color: var(--primary-color, #4a90e2);
+}
+
+/* Empty State Styling */
+.pa-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  color: #adb5bd;
+}
+
+.pa-empty-state i {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+/* Full-screen Backdrop */
+.pa-image-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  /* Darker backdrop for focus */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
+/* Modal Box */
+.pa-viewer-container {
+  background: white;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 85vh;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.pa-viewer-header {
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.pa-viewer-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.pa-close-viewer {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.pa-close-viewer:hover {
+  background: #ff6b81;
+}
+
+/* Image Grid */
+.pa-viewer-grid {
+  padding: 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  overflow-y: auto;
+  /* Scroll if many images */
+}
+
+.pa-viewer-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pa-viewer-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  /* Keeps images uniform size */
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  transition: 0.3s;
+  cursor: zoom-in;
+}
+
+.pa-viewer-item img:hover {
+  border-color: #4a90e2;
+  transform: scale(1.02);
+}
+
+.pa-file-label {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+}
+
+.ai-genDiv {
+  margin-bottom: 10px;
+}
+
+.model-patient-history-documnet {
+  /* width: 100%; */
+  margin-left: 20px;
+  margin-right: 50px;
+
+}
+
+.patient-history-documents {
+  /* padding: 10px; */
+  border: 1px solid var(--border-color);
+
+}
+
+.patient-history-document-card {
+
+  height: 70px;
+  width: 120px;
+  background-color: lightgray;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10PX;
+
+
+  img {
+    height: 50px;
+    width: 80px;
+  }
+
 }

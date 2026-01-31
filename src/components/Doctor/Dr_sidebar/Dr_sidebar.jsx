@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import "./Dr_sidebar.css"
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboard, faCog, faDashboard, faHistory, faPrescription, faSearch, faUserInjured, faUserMd } from '@fortawesome/free-solid-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
+import { LogOut } from 'lucide-react';
 
 
 
 const Side_bar = () => {
 
   const [headline, setHeadline] = useState("Dashboard")
+
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      localStorage.clear();
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="app-container"> {/* Ek wrapper div zaroori hai React return ke liye */}
 
@@ -41,13 +51,16 @@ const Side_bar = () => {
             <FontAwesomeIcon icon={faCog} />
             <span>Settings</span>
           </NavLink>
+          <div className="menu-item logout-item" onClick={handleLogout}>
+            <LogOut size={16} /> <span>Sign Out</span>
+          </div>
         </div>
 
         <div className="sidebar-footer">
           <div className="user-avatar">PA</div>
           <div className="user-info">
-            <h4>Priya Sharma</h4>
-            <p>Physician Assistant</p>
+            <h4>Dr.Mahesh Kumar</h4>
+            <p>Cardiology</p>
           </div>
         </div>
       </div>
@@ -64,20 +77,21 @@ const Side_bar = () => {
           </div>
 
           <div className="header-actions">
-            <div className="search-box">
+            {/* <div className="search-box">
               <FontAwesomeIcon icon={faSearch} />
               <input
                 type="text"
                 id="globalSearch"
                 placeholder="Search patients, records..."
               />
-            </div>
+            </div> */}
 
             <div className="notification" id="notificationBtn">
               <i className="far fa-bell"></i>
               <FontAwesomeIcon icon={faBell} />
               <div className="notification-badge">3</div>
             </div>
+
           </div>
         </div>
 

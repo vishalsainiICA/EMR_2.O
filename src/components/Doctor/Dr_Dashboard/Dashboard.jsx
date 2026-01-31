@@ -47,6 +47,7 @@ const DashboardComponent = () => {
 
   //  NEW: PA Documents Modal State
   const [isPaDocumentsModalOpen, setIsPaDocumentsModalOpen] = useState(false);
+  const [isImageVier, setisImageVier] = useState(null)
 
 
   //  NEW: Final Prescription Data
@@ -94,6 +95,16 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
       console.error("Load illness error:", err);
     }
   };
+  const handleLoadPatient = async () => {
+    try {
+      const res = await loadpatient()
+      console.log(res)
+
+      setPatients(res?.data?.todayPatient)
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const handleSavePriscbrition = async () => {
     try {
       const formdata = new FormData();
@@ -137,6 +148,8 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
       formdata.append("prescriptionImage", "");
       await savePriscribtion(formdata);
+      setIsPrescriptionModalOpen(false)
+      await handleLoadPatient()
       toast.success("Prescription saved:");
 
     } catch (error) {
@@ -151,16 +164,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
   // }, [selectedState.selectedSymtompsData]);
 
 
-  const handleLoadPatient = async () => {
-    try {
-      const res = await loadpatient()
-      console.log(res)
 
-      setPatients(res?.data?.todayPatient)
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   useEffect(() => {
     const fetchIllness = async () => {
@@ -458,6 +462,21 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
     }
   };
 
+  const handleViewDoc = (doc) => {
+    // 1. Check if the document actually has files
+    if (!doc?.files || doc.files.length === 0) {
+      alert("No files attached to this document.");
+      return;
+    }
+
+    // 2. Update the state to 'open' the viewer with this doc's data
+    // Using the name from your JSX: isImageVier
+    setisImageVier(doc);
+
+    // Optional: Log for debugging
+    console.log("Viewing Document:", doc);
+  };
+
   return (
     <div className="Dr_Dashboard_section section active" id="dashboardSection" style={{ display: "block" }}>
       {/* Stats Cards */}
@@ -637,14 +656,28 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
                     {/* Action */}
                     <td>
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => showPrescriptionModal(patient._id)}
+                      {patient?.currentPrescriptionId ?
+                        (
+                          <button
 
-                      >
-                        <i className="fas fa-prescription"></i>{" "}
-                        {"Prescribe"}
-                      </button>
+                            disabled={true}
+                            className="btn btn-primary"
+                            onClick={() => showPrescriptionModal(patient._id)}
+
+                          >
+                            {"Prescribe Done"}
+                          </button>
+                        ) :
+                        (<button
+                          className="btn btn-primary"
+                          onClick={() => showPrescriptionModal(patient._id)}
+
+                        >
+
+                          {"Prescribe"}
+                        </button>)
+                      }
+
                     </td>
                   </tr>
                 ))}
@@ -667,11 +700,57 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
         }}
       >
         <div className="modal-content">
-          <div className="modal-header">
-            <h2 className="modal-title">Prescription</h2>
-            <button className="close-modal" id="closePrescriptionModal" onClick={closePrescriptionModal}>
-              &times;
-            </button>
+
+          <div className="">
+            <div className="modal-header">
+              <h2 className="modal-title">Prescription </h2>
+              <button className="close-modal" id="closePrescriptionModal" onClick={closePrescriptionModal}>
+                &times;
+              </button>
+            </div>
+            <div className="model-patient-history-documnet">
+              {
+                Array.isArray(currentPatientForPrescription?.pastDocuments) &&
+                currentPatientForPrescription.pastDocuments.length > 0 && (
+
+                  <div className="patient-history-documents">
+
+                    {console.log("currentPatientForPrescription.pastDocuments", currentPatientForPrescription.pastDocuments)
+                    }
+                    {currentPatientForPrescription.pastDocuments.map((category, catIndex) => {
+                      console.log("category", category);
+
+                      return category?.files?.map((file, fileIndex) => {
+                        console.log("file", file);
+
+                        return (
+                          <div
+                            key={`${catIndex}-${fileIndex}`}
+                            className="patient-history-document-card"
+                          >
+                            <img
+                              src={`${import.meta.env.VITE_BACKEND_URL}${file?.path}`}
+                              alt={`Document ${fileIndex + 1}`}
+                              onClick={() =>
+                                window.open(
+                                  `http://localhost:8000/${file?.path}`,
+                                  "_blank"
+                                )
+                              }
+                            />
+                            <p>{`Doc-${fileIndex + 1}`}</p>
+                          </div>
+                        )
+                      })
+                    })}
+                  </div>
+                )
+              }
+
+
+            </div>
+
+
           </div>
 
           <div className="modal-body">
@@ -850,7 +929,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
                         <div className="doctor-signature">
                           <div className="doctor-info">
-                            <div className="doctor-name">Dr. Anil Sharma</div>
+                            <div className="doctor-name">Dr. Mahesh Kumar</div>
                             <div className="doctor-credentials">MBBS, MD (General Medicine)</div>
                             <div className="doctor-credentials">Reg. No: MED123456 | MCI: 12345/2010</div>
                             <div className="doctor-credentials">Consultant Physician, Apollo Hospitals</div>
@@ -1138,7 +1217,11 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                             )}
                           </div>
                           <div className="ai-genDiv">
-                            <p>Ai Generated: </p>
+                            <p style={{
+                              display: 'flex',
+                              justifyContent: 'start',
+                              marginBottom: '10px'
+                            }}>Ai Generated: </p>
                             {loadingIllnessBySymptoms && (
                               <div className="loader-mini">
 
@@ -1147,31 +1230,48 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
                             {!loadingIllnessBySymptoms && loadIllness?.length > 0 && (
                               <div className="illness-grid">
-                                {loadIllness.map((item, index) => (
-                                  <div className="illness-card" key={index}>
+                                {loadIllness.map((item, index) => {
+                                  const isSelected = selectedState.selectedIllnessData.includes(item?.illness);
 
-                                    <div className="illness-header">
-                                      <input type="checkbox" />
-                                      <p>{item.illness}</p>
-                                    </div>
-
-                                    <p
-                                      className="confidence"
-                                      style={{
-                                        color:
-                                          item.confidence_score > 0.80
-                                            ? "green"
-                                            : item.confidence_score > 0.50
-                                              ? "orange"
-                                              : "red",
+                                  return (
+                                    <div
+                                      onClick={() => {
+                                        handleSelectCommon(
+                                          item?.illness,
+                                          textareaRefForIllness,
+                                          textForIllness,
+                                          setextForIllness,
+                                          setselectedState,
+                                          "selectedIllnessData",
+                                          setfilterState,
+                                          "filterIllnessData"
+                                        );
                                       }}
+                                      className="illness-card"
+                                      key={index}
                                     >
-                                      Confidence: <b>{item.confidence_score}%</b>
-                                    </p>
+                                      <div className="illness-header">
+                                        {/* Changed value to checked for a checkbox */}
+                                        <input checked={isSelected} readOnly type="checkbox" />
+                                        <p>{item.illness}</p>
+                                      </div>
 
-
-                                  </div>
-                                ))}
+                                      <p
+                                        className="confidence"
+                                        style={{
+                                          color:
+                                            item.confidence_score > 0.80
+                                              ? "green"
+                                              : item.confidence_score > 0.50
+                                                ? "orange"
+                                                : "red",
+                                        }}
+                                      >
+                                        Confidence: <b>{item.confidence_score}%</b>
+                                      </p>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             )}
 
@@ -1449,12 +1549,17 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                           <div className="form-group">
                             <label htmlFor="advice">Patient Advice</label>
                             <textarea
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'start'
+                              }}
                               id="advice"
                               placeholder="Add general advice for patient..."
-                              defaultValue={`1. Take adequate rest for 3-5 days
-                                             2. Drink plenty of warm fluids
-                                             3. Follow up if symptoms worsen
-                                             4. Next review in 7 days`}
+                              defaultValue=
+                              {`1. Take adequate rest for 3-5 days
+                                2. Drink plenty of warm fluids
+                                3. Follow up if symptoms worsen
+                                4. Next review in 7 days`}
                             />
                           </div>
                         </div>
@@ -1526,28 +1631,70 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
             <p>Documents uploaded by the Physician Assistant for this patient:</p>
 
             <div className="pa-docs-grid" id="paDocsGrid">
-              {currentPatientForPrescription?.paDocuments && currentPatientForPrescription.paDocuments.length > 0 ? (
-                currentPatientForPrescription.paDocuments.map((doc) => (
-                  <div className="pa-doc-card" key={doc.id}>
-                    <div className="pa-doc-icon">
+              {currentPatientForPrescription?.pastDocuments?.length > 0 ? (
+                currentPatientForPrescription.pastDocuments.map((doc, index) => (
+                  <div className="pa-doc-card" key={index} onClick={() => handleViewDoc(doc)}>
+                    <div className="pa-doc-badge">{doc?.category}</div>
+
+                    <div className="pa-doc-icon-wrapper">
                       <i className={`fas fa-file-${getDocIcon(doc.type)}`}></i>
                     </div>
-                    <div className="pa-doc-title">{doc.name}</div>
-                    <div className="pa-doc-info">Type: {doc.type}</div>
-                    <div className="pa-doc-info">Uploaded by: {doc.uploadedBy}</div>
-                    <div className="pa-doc-date">Date: {doc.date}</div>
+
+                    <div className="pa-doc-content">
+                      <h4 className="pa-doc-title">Document #{index + 1}</h4>
+                      <p className="pa-doc-meta">
+                        <i className="fas fa-user-edit"></i> {doc?.registerarId?.name || 'System'}
+                      </p>
+                      <p className="pa-doc-date">
+                        <i className="fas fa-calendar-alt"></i> {new Date(doc?.updatedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    <button onClick={() => setisImageVier(doc?.pastDocuments)} className="pa-view-btn">View Files</button>
                   </div>
                 ))
               ) : (
-                <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--text-light)" }}>
-                  No documents uploaded by PA for this patient.
-                </p>
+                <div className="pa-empty-state">
+                  <i className="fas fa-folder-open"></i>
+                  <p>No documents uploaded by PA for this patient.</p>
+                </div>
+              )}
+
+              {/* Improved Image Viewer Overlay */}
+              {isImageVier && (
+                <div className="pa-image-overlay" onClick={() => setisImageVier(null)}>
+                  <div className="pa-viewer-container" onClick={e => e.stopPropagation()}>
+
+                    {/* Header Section */}
+                    <div className="pa-viewer-header">
+                      <h3>{isImageVier?.category} - Document Files</h3>
+                      <button className="pa-close-viewer" onClick={() => setisImageVier(null)}>
+                        <i className="fas fa-times"></i> Close
+                      </button>
+                    </div>
+
+                    {/* Image Grid Section */}
+                    <div className="pa-viewer-grid">
+                      {isImageVier?.files?.map((file, index) => (
+                        <div key={index} className="pa-viewer-item">
+                          <img
+                            src={`http://localhost:8000/${file?.path}`}
+                            alt={`Page ${index + 1}`}
+                            onClick={() => window.open(`http://localhost:8000/${file?.path}`, '_blank')}
+                          />
+                          <span className="pa-file-label">Page {index + 1}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                  </div>
+                </div>
               )}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
