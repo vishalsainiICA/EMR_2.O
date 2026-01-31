@@ -15,6 +15,7 @@ const DashboardComponent = () => {
   const [showRevenue, setShowRevenue] = useState(true);
   const [patients, setPatients] = useState([]);
   const [loadIllness, setloadIllness] = useState([]);
+  const [isImageOpen, setisImageOpen] = useState(null)
   const [state, setState] = useState({
     labTest: [],
     illnessData: [],
@@ -471,7 +472,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
     // 2. Update the state to 'open' the viewer with this doc's data
     // Using the name from your JSX: isImageVier
-    setisImageVier(doc);
+    // setisImageVier(doc);
 
     // Optional: Log for debugging
     console.log("Viewing Document:", doc);
@@ -725,18 +726,14 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
                         return (
                           <div
+                            onClick={() => setisImageOpen(file)}
                             key={`${catIndex}-${fileIndex}`}
                             className="patient-history-document-card"
                           >
                             <img
-                              src={`${import.meta.env.VITE_BACKEND_URL}${file?.path}`}
+                              src={`${import.meta.env.VITE_BACKEND_URL}/${file?.path}`}
                               alt={`Document ${fileIndex + 1}`}
-                              onClick={() =>
-                                window.open(
-                                  `http://localhost:8000/${file?.path}`,
-                                  "_blank"
-                                )
-                              }
+
                             />
                             <p>{`Doc-${fileIndex + 1}`}</p>
                           </div>
@@ -1601,13 +1598,34 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                   )}
                 </>
               )}
+
+              {isImageOpen && (
+                <div className="image-viewer"
+                // onClick={() => setisImageVier(null)}
+                >
+
+                  <div className="image-viewer-div">
+                    <div>
+                      <p>Doc_1</p>
+                      <button>close</button>
+
+                    </div>
+
+                    <div className="image-viewer-image-div">
+                      <img src={`${import.meta.env.VITE_BACKEND_URL}/${isImageOpen?.path}`} alt="" />
+                    </div>
+                  </div>
+
+                </div>
+              )}
             </div>
           </div>
         </div>
+
       </div>
 
       {/* ===================== NEW: PA Documents Modal ===================== */}
-      <div
+      {/* <div
         className="modal pa-documents-modal"
         id="paDocumentsModal"
         style={{ display: isPaDocumentsModalOpen ? "flex" : "none" }}
@@ -1627,73 +1645,11 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
             </button>
           </div>
 
-          <div className="pa-docs-body">
-            <p>Documents uploaded by the Physician Assistant for this patient:</p>
 
-            <div className="pa-docs-grid" id="paDocsGrid">
-              {currentPatientForPrescription?.pastDocuments?.length > 0 ? (
-                currentPatientForPrescription.pastDocuments.map((doc, index) => (
-                  <div className="pa-doc-card" key={index} onClick={() => handleViewDoc(doc)}>
-                    <div className="pa-doc-badge">{doc?.category}</div>
-
-                    <div className="pa-doc-icon-wrapper">
-                      <i className={`fas fa-file-${getDocIcon(doc.type)}`}></i>
-                    </div>
-
-                    <div className="pa-doc-content">
-                      <h4 className="pa-doc-title">Document #{index + 1}</h4>
-                      <p className="pa-doc-meta">
-                        <i className="fas fa-user-edit"></i> {doc?.registerarId?.name || 'System'}
-                      </p>
-                      <p className="pa-doc-date">
-                        <i className="fas fa-calendar-alt"></i> {new Date(doc?.updatedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-
-                    <button onClick={() => setisImageVier(doc?.pastDocuments)} className="pa-view-btn">View Files</button>
-                  </div>
-                ))
-              ) : (
-                <div className="pa-empty-state">
-                  <i className="fas fa-folder-open"></i>
-                  <p>No documents uploaded by PA for this patient.</p>
-                </div>
-              )}
-
-              {/* Improved Image Viewer Overlay */}
-              {isImageVier && (
-                <div className="pa-image-overlay" onClick={() => setisImageVier(null)}>
-                  <div className="pa-viewer-container" onClick={e => e.stopPropagation()}>
-
-                    {/* Header Section */}
-                    <div className="pa-viewer-header">
-                      <h3>{isImageVier?.category} - Document Files</h3>
-                      <button className="pa-close-viewer" onClick={() => setisImageVier(null)}>
-                        <i className="fas fa-times"></i> Close
-                      </button>
-                    </div>
-
-                    {/* Image Grid Section */}
-                    <div className="pa-viewer-grid">
-                      {isImageVier?.files?.map((file, index) => (
-                        <div key={index} className="pa-viewer-item">
-                          <img
-                            src={`http://localhost:8000/${file?.path}`}
-                            alt={`Page ${index + 1}`}
-                            onClick={() => window.open(`http://localhost:8000/${file?.path}`, '_blank')}
-                          />
-                          <span className="pa-file-label">Page {index + 1}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
-      </div>
+
+      </div> */}
+
     </div >
   );
 };
