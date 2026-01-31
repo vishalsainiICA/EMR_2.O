@@ -1469,6 +1469,21 @@ textarea {
   backdrop-filter: blur(5px);
 }
 
+.image-viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  /* Darker backdrop for focus */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
 /* Modal Box */
 .pa-viewer-container {
   background: white;
@@ -1567,16 +1582,22 @@ textarea {
   margin-bottom: 10px;
 }
 
+
+
 .model-patient-history-documnet {
   /* width: 100%; */
-  margin-left: 20px;
-  margin-right: 50px;
-
+  margin-top: 10px;
+  margin-left: 30px;
+  margin-right: 30px;
+  padding: 10px;
+  height: 110px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
 }
 
 .patient-history-documents {
   /* padding: 10px; */
-  border: 1px solid var(--border-color);
+
 
 }
 
@@ -1584,13 +1605,13 @@ textarea {
 
   height: 70px;
   width: 120px;
-  background-color: lightgray;
   cursor: pointer;
   border-radius: 20px;
   padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10PX;
+  align-items: center;
+  gap: 10px;
 
 
   img {
@@ -1598,4 +1619,19 @@ textarea {
     width: 80px;
   }
 
+}
+
+.image-viewer-div {
+  height: 700px;
+  width: 400px;
+  background-color: white;
+  padding: 20px;
+}
+
+.image-viewer-image-div {
+  img {
+
+    height: 400px;
+    width: 400px;
+  }
 }
