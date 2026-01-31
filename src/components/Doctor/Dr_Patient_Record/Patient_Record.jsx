@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose,faFileMedicalAlt , faClipboardList, faUser, faEye, faHospitalUser, faEdit, faPhoneAlt, faStethoscope, faFolder, faHistory, faMapMarkedAlt, faPrint, faSyncAlt, faUserMd, faUserPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faFileMedicalAlt, faClipboardList, faUser, faEye, faHospitalUser, faEdit, faPhoneAlt, faStethoscope, faFolder, faHistory, faMapMarkedAlt, faPrint, faSyncAlt, faUserMd, faUserPlus, faSearch, faFilter } from "@fortawesome/free-solid-svg-icons";
 import "./Patient_Record.css"
 import { useApi } from '../../../api/useApi';
 import { doctorApi } from '../../../api/apiService';
@@ -105,62 +105,72 @@ const PatientRecords = () => {
 
         </div>
         <div className="filter-controls">
-          <input
-            type="date"
-            className="date-input"
-            id="startDate"
-            value={date.startDate}
-            onChange={(e) =>
-              setDate(prev => ({
-                ...prev,
-                startDate: e.target.value
-              }))
-            }
-          />
+         
+          <div style={{width:"100%",display:"flex",justifyContent:"space-between",padding:"0px 0px"}}>
 
-          <span>to</span>
+            <div className="filter-btn-wrapper">
+              <button
+                className="filter-btn"
+                id="applyFilterBtn"
+                disabled={!date.startDate || !date.endDate || loading}
+                onClick={handleLoadPatient}
+              >
+                {loading ? (
+                  <div className="loader-mini"></div>
+                ) : (
+                  <>
+                    <i className="fas fa-filter"></i>
+                    <FontAwesomeIcon icon={faFilter} />
+                    Apply Filter
+                  </>
+                )}
+              </button>
 
-          <input
-            type="date"
-            className="date-input"
-            id="endDate"
-            value={date.endDate}
-            onChange={(e) =>
-              setDate(prev => ({
-                ...prev,
-                endDate: e.target.value
-              }))
-            }
-          />
-
-          <div className="filter-btn-wrapper">
-            <button
-              className="filter-btn"
-              id="applyFilterBtn"
-              disabled={!date.startDate || !date.endDate || loading}
-              onClick={handleLoadPatient}
-            >
-              {loading ? (
-                <div className="loader-mini"></div>
-              ) : (
-                <>
-                  <i className="fas fa-filter"></i> Apply Filter
-                </>
-              )}
-            </button>
-
-            {/* {(!date.startDate || !date.endDate) && (
+              {/* {(!date.startDate || !date.endDate) && (
                                   <span className="tooltip-text">
                                       Please select start & end date
                                   </span>
                               )} */}
+            </div>
+
+
+            <button className="export-btn" onClick={handleExportExcel}>
+              <i className="ri-upload-2-line"></i> Export (.excel)
+            </button>
+          </div>
+           <div style={{justifyContent:"space-between"}}>
+
+            <input
+              type="date"
+              className="date-input"
+              id="startDate"
+              value={date.startDate}
+              onChange={(e) =>
+                setDate(prev => ({
+                  ...prev,
+                  startDate: e.target.value
+                }))
+              }
+            />
+
+            <span>to</span>
+
+            <input
+              type="date"
+              className="date-input"
+              id="endDate"
+              value={date.endDate}
+              onChange={(e) =>
+                setDate(prev => ({
+                  ...prev,
+                  endDate: e.target.value
+                }))
+              }
+            />
           </div>
 
-        </div>
 
-        <button className="export-btn" onClick={handleExportExcel}>
-          <i className="ri-upload-2-line"></i> Export (.excel)
-        </button>
+        </div>
 
 
       </div>

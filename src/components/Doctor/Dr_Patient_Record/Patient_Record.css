@@ -493,6 +493,16 @@ textarea {
   color: white;
 }
 
+
+.filter-controls
+{
+  display: flex;
+  flex-direction: column;
+  
+}
+
+
+
 /* ===========================
    RESPONSIVE (Modal + Cards)
    =========================== */
