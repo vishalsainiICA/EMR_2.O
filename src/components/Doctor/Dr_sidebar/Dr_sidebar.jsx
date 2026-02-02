@@ -31,15 +31,15 @@ const Side_bar = () => {
         </div>
 
         <div className="nav-menu">
-          <NavLink to="/Dr/Dr_dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("Dashboard")}>
+          <NavLink to="/dr/dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("Dashboard")}>
             <FontAwesomeIcon icon={faDashboard} />
             <span>Dashboard</span>
           </NavLink>
-          <NavLink to="/Dr/Consultation_Queue" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Consultation Queue")}>
+          <NavLink to="/dr/consultation_Queue" className="nav-item " data-page="newPatient" onClick={() => setHeadline("Consultation Queue")}>
             <FontAwesomeIcon icon={faUserMd} />
             <span>Consultation Queue</span>
           </NavLink>
-          <NavLink to="/Dr/PatientRecord" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Patient Records")}>
+          <NavLink to="/dr/patientRecord" className="nav-item" data-page="initialAssessment" onClick={() => setHeadline("Patient Records")}>
             <FontAwesomeIcon icon={faUserInjured} />
             <span>Patient Records</span>
           </NavLink>
@@ -47,7 +47,7 @@ const Side_bar = () => {
             <FontAwesomeIcon icon={faPrescription} />
             <span>Prescription Management</span>
           </NavLink> */}
-          <NavLink to="/Dr/Setting" className="nav-item" data-page="settings" onClick={() => setHeadline(" Settings")} >
+          <NavLink to="/dr/setting" className="nav-item" data-page="settings" onClick={() => setHeadline(" Settings")} >
             <FontAwesomeIcon icon={faCog} />
             <span>Settings</span>
           </NavLink>

@@ -15,23 +15,38 @@ const Loginpage = () => {
   const { request: login, loading: isProcessing, error: apiError } = useApi(CommonApi.login);
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
     if (!validation()) return;
 
     try {
       const res = await login({ email, password });
 
-      localStorage.setItem("token", res?.token);
-      localStorage.setItem("role", res?.role);
-      localStorage.setItem("profile", JSON.stringify(res?.profile));
+      const { token, role, profile } = res || {};
 
-      toast.success("Welcome back, Doctor");
+      if (!token || !role) {
+        throw new Error("Invalid login response");
+      }
 
-      if (res?.role === "personalAssitant") navigate("/pa");
-      else if (res?.role === "doctor") navigate("/");
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+      localStorage.setItem("profile", JSON.stringify(profile));
+
+      toast.success("Login Success");
+
+      // role-based redirect
+      const roleRedirectMap = {
+        personalAssistant: "/pa",
+        doctor: "/dr",
+      };
+
+      navigate(roleRedirectMap[role] || "/login", { replace: true });
 
     } catch (err) {
-      toast.error(err.response?.data?.message || "Authentication failed");
+      toast.error(
+        err.response?.data?.message ||
+        err.message ||
+        "Authentication failed"
+      );
     }
   };
 

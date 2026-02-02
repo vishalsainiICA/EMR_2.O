@@ -28,6 +28,7 @@ import MD_side_bar from "./components/Medical_Director/MD_Side_bar/md_side_bar.j
 
 // Login page
 import Loginpage from './components/Loginpage/LoginPage.jsx'
+import RedirectToDashboard from './components/Handler.jsx'
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
     <Routes>
 
       {/* Loginpage-Routes */}
+      <Route path='/' element={<RedirectToDashboard></RedirectToDashboard>}></Route>
       <Route path='/login' element={<Loginpage />}></Route>
 
       {/* PA-Routes */}
@@ -50,14 +52,14 @@ function App() {
       </Route>
 
       {/* Dr-Routes */}
-      <Route path='/' element={<Dr_Side_bar />}>
+      <Route path='/dr' element={<Dr_Side_bar />}>
 
         <Route index element={<Dr_Dashboard />} />
-        <Route path='Dr_dashboard' element={<Dr_Dashboard />} />
-        <Route path='Consultation_Queue' element={<Consultation_Queue />} />
-        <Route path='PatientRecord' element={<PatientRecords />} />
-        <Route path='Prescription' element={<PrescriptionManagement />} />
-        <Route path='Setting' element={<Settings />} />
+        <Route path='dashboard' element={<Dr_Dashboard />} />
+        <Route path='consultation_Queue' element={<Consultation_Queue />} />
+        <Route path='patientRecord' element={<PatientRecords />} />
+        <Route path='prescription' element={<PrescriptionManagement />} />
+        <Route path='setting' element={<Settings />} />
 
       </Route>
 

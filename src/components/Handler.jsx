@@ -22,9 +22,9 @@ const RedirectToDashboard = () => {
             navigate("/md/dashboard", { replace: true });
         }
         else if (role === "doctor") {
-            navigate("/doctor", { replace: true });
+            navigate("/dr", { replace: true });
         }
-        else if (role === "perosnalAssistant") {
+        else if (role === "personalAssistant") {
             navigate("/pa", { replace: true });
         }
 
