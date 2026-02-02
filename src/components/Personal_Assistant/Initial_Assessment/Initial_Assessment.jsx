@@ -23,7 +23,8 @@ const Initialassessment = () => {
       respRate: "",
       spo2: "",
       weight: "",
-      height: ""
+      height: "",
+      bloodgroup: ""
     },
     complaint: "",
     medicalHistory: "",
@@ -367,6 +368,26 @@ const Initialassessment = () => {
                 value={assessmentData.vitals.height}
                 onChange={handleVitalsChange}
               />
+            </div>
+            <div className="vital-item">
+              <div className="vital-label">Blood Group</div>
+              <select
+                className="vital-input"
+                name="bloodgroup"
+                value={assessmentData?.vitals?.bloodgroup || ""}
+                onChange={handleVitalsChange}
+              >
+                <option value="">Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+
             </div>
           </div>
 

@@ -1018,18 +1018,18 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
                               <div className="vital-label-enhanced">Blood Pressure</div>
                             </div>
 
-                            <div className="vital-card-enhanced">
+                            {/* <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
                                 {currentPatientForPrescription.initialAssementId.vitals?.pulseRate}
                               </div>
                               <div className="vital-label-enhanced">Pulse Rate</div>
-                            </div>
+                            </div> */}
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.initialAssementId.vitals?.respRate}
+                                {currentPatientForPrescription.initialAssementId.vitals?.bloodgroup}
                               </div>
-                              <div className="vital-label-enhanced">Resp. Rate</div>
+                              <div className="vital-label-enhanced">Blood Group</div>
                             </div>
 
                             <div className="vital-card-enhanced">
@@ -1058,12 +1058,12 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
                               <div className="vital-label-enhanced">BMI</div>
                             </div> */}
 
-                            <div className="vital-card-enhanced">
+                            {/* <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
                                 {currentPatientForPrescription.initialAssementId.vitals.bg}
                               </div>
                               <div className="vital-label-enhanced">Blood Group</div>
-                            </div>
+                            </div> */}
                           </div>
 
                           <div style={{ marginTop: "10px", fontSize: "11px", color: "var(--text-light)", textAlign: "center" }}>
