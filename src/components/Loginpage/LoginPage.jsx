@@ -68,7 +68,7 @@ const Loginpage = () => {
         <div className="brand-section">
           <div className="medical-logo"></div>
           <h2>Dr.Parcha</h2>
-          <p>Secure Professional Access</p>
+          <p>Secure Access</p>
         </div>
 
         <form onSubmit={handleLogin} className="login-form">
