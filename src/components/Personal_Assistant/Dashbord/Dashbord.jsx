@@ -10,6 +10,7 @@ import { personalAssitantApi } from "../../../api/apiService";
 function Personalassitant() {
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [metrices, setMetrices] = useState(null)
 
   const navigate = useNavigate()
   const { request: loadpatient, loading, error } = useApi(personalAssitantApi.loadPatient)
@@ -17,6 +18,7 @@ function Personalassitant() {
     try {
       const res = await loadpatient()
       setPatients(res?.data)
+      setMetrices(res?.metrices)
     } catch (error) {
       console.log(error);
     }
@@ -74,47 +76,53 @@ function Personalassitant() {
       </div> */}
 
       {/* UPDATED: Dashboard Cards - Smaller */}
-      <div className="dashboard-cards">
-        <div className="card" id="newPatientCard">
-          <div className="card-header">
-            <div onClick={ScorllToview} className="card-alignment">
-              <div className="card-count">12</div>
-              <div className="card-title"> New Patients Today</div>
-            </div>
-            <div className="card-icon patient">
-              <FontAwesomeIcon icon={faUserPlus} />
-            </div>
-          </div>
-          <div className="card-trend">+2 from yesterday</div>
-        </div>
+      {loading && (
+        <div className="loader-mini">
 
-        <div className="card" id="pendingAssessmentsCard">
-          <div className="card-header">
-            <div className="card-alignment">
-              <div className="card-count">8</div>
-              <div className="card-title">Pending Assessments</div>
-            </div>
-            <div className="card-icon assessment">
-              <FontAwesomeIcon icon={faClipboardList} />
-            </div>
-          </div>
-          <div className="card-trend down">-3 from yesterday</div>
         </div>
-
-        <div className="card" id="patientRecordsCard">
-          <div className="card-header">
-            <div className="card-alignment">
-              <div className="card-count">142</div>
-              <div className="card-title">Total Patient Records</div>
+      )}
+      {!loading && (
+        <div className="dashboard-cards">
+          <div className="card" id="newPatientCard">
+            <div className="card-header">
+              <div onClick={ScorllToview} className="card-alignment">
+                <div className="card-count">{metrices?.todayPatient || "0"}</div>
+                <div className="card-title"> New Patients Today</div>
+              </div>
+              <div className="card-icon patient">
+                <FontAwesomeIcon icon={faUserPlus} />
+              </div>
             </div>
-            <div className="card-icon records">
-              <FontAwesomeIcon icon={faFolder} />
-            </div>
+            <div className="card-trend">+2 from yesterday</div>
           </div>
-          <div className="card-trend">+12 this week</div>
-        </div>
 
-        {/* <div className="card" id="doctorQueueCard">
+          <div className="card" id="pendingAssessmentsCard">
+            <div className="card-header">
+              <div className="card-alignment">
+                <div className="card-count">{metrices?.pendingAssessment || "0"}</div>
+                <div className="card-title">Pending Assessments</div>
+              </div>
+              <div className="card-icon assessment">
+                <FontAwesomeIcon icon={faClipboardList} />
+              </div>
+            </div>
+            <div className="card-trend down">-3 from yesterday</div>
+          </div>
+
+          <div className="card" id="patientRecordsCard">
+            <div className="card-header">
+              <div className="card-alignment">
+                <div className="card-count">{metrices?.patientRecord || "0"}</div>
+                <div className="card-title">Total Patient Records</div>
+              </div>
+              <div className="card-icon records">
+                <FontAwesomeIcon icon={faFolder} />
+              </div>
+            </div>
+            <div className="card-trend">+12 this week</div>
+          </div>
+
+          {/* <div className="card" id="doctorQueueCard">
           <div className="card-header">
             <div className="card-alignment">
               <div className="card-count">5</div>
@@ -126,7 +134,9 @@ function Personalassitant() {
           </div>
           <div className="card-trend">+1 in queue</div>
         </div> */}
-      </div>
+        </div>
+      )}
+
 
       {/* UPDATED: Recent Patients Table */}
       <div id="scrollView" className="recent-patients">
@@ -156,7 +166,8 @@ function Personalassitant() {
               {loading && (
                 <tr>
                   <td colSpan="7" style={{ textAlign: "center" }}>
-                    Loading patients...
+
+                    Loading patients...  <div className="loader-mini"></div>
                   </td>
                 </tr>
               )}

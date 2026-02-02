@@ -199,9 +199,6 @@ const Initialassessment = () => {
                   <td className="action-handler">
                     <button
                       onClick={() => {
-                        setSelectedPatient(item);
-                        setShowForm(true);
-
                         if (item?.initialAssementId) {
                           console.log("call");
 
@@ -212,6 +209,15 @@ const Initialassessment = () => {
                           // reset form for new assessment
                           resetInitialAssessment()
                         }
+                        setSelectedPatient(item);
+                        setShowForm(true);
+
+                        setTimeout(() => {
+
+                          const el = document.getElementById(`assessmentForm-${item?._id}`);
+                          el?.scrollIntoView({ behavior: "smooth" })
+                        }, 100);
+                        <a href={`assessmentForm-${selectedPatient._id}`}></a>
                       }}
 
                       className="action-btn">

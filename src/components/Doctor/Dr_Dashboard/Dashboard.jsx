@@ -82,11 +82,26 @@ const DashboardComponent = () => {
   const handleLoadIllness = async () => {
     if (selectedState.selectedSymtompsData.length === 0) return;
     try {
+      console.log("loadIlneess", currentPatientForPrescription);
+
+      const vitals = currentPatientForPrescription?.initialAssementId?.vitals;
+
+      const formattedVitals = vitals
+        ? `
+BP: ${vitals.bp || "N/A"}
+Pulse: ${vitals.pulse || "N/A"}
+Temperature: ${vitals.temperature || "N/A"}
+Respiratory Rate: ${vitals.respiratoryRate || "N/A"}
+SpO₂: ${vitals.spo2 || "N/A"}
+`
+        : "N/A";
+
       const prompt = {
-        question: `This is my vitals: ${currentPatientForPrescription?.patient?.initialAssementId?.vitals || "N/A"
-          }
-Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
+        question: `This is my vitals:
+${formattedVitals}
+Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
       };
+
 
       const res = await getLoadIllness(prompt);
       console.log("res", res?.answer?.possibleIllnesses);
@@ -211,8 +226,6 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
       ],
     });
 
-
-
     setIsPrescriptionModalOpen(true);
 
     //always open in edit mode first
@@ -232,41 +245,6 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
     setIsPaDocumentsModalOpen(false);
 
   };
-
-  //  Show PA Documents Modal (React version)
-  const showPaDocumentsModal = () => {
-    if (!currentPatientForPrescription) return;
-    setIsPaDocumentsModalOpen(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  //Close PA Documents Modal
-  const closePaDocumentsModal = () => {
-    setIsPaDocumentsModalOpen(false);
-    document.body.style.overflow = "hidden"; // prescription modal still open
-  };
-
-  // Helper function to get document icon (same logic as JS)
-  const getDocIcon = (docType) => {
-    switch ((docType || "").toLowerCase()) {
-      case "form":
-        return "edit";
-      case "report":
-        return "chart-line";
-      case "prescription":
-        return "prescription";
-      case "insurance":
-        return "file-invoice-dollar";
-      case "medical report":
-        return "file-medical";
-      case "notes":
-        return "sticky-note";
-      default:
-        return "file";
-    }
-  };
-
-
 
   //  Generate Final Prescription (React version of your JS function)
   const generateFinalPrescription = () => {
@@ -462,22 +440,6 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
       }));
     }
   };
-
-  const handleViewDoc = (doc) => {
-    // 1. Check if the document actually has files
-    if (!doc?.files || doc.files.length === 0) {
-      alert("No files attached to this document.");
-      return;
-    }
-
-    // 2. Update the state to 'open' the viewer with this doc's data
-    // Using the name from your JSX: isImageVier
-    // setisImageVier(doc);
-
-    // Optional: Log for debugging
-    console.log("Viewing Document:", doc);
-  };
-
   return (
     <div className="Dr_Dashboard_section section active" id="dashboardSection" style={{ display: "block" }}>
       {/* Stats Cards */}
@@ -704,50 +666,24 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
           <div className="">
             <div className="modal-header">
-              <h2 className="modal-title">Prescription </h2>
+              <div className="dianosis-and-prescription ">
+                <h2 className="modal-title">Prescription </h2>
+                <div style={{ alignItems: "center", display: "flex" }}>
+                  <span className="type"> Diagnosis Type:</span>
+                  <label className="diagnosis-toggle">
+                    <input type="checkbox" id="diagnosisToggle" defaultChecked />
+                    <span className="diagnosis-toggle-slider">
+                      <span className="diagnosis-toggle-option">Provisional</span>
+                      <span className="diagnosis-toggle-option">Final</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
               <button className="close-modal" id="closePrescriptionModal" onClick={closePrescriptionModal}>
                 &times;
               </button>
             </div>
-            <div className="model-patient-history-documnet">
-              {
-                Array.isArray(currentPatientForPrescription?.pastDocuments) &&
-                currentPatientForPrescription.pastDocuments.length > 0 && (
-
-                  <div className="patient-history-documents">
-
-                    {console.log("currentPatientForPrescription.pastDocuments", currentPatientForPrescription.pastDocuments)
-                    }
-                    {currentPatientForPrescription.pastDocuments.map((category, catIndex) => {
-                      console.log("category", category);
-
-                      return category?.files?.map((file, fileIndex) => {
-                        console.log("file", file);
-
-                        return (
-                          <div
-                            onClick={() => setisImageOpen(file)}
-                            key={`${catIndex}-${fileIndex}`}
-                            className="patient-history-document-card"
-                          >
-                            <img
-                              src={`${import.meta.env.VITE_BACKEND_URL}/${file?.path}`}
-                              alt={`Document ${fileIndex + 1}`}
-
-                            />
-                            <p>{`Doc-${fileIndex + 1}`}</p>
-                          </div>
-                        )
-                      })
-                    })}
-                  </div>
-                )
-              }
-
-
-            </div>
-
-
           </div>
 
           <div className="modal-body">
@@ -983,31 +919,36 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                   ) : (
                     <>
                       {/* ====================== EDIT PRESCRIPTION VIEW ====================== */}
-                      <div className="diagnosis-toggle-container" >
-                        <div className="diagnosis-div">
-                          <div style={{ alignItems: "center", display: "flex" }}>
-                            <span>Diagnosis Type:</span>
-                            <label className="diagnosis-toggle">
-                              <input type="checkbox" id="diagnosisToggle" defaultChecked />
-                              <span className="diagnosis-toggle-slider">
-                                <span className="diagnosis-toggle-option">Provisional</span>
-                                <span className="diagnosis-toggle-option">Final</span>
-                              </span>
-                            </label>
-                          </div>
-                          {/* <button
-                            className="view-pa-docs-btn"
-                            id="viewPaDocumentsBtn"
-                            onClick={showPaDocumentsModal}>
 
-                            <i class="fas fa-file-medical-alt"></i>
-                            < FontAwesomeIcon icon={faFileMedicalAlt} />
-                            View PA Documents
-                          </button> */}
-                        </div>
+                      <div className="model-patient-history-documnet">
+                        {
+                          Array.isArray(currentPatientForPrescription?.pastDocuments) &&
+                          currentPatientForPrescription.pastDocuments.length > 0 && (
+                            <div className="patient-history-documents">
+                              {currentPatientForPrescription.pastDocuments.map((category, catIndex) => {
+                                return category?.files?.map((file, fileIndex) => {
+                                  return (
+                                    <div
+                                      onClick={() => setisImageOpen(file)}
+                                      key={`${catIndex}-${fileIndex}`}
+                                      className="patient-history-document-card"
+                                    >
+                                      <img
+                                        src={`${import.meta.env.VITE_BACKEND_URL}/${file?.path}`}
+                                        alt={`Document ${fileIndex + 1}`}
+
+                                      />
+                                      <p>{`Doc-${fileIndex + 1}`}</p>
+                                    </div>
+                                  )
+                                })
+                              })}
+                            </div>
+                          )
+                        }
+
 
                       </div>
-
                       <div className="prescription-cards-container">
                         <div className="prescription-card patient-details-enhanced">
                           <h3>
@@ -1072,28 +1013,28 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.initialAssementId.vitals.bloodPressure}
+                                {currentPatientForPrescription.initialAssementId.vitals.bp} / 120
                               </div>
                               <div className="vital-label-enhanced">Blood Pressure</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.initialAssementId.vitals.pulseRate}
+                                {currentPatientForPrescription.initialAssementId.vitals?.pulseRate}
                               </div>
                               <div className="vital-label-enhanced">Pulse Rate</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.initialAssementId.vitals.respiratoryRate}
+                                {currentPatientForPrescription.initialAssementId.vitals?.respRate}
                               </div>
                               <div className="vital-label-enhanced">Resp. Rate</div>
                             </div>
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
-                                {currentPatientForPrescription.initialAssementId.vitals.oxygenSaturation}
+                                {currentPatientForPrescription.initialAssementId.vitals?.spo2}
                               </div>
                               <div className="vital-label-enhanced">SpO₂</div>
                             </div>
@@ -1112,10 +1053,10 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                               <div className="vital-label-enhanced">Weight</div>
                             </div>
 
-                            <div className="vital-card-enhanced">
+                            {/* <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">{currentPatientForPrescription.initialAssementId.vitals.bmi}</div>
                               <div className="vital-label-enhanced">BMI</div>
-                            </div>
+                            </div> */}
 
                             <div className="vital-card-enhanced">
                               <div className="vital-value-enhanced">
@@ -1598,20 +1539,26 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                   )}
                 </>
               )}
-
               {isImageOpen && (
                 <div
-                  onClick={() => setisImageOpen(null)}
                   className="image-viewer"
-                // background click close
+                  onClick={() => setisImageOpen(null)}
                 >
                   <div
                     className="image-viewer-div"
-                    onClick={(e) => e.stopPropagation()} // prevent close on card click
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <div className="image-viewer-header">
-                      <p>Doc_1</p>
-                      <button onClick={() => setisImageOpen(null)}>close</button>
+                      <p className="doc-title">
+                        {isImageOpen?.name || "Patient Document"}
+                      </p>
+
+                      <button
+                        className="close-btn"
+                        onClick={() => setisImageOpen(null)}
+                      >
+                        ✕
+                      </button>
                     </div>
 
                     <div className="image-viewer-image-div">
@@ -1623,6 +1570,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                   </div>
                 </div>
               )}
+
 
             </div>
           </div>
