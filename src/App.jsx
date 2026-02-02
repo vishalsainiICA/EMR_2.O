@@ -36,7 +36,7 @@ function App() {
   return (
     <Routes>
 
-     {/* Loginpage-Routes */}
+      {/* Loginpage-Routes */}
       <Route path='/login' element={<Loginpage />}></Route>
 
       {/* PA-Routes */}
@@ -50,28 +50,26 @@ function App() {
       </Route>
 
       {/* Dr-Routes */}
-      <Route path='/Dr' element={<Dr_Side_bar />}>
+      <Route path='/' element={<Dr_Side_bar />}>
 
-         <Route index element={<Dr_Dashboard/>}/>
-         <Route path='Dr_dashboard' element={<Dr_Dashboard/>}/>
-         <Route path='Consultation_Queue' element={<Consultation_Queue/>}/>
-         <Route path='PatientRecord' element={<PatientRecords/>}/>
-         <Route path='Prescription' element={<PrescriptionManagement/>}/>
-         <Route path='Setting' element={<Settings/>}/>
+        <Route index element={<Dr_Dashboard />} />
+        <Route path='Dr_dashboard' element={<Dr_Dashboard />} />
+        <Route path='Consultation_Queue' element={<Consultation_Queue />} />
+        <Route path='PatientRecord' element={<PatientRecords />} />
+        <Route path='Prescription' element={<PrescriptionManagement />} />
+        <Route path='Setting' element={<Settings />} />
 
       </Route>
 
       {/* MD-Routes */}
-      <Route path='/' element={<MD_side_bar />}>
-
-         {/* <Route index element={<Dr_Dashboard/>}/>
+      {/* <Route index element={<Dr_Dashboard/>}/>
          <Route path='Dr_dashboard' element={<Dr_Dashboard/>}/>
          <Route path='Consultation_Queue' element={<Consultation_Queue/>}/>
          <Route path='PatientRecord' element={<PatientRecords/>}/>
          <Route path='Prescription' element={<PrescriptionManagement/>}/>
          <Route path='Setting' element={<Settings/>}/> */}
 
-      </Route>
+
 
     </Routes>
 

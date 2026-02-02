@@ -719,17 +719,20 @@ textarea {
 }
 
 .illness-grid {
-  display: grid;
-
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
 .illness-card {
   height: 50px;
-  width: 180px;
   border: 0.4px solid lightgray;
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .illness-card p {
@@ -1621,17 +1624,63 @@ textarea {
 
 }
 
-.image-viewer-div {
-  height: 700px;
-  width: 400px;
-  background-color: white;
-  padding: 20px;
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.image-viewer-image-div {
-  img {
+.image-viewer-div {
+  width: 820px;
+  max-height: 80vh;
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
 
-    height: 400px;
-    width: 400px;
-  }
+.image-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.image-viewer-header button {
+  background: #e53935;
+  border: none;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.image-viewer-header button:hover {
+  background: #c62828;
+}
+
+.image-viewer-header button:active {
+  transform: scale(0.95);
+}
+
+
+.image-viewer-image-div {
+  flex: 1;
+  overflow: auto;
+}
+
+.image-viewer-image-div img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }

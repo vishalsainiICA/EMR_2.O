@@ -995,7 +995,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                               </span>
                             </label>
                           </div>
-                          <button
+                          {/* <button
                             className="view-pa-docs-btn"
                             id="viewPaDocumentsBtn"
                             onClick={showPaDocumentsModal}>
@@ -1003,7 +1003,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                             <i class="fas fa-file-medical-alt"></i>
                             < FontAwesomeIcon icon={faFileMedicalAlt} />
                             View PA Documents
-                          </button>
+                          </button> */}
                         </div>
 
                       </div>
@@ -1218,7 +1218,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
                               display: 'flex',
                               justifyContent: 'start',
                               marginBottom: '10px'
-                            }}>Ai Generated: </p>
+                            }}>AI Generated: </p>
                             {loadingIllnessBySymptoms && (
                               <div className="loader-mini">
 
@@ -1600,24 +1600,30 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`,
               )}
 
               {isImageOpen && (
-                <div className="image-viewer"
-                // onClick={() => setisImageVier(null)}
+                <div
+                  onClick={() => setisImageOpen(null)}
+                  className="image-viewer"
+                // background click close
                 >
-
-                  <div className="image-viewer-div">
-                    <div>
+                  <div
+                    className="image-viewer-div"
+                    onClick={(e) => e.stopPropagation()} // prevent close on card click
+                  >
+                    <div className="image-viewer-header">
                       <p>Doc_1</p>
-                      <button>close</button>
-
+                      <button onClick={() => setisImageOpen(null)}>close</button>
                     </div>
 
                     <div className="image-viewer-image-div">
-                      <img src={`${import.meta.env.VITE_BACKEND_URL}/${isImageOpen?.path}`} alt="" />
+                      <img
+                        src={`${import.meta.env.VITE_BACKEND_URL}/${isImageOpen?.path}`}
+                        alt="document"
+                      />
                     </div>
                   </div>
-
                 </div>
               )}
+
             </div>
           </div>
         </div>
