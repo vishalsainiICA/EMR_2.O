@@ -6,6 +6,7 @@ export const CommonApi = {
 
 export const personalAssitantApi = {
   registerPatient: (data) => API.post("/common/patient/register-patient", data),
+  updatePatient: (data) => API.post("/common/patient/update-patient", data),
   fetchIllness: () => API.get("/common/patient/illness"),
   getUsers: () => API.get("/users"),
   getProfile: () => API.get("/profile"),

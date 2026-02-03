@@ -72,8 +72,7 @@ const NewPatient = () => {
     if (!profile) {
       navigate("/login", { replace: true })
     }
-    console.log("prfie", profile)
-
+    // console.log("prfie", profile)
     setAssignDoc(profile?.assignDoctors)
   }, [])
 
@@ -108,9 +107,10 @@ const NewPatient = () => {
         return;
       }
     }
-    const combinedText = await extractTextFromImage(aadhaarDoc)
+    const combinedText = await extractTextFromImage(files)
+    const parsed = await parseAadhaarText(combinedText);
+    console.log("parsed", parsed);
 
-    const parsed = parseAadhaarText(combinedText);
     setPatient((prev) => ({
       ...prev,
       name: parsed.name,
@@ -133,23 +133,24 @@ const NewPatient = () => {
     }));
   };
 
-  const { request: registerPatient, loading: patientLoading, error: patientError } = useApi(personalAssitantApi.registerPatient)
-  const { request: fetchSymtomps, loading: symtompsLoading, error: symtompsError } = useApi(personalAssitantApi.fetchIllness)
+  const { request: registerPatient, loading: patientLoading, error: patientRegError } = useApi(personalAssitantApi.registerPatient)
+  const { request: updatedPatient, loading: updatePatientLoading, error: updatepatientRegError } = useApi(personalAssitantApi.updatePatient)
+  // const { request: fetchSymtomps, loading: symtompsLoading, error: symtompsError } = useApi(personalAssitantApi.fetchIllness)
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const fetchAllIllness = async () => {
-      try {
-        const res = await fetchSymtomps()
-        setSymptopms(res?.data)
-      } catch (error) {
-        console.log(error);
-      }
-    }
+  //   const fetchAllIllness = async () => {
+  //     try {
+  //       const res = await fetchSymtomps()
+  //       setSymptopms(res?.data)
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
 
-    fetchAllIllness()
+  //   fetchAllIllness()
 
-  }, [])
+  // }, [])
 
   const handleRegisterPatient = async (e) => {
     e.preventDefault(); // correct spelling
@@ -194,7 +195,7 @@ const NewPatient = () => {
       const res = await registerPatient(formdata);
       toast.success("Patient Registered")
 
-      console.log("Patient Registered:", res);
+      // console.log("Patient Registered:", res);
       navigate("/pa/pa_initial_assessment")
 
     } catch (error) {
@@ -202,38 +203,91 @@ const NewPatient = () => {
     }
   };
 
+  const handleUpdatePatient = async (e) => {
+    e.preventDefault(); // correct spelling
 
-  const handleChangeSymtomps = (e) => {
-    const value = e.target.value;
+    try {
+      const formdata = new FormData();
 
-    // split by comma
-    const parts = value
-      .split(",")
-      .map((p) => p.trim())
-      .filter(Boolean);
+      /* ================= FILES ================= */
+      files.forEach((doc, index) => {
+        formdata.append(`categories[${index}]`, doc.category);
+        formdata.append(`fileCount[${index}]`, files.length);
 
-    // last part = search term
-    const searchTerm = parts[parts.length - 1] || "";
+        if (doc.files && Array.isArray(doc.files)) {
+          doc.files.forEach((file) => {
+            formdata.append("documents", file);
+          });
+        }
+      });
 
-    setsearchTermforsymtoms(searchTerm);
+      /* ================= AADHAAR ================= */
 
-    if (!searchTerm) {
-      setfilteredsymtomps([]);
-      return;
+
+      if (aadhaarDoc?.[0]) formdata.append("aadhaarFront", aadhaarDoc[0]);
+      if (aadhaarDoc?.[1]) formdata.append("aadhaarBack", aadhaarDoc[1]);
+
+      /* ================= PATIENT DATA ================= */
+      Object.keys(patient).forEach((key) => {
+        let value = patient[key];
+
+        if (
+          typeof value === "object" &&
+          value !== null &&
+          !(value instanceof File)
+        ) {
+          value = JSON.stringify(value);
+        }
+
+        formdata.append(key, value ?? "");
+      });
+
+      /* ================= API CALL ================= */
+
+      formdata.append("patientId", editPatient?._id)
+      const res = await updatedPatient(formdata);
+      toast.success("Patient Updated")
+      // console.log("Patient Registered:", res);
+      navigate("/pa/pa_initial_assessment")
+
+    } catch (error) {
+      console.error("Update Patient Error:", error);
     }
-
-    const filtered = symtomps.filter((ill) =>
-      ill.symptoms?.some((sym) =>
-        sym.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-
-    setfilteredsymtomps(filtered);
   };
 
+  // const handleChangeSymtomps = (e) => {
+  //   const value = e.target.value;
+
+  //   // split by comma
+  //   const parts = value
+  //     .split(",")
+  //     .map((p) => p.trim())
+  //     .filter(Boolean);
+
+  //   // last part = search term
+  //   const searchTerm = parts[parts.length - 1] || "";
+
+  //   setsearchTermforsymtoms(searchTerm);
+
+  //   if (!searchTerm) {
+  //     setfilteredsymtomps([]);
+  //     return;
+  //   }
+
+  //   const filtered = symtomps.filter((ill) =>
+  //     ill.symptoms?.some((sym) =>
+  //       sym.toLowerCase().includes(searchTerm.toLowerCase())
+  //     )
+  //   );
+
+  //   setfilteredsymtomps(filtered);
+  // };
   useEffect(() => {
-    console.log("aadhaarDoc", aadhaarDoc);
-  }, [aadhaarDoc])
+    const error = updatepatientRegError || patientRegError || null;
+    if (error) {
+      toast.error(error)
+    }
+  })
   return (
     <div className="section active" id="newPatientSection">
       <div className="section-header">
@@ -244,7 +298,12 @@ const NewPatient = () => {
       </div>
 
       <div className="patient-details">
-        <form id="newPatientForm">
+        <form id="newPatientForm" onSubmit={(e) => {
+          e.preventDefault();
+          isEditMode
+            ? handleUpdatePatient(e)
+            : handleRegisterPatient(e);
+        }}>
           {/* Aadhar Scan Section */}
           <div onClick={() => openFileDialog("addhar")} className="aadhar-scan" id="aadharScanBtnSection">
             <i className=" fa-id-card"><FontAwesomeIcon icon={faIdCard} /></i>
@@ -447,7 +506,7 @@ const NewPatient = () => {
             </div>
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <div className='form-group-heading'>
               <label htmlFor="patientHistory">Medical History Summary</label>
               <div>
@@ -470,16 +529,6 @@ const NewPatient = () => {
                               <h5>{sym}</h5>
                               <p>{ill?.illnessName}</p>
                             </div>
-
-                            {/* {isSelected && (
-                <i
-                  className="ri-check-line"
-                  style={{
-                    fontSize: "22px",
-                    color: "green",
-                  }}
-                ></i>
-              )} */}
                           </div>
                         );
                       })
@@ -500,13 +549,13 @@ const NewPatient = () => {
               }
               {selectedSymtomps.length > 0 && (
                 selectedSymtomps.map((sym, index) => {
-                  console.log(sym);
+                  // console.log(sym);
 
                   return <p key={index}>{sym} </p>
                 })
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* File Upload Section */}
           <div className="file-upload-section">
@@ -594,17 +643,20 @@ const NewPatient = () => {
             <button
               type="submit"
               className="btn btn-primary"
-              onClick={handleRegisterPatient}
-              disabled={patientLoading} // disable while loading
+              disabled={patientLoading || updatePatientLoading}
             >
-              {patientLoading ? "Registering..." : isEditMode ? "Update Patient" : "Register Patient"}
+              {(patientLoading || updatePatientLoading) ? (
+                <div className="loader-mini" />
+              ) : (
+                isEditMode ? "Update Patient" : "Register Patient"
+              )}
             </button>
 
           </div>
 
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

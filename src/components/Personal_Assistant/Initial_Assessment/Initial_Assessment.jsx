@@ -458,6 +458,19 @@ const Initialassessment = () => {
               type="button"
               className="btn btn-primary"
               disabled={intiLoading}
+              onKeyDown={(e) => {
+                console.log("wwww", e);
+
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  console.log("call");
+                  // form submit / newline prevent
+                  handleSaveIntialAssement(
+                    selectedPatient._id,
+                    assessmentData
+                  );
+                }
+              }}
               onClick={() =>
                 handleSaveIntialAssement(selectedPatient._id, assessmentData)
               }

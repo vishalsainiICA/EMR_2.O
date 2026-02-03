@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL, // backend url
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  timeout: 15000 // backend url
 });
 
 export const PYTHONAPI = axios.create({
@@ -11,6 +12,7 @@ export const PYTHONAPI = axios.create({
 });
 export const COMMONAPI = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL, // backend url
+  timeout: 15000 // backend url
 });
 
 API.interceptors.request.use((req) => {
