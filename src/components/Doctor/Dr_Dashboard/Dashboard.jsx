@@ -7,6 +7,34 @@ import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faLink, faFileMedicalAlt, faPrescription, faRupeeSign, faStethoscope, faSyncAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
+const snapshot = {
+  "importantPoints": [
+    "The patient is a 61-year-old female with a BMI of 21.5 kg/m².",
+    "Serum TSH is elevated at 12.08 µIU/mL, consistent with hypothyroidism.",
+    "AST (53.2 U/L) and ALT (51.2 U/L) are mildly elevated.",
+    "Liver stiffness measured by FibroTouch is 7.3 kPa, suggesting early fibrosis (F1‑F2).",
+    "CT abdomen shows normal solid organs, a 16 × 18 mm lipoma in the splenic flexure, and a compression fracture of the L2 vertebra with reduced bone density.",
+    "Hemoglobin is 11.3 g/dL indicating mild anemia."
+  ],
+  "flags": [
+    {
+      "level": "high",
+      "color": "red",
+      "message": "Elevated TSH (12.08 µIU/mL) indicating hypothyroidism."
+    },
+    {
+      "level": "high",
+      "color": "red",
+      "message": "Compression fracture of L2 vertebra with reduced bone density."
+    },
+    {
+      "level": "medium",
+      "color": "yellow",
+      "message": "Mildly elevated AST and ALT suggesting hepatic injury."
+    }
+  ],
+  "summaryText": "61-year-old female presents with elevated TSH (12.08 µIU/mL) indicating hypothyroidism, mild transaminase elevation (AST 53.2 U/L, ALT 51.2 U/L) and early liver fibrosis (FibroTouch stiffness 7.3 kPa). Imaging reveals a small lipoma in the splenic flexure and a compression fracture of the L2 vertebra with osteopenia. Laboratory studies show mild anemia (Hb 11.3 g/dL)."
+}
 const DashboardComponent = () => {
   const [text, setText] = useState("");
   const [textForLabtest, setextForLabtest] = useState("");
@@ -16,6 +44,8 @@ const DashboardComponent = () => {
   const [patients, setPatients] = useState([]);
   const [loadIllness, setloadIllness] = useState([]);
   const [isImageOpen, setisImageOpen] = useState(null)
+  const [diagnosisType, setDiagnosisType] = useState("Provisional");
+
   const [state, setState] = useState({
     labTest: [],
     illnessData: [],
@@ -47,10 +77,7 @@ const DashboardComponent = () => {
 
 
   //  NEW: PA Documents Modal State
-  const [isPaDocumentsModalOpen, setIsPaDocumentsModalOpen] = useState(false);
-  const [isImageVier, setisImageVier] = useState(null)
-
-
+  const [isPaDocumentsModalOpen, setIsPaDocumentsModalOpen] = useState(false)
   //  NEW: Final Prescription Data
   const [finalPrescriptionData, setFinalPrescriptionData] = useState({
     formattedDate: "",
@@ -249,11 +276,6 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
   //  Generate Final Prescription (React version of your JS function)
   const generateFinalPrescription = () => {
     if (!currentPatientForPrescription) return;
-
-    // Diagnosis Type Toggle (same id)
-    const diagnosisToggle = document.getElementById("diagnosisToggle");
-    const diagnosisType = diagnosisToggle && diagnosisToggle.checked ? "Final" : "Provisional";
-
     // Textareas values (same ids)
     const diagnosis = document.getElementById("doctorDiagnosis")?.value || "";
     const clinicalNotes = document.getElementById("clinicalNotes")?.value || "";
@@ -283,7 +305,6 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
       formattedDate,
       formattedTime,
       prescriptionId,
-      diagnosisType,
       diagnosis,
       clinicalNotes,
       medications,
@@ -668,16 +689,25 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
             <div className="modal-header">
               <div className="dianosis-and-prescription ">
                 <h2 className="modal-title">Prescription </h2>
-                <div style={{ alignItems: "center", display: "flex" }}>
-                  <span className="type"> Diagnosis Type:</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span className="type">Diagnosis Type:</span>
+
                   <label className="diagnosis-toggle">
-                    <input type="checkbox" id="diagnosisToggle" defaultChecked />
+                    <input
+                      type="checkbox"
+                      checked={diagnosisType === "Final"}
+                      onChange={(e) =>
+                        setDiagnosisType(e.target.checked ? "Final" : "Provisional")
+                      }
+                    />
+
                     <span className="diagnosis-toggle-slider">
                       <span className="diagnosis-toggle-option">Provisional</span>
                       <span className="diagnosis-toggle-option">Final</span>
                     </span>
                   </label>
                 </div>
+
               </div>
 
               <button className="close-modal" id="closePrescriptionModal" onClick={closePrescriptionModal}>
@@ -741,7 +771,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
 
                             <div className="prescription-field">
                               <span className="prescription-label">Diagnosis Type:</span>
-                              <span className="prescription-value">{finalPrescriptionData.diagnosisType} Diagnosis</span>
+                              <span className="prescription-value">{diagnosisType} Diagnosis</span>
                             </div>
 
                             <div className="prescription-field">
@@ -977,24 +1007,35 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
                             <div className="detail-value">{currentPatientForPrescription.phone}</div>
                           </div>
 
-                          <div className="detail-row">
+                          {/* <div className="detail-row">
                             <div className="detail-label">Last Consultation:</div>
                             <div className="detail-value">{currentPatientForPrescription?.lastVisit || "0"}</div>
-                          </div>
+                          </div> */}
 
-                          <div className="detail-row">
+                          {/* <div className="detail-row">
                             <div className="detail-label">Next Appointment:</div>
                             <div className="detail-value">{currentPatientForPrescription?.nextAppointment || "-/"}</div>
-                          </div>
+                          </div> */}
 
-                          <div className="detail-row">
+                          {/* <div className="detail-row">
                             <div className="detail-label">Assessed by PA:</div>
                             <div className="detail-value">{currentPatientForPrescription.registerarId?.name}</div>
-                          </div>
+                          </div> */}
 
-                          <div className="detail-row">
+                          {/* <div className="detail-row">
                             <div className="detail-label">Assessment Time:</div>
                             <div className="detail-value">{currentPatientForPrescription.registerarId?.updatedAt}</div>
+                          </div> */}
+
+                          <div className="ps-imp-points">
+                            <p className="ps-section-header">Patient Summary:</p>
+                            <ul className="ps-imp-points-body">
+                              {currentPatientForPrescription?.pastDocumentSummary?.snapshot?.importantPoints.map((f, i) => (
+                                <li key={i} className="ps-imp-point">
+                                  {f}
+                                </li>
+                              ))}
+                            </ul>
                           </div>
                         </div>
 
@@ -1064,6 +1105,17 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
                               </div>
                               <div className="vital-label-enhanced">Blood Group</div>
                             </div> */}
+                          </div>
+
+                          <div className="ps-flags-dashboard">
+                            <p className="ps-section-header">Flags:</p>
+                            <ul className="ps-flags-body">
+                              {currentPatientForPrescription?.pastDocumentSummary?.snapshot?.flags.map((f, i) => (
+                                <li key={i} className={`ps-flag-card ${f.level}`}>
+                                  {f.message}
+                                </li>
+                              ))}
+                            </ul>
                           </div>
 
                           <div style={{ marginTop: "10px", fontSize: "11px", color: "var(--text-light)", textAlign: "center" }}>

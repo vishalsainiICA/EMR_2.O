@@ -10,6 +10,8 @@ import { personalAssitantApi } from '../../../api/apiService';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 
+
+
 const NewPatient = () => {
 
 
@@ -165,7 +167,7 @@ const NewPatient = () => {
 
         if (doc.files && Array.isArray(doc.files)) {
           doc.files.forEach((file) => {
-            formdata.append("documents", file);
+            formdata.append("files", file);
           });
         }
       });
@@ -216,7 +218,7 @@ const NewPatient = () => {
 
         if (doc.files && Array.isArray(doc.files)) {
           doc.files.forEach((file) => {
-            formdata.append("documents", file);
+            formdata.append("files", file);
           });
         }
       });

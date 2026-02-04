@@ -7,6 +7,34 @@ import { useApi } from '../../../api/useApi';
 import { personalAssitantApi } from '../../../api/apiService';
 import { toast } from 'react-toastify';
 
+const snapshot = {
+  "importantPoints": [
+    "The patient is a 61-year-old female with a BMI of 21.5 kg/m².",
+    "Serum TSH is elevated at 12.08 µIU/mL, consistent with hypothyroidism.",
+    "AST (53.2 U/L) and ALT (51.2 U/L) are mildly elevated.",
+    "Liver stiffness measured by FibroTouch is 7.3 kPa, suggesting early fibrosis (F1‑F2).",
+    "CT abdomen shows normal solid organs, a 16 × 18 mm lipoma in the splenic flexure, and a compression fracture of the L2 vertebra with reduced bone density.",
+    "Hemoglobin is 11.3 g/dL indicating mild anemia."
+  ],
+  "flags": [
+    {
+      "level": "high",
+      "color": "red",
+      "message": "Elevated TSH (12.08 µIU/mL) indicating hypothyroidism."
+    },
+    {
+      "level": "high",
+      "color": "red",
+      "message": "Compression fracture of L2 vertebra with reduced bone density."
+    },
+    {
+      "level": "medium",
+      "color": "yellow",
+      "message": "Mildly elevated AST and ALT suggesting hepatic injury."
+    }
+  ],
+  "summaryText": "61-year-old female presents with elevated TSH (12.08 µIU/mL) indicating hypothyroidism, mild transaminase elevation (AST 53.2 U/L, ALT 51.2 U/L) and early liver fibrosis (FibroTouch stiffness 7.3 kPa). Imaging reveals a small lipoma in the splenic flexure and a compression fracture of the L2 vertebra with osteopenia. Laboratory studies show mild anemia (Hb 11.3 g/dL)."
+}
 const Initialassessment = () => {
   // State to toggle form visibility
   const [patients, setPatients] = useState([]);
@@ -403,16 +431,6 @@ const Initialassessment = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label>Relevant Medical History</label>
-            <textarea
-              name="medicalHistory"
-              placeholder="Any relevant medical history for current complaint"
-              value={assessmentData.medicalHistory}
-              onChange={handleTextChange}
-            />
-          </div>
-
           {/* <div className="form-group">
       <label>Physical Examination Findings</label>
       <textarea
@@ -432,8 +450,52 @@ const Initialassessment = () => {
               onChange={handleTextChange}
             />
           </div>
+          {/* <div className="form-group">
+            <label>Relevant Medical History</label>
+            <textarea
+              name="medicalHistory"
+              placeholder="Any relevant medical history for current complaint"
+              value={assessmentData.medicalHistory}
+              onChange={handleTextChange}
+            />
+          </div> */}
 
           {/* ================= Actions ================= */}
+
+          {selectedPatient?.pastDocumentSummary && (
+            <div className='form-group'>
+              <label>Patient Summary</label>
+              <div className="ps-card">
+                {/* Important Points */}
+                <div className="ps-imp-points">
+                  <p className="ps-section-header">Important Points:</p>
+                  <ul className="ps-imp-points-body">
+                    {selectedPatient?.pastDocumentSummary?.snapshot?.importantPoints.map((f, i) => (
+                      <li key={i} className="ps-imp-point">
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Flags */}
+                <div className="ps-flags">
+                  <p className="ps-section-header">Flags:</p>
+                  <ul className="ps-flags-body">
+                    {selectedPatient?.pastDocumentSummary?.snapshot?.flags.map((f, i) => (
+                      <li key={i} className={`ps-flag-card ${f.level}`}>
+                        {f.message}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+
+              </div>
+
+            </div>
+          )}
+
+
           <div
             className="form-group"
             style={{
