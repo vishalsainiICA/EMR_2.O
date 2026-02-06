@@ -42,6 +42,7 @@ const DashboardComponent = () => {
   const [textForIllness, setextForIllness] = useState("");
   const [showRevenue, setShowRevenue] = useState(true);
   const [patients, setPatients] = useState([]);
+  const [metrices, setMetrices] = useState(null)
   const [loadIllness, setloadIllness] = useState([]);
   const [isImageOpen, setisImageOpen] = useState(null)
   const [diagnosisType, setDiagnosisType] = useState("Provisional");
@@ -113,6 +114,7 @@ const DashboardComponent = () => {
 
       const vitals = currentPatientForPrescription?.initialAssementId?.vitals;
 
+
       const formattedVitals = vitals
         ? `
 BP: ${vitals.bp || "N/A"}
@@ -126,8 +128,14 @@ SpO₂: ${vitals.spo2 || "N/A"}
       const prompt = {
         question: `This is my vitals:
 ${formattedVitals}
-Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
+Symptoms: ${selectedState.selectedSymtompsData.join(", ")}
+Patient Summary:${JSON.stringify(currentPatientForPrescription?.pastDocumentSummary?.snapshot?.importantPoints)}
+`
+
       };
+
+      console.log("promot", prompt);
+
 
 
       const res = await getLoadIllness(prompt);
@@ -144,6 +152,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
       console.log(res)
 
       setPatients(res?.data?.todayPatient)
+      setMetrices(res?.metrices)
     } catch (error) {
       console.log(error);
     }
@@ -335,16 +344,13 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
   ) => {
     const value = e.target.value;
     setText(value);
-
     const lastWord = value.split(",").pop().trim();
-
     if (lastWord.length > 0) {
       const filtered = dataArray.filter((item) =>
         item?.[matchKey]
           ?.toLowerCase()
           .startsWith(lastWord.toLowerCase())
       );
-
       setFilterState((prev) => ({
         ...prev,
         [filterKey]: filtered,
@@ -441,7 +447,6 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
   const handleChangeForSymtomps = (e) => {
     const value = e.target.value;
     setextForsymtomps(value);
-
     const lastWord = value.split(",").pop().trim();
     if (lastWord.length > 0) {
       const filtered = state.illnessData.filter((item) =>
@@ -449,7 +454,6 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
           sym?.toLowerCase().startsWith(lastWord.toLowerCase())
         )
       );
-
       setfilterState((prev) => ({
         ...prev,
         filterSymtompsData: filtered,
@@ -465,10 +469,12 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
     <div className="Dr_Dashboard_section section active" id="dashboardSection" style={{ display: "block" }}>
       {/* Stats Cards */}
       <div className="stats-cards">
-        <div className="card" id="todaysConsultationsCard">
+        <div className="card" id="s">
           <div className="card-header">
             <div className="card-alignment">
-              <div className="card-count">8</div>
+              {/* {console.log("metircs", metrices?.todayConsultations)
+              } */}
+              <div className="card-count">{metrices?.todayConsultations}</div>
               <div className="card-title">Today's Consultations</div>
             </div>
             <div className="card-icon consultation">
@@ -481,7 +487,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
         <div className="card" id="waitingPatientsCard">
           <div className="card-header">
             <div className="card-alignment">
-              <div className="card-count">3</div>
+              <div className="card-count">{metrices?.readyforConsultation}</div>
               <div className="card-title">Ready for Consultation</div>
             </div>
             <div className="card-icon waiting">
@@ -494,7 +500,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
         <div className="card" id="prescriptionsCard">
           <div className="card-header">
             <div className="card-alignment" >
-              <div className="card-count">12</div>
+              <div className="card-count">{metrices?.todayPrescription}</div>
               <div className="card-title">Prescriptions Today</div>
             </div>
             <div className="card-icon prescription">
@@ -824,7 +830,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
                         {/* Doctor's Diagnosis */}
                         <div className="compact-section">
                           <div className="compact-section-title">
-                            DOCTOR'S {finalPrescriptionData.diagnosisType.toUpperCase()} DIAGNOSIS
+                            DOCTOR'S {diagnosisType} DIAGNOSIS
                           </div>
                           <div style={{ marginBottom: "6px" }}>
                             <strong>Diagnosis:</strong> {finalPrescriptionData.diagnosis}
@@ -965,7 +971,7 @@ Symptoms: ${selectedState.selectedSymtompsData.join(", ")}`
                                     >
                                       <img
                                         src={`${import.meta.env.VITE_BACKEND_URL}/${file?.path}`}
-                                        alt={`Document ${fileIndex + 1}`}
+                                        alt={`${fileIndex + 1}`}
 
                                       />
                                       <p>{`Doc-${fileIndex + 1}`}</p>

@@ -14,7 +14,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const NewPatient = () => {
 
-
   const [categoryName, setCategoryName] = useState(null)
 
   const [files, setFiles] = useState([])
@@ -24,6 +23,7 @@ const NewPatient = () => {
   const [searchTermforsymtoms, setsearchTermforsymtoms] = useState("");
   const [filteredsymtomps, setfilteredsymtomps] = useState([]);
   const [assinDoc, setAssignDoc] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [patient, setPatient] = useState({
     name: "",
     age: "",
@@ -93,39 +93,53 @@ const NewPatient = () => {
   };
 
   const handleAddharFileChange = async (e) => {
-    const files = Array.from(e.target.files);
+    try {
 
-    if (files.length > 2) {
-      toast.info("Please select only 2 files (Aadhaar Front & Back)");
-      e.target.value = ""; // reset input
-      return;
-    }
 
-    // Optional: size check (example 5MB each)
-    for (let file of files) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.info("Each file should be less than 5MB");
-        e.target.value = "";
+      setLoading(true)
+      const files = Array.from(e.target.files);
+
+      if (files.length < 2) {
+        toast.info("Please select only 2 files (Aadhaar Front & Back)");
+        e.target.value = ""; // reset input
         return;
       }
-    }
-    const combinedText = await extractTextFromImage(files)
-    const parsed = await parseAadhaarText(combinedText);
-    console.log("parsed", parsed);
 
-    setPatient((prev) => ({
-      ...prev,
-      name: parsed.name,
-      age: parsed.DOB ? calculateAge(parsed.DOB) : prev.age,
-      gender: parsed.gender || prev.gender,
-      permanentAddress: parsed.address || prev.permanentAddress,
-      aadhaarNumber: parsed?.aadhaarNumber ? parsed?.aadhaarNumber : parsed?.aadhaarNumber,
-      city: parsed.city,
-      state: parsed.state,
-      pinCode: parsed.pinCode,
-    }));
-    toast.success("Aadhaar details extracted successfully ");
-    setAadhaarDoc(files)
+      // Optional: size check (example 5MB each)
+      for (let file of files) {
+        if (file.size > 5 * 1024 * 1024) {
+          toast.info("Each file should be less than 5MB");
+          e.target.value = "";
+          return;
+        }
+      }
+      const combinedText = await extractTextFromImage(files)
+      const parsed = await parseAadhaarText(combinedText);
+
+      console.log("combinedText", combinedText);
+      console.log("parsed", parsed);
+
+      setPatient((prev) => ({
+        ...prev,
+        name: parsed.name,
+        age: parsed.DOB ? calculateAge(parsed.DOB) : prev.age,
+        gender: parsed.gender || prev.gender,
+        permanentAddress: parsed.address || prev.permanentAddress,
+        aadhaarNumber: parsed?.aadhaarNumber ? parsed?.aadhaarNumber : parsed?.aadhaarNumber,
+        city: parsed.city,
+        state: parsed.state,
+        pinCode: parsed.pinCode,
+      }));
+      toast.success("Aadhaar details extracted successfully ");
+      setAadhaarDoc(files)
+    } catch (error) {
+      toast.error("Error To Extract Details")
+
+    }
+    finally {
+      setLoading(false)
+    }
+
   };
 
   const handleChange = (key, value) => {
@@ -290,6 +304,18 @@ const NewPatient = () => {
       toast.error(error)
     }
   })
+  if (loading) {
+    return <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '10px'
+    }} >
+      <p>Extracting Details</p>
+      <div className='loader-mini'>
+
+      </div>
+    </div>
+  }
   return (
     <div className="section active" id="newPatientSection">
       <div className="section-header">
@@ -620,7 +646,22 @@ const NewPatient = () => {
                       <h5>{obj?.category}</h5>
 
                       {obj?.files?.map((file, i) => (
-                        <p key={i}>✓ {file.name || file} (Processing)</p>
+                        <div style={{
+                          display: 'flex'
+                        }}>
+                          <p key={i}>✓ {file.name || file} (Processing)
+                          </p>
+                          <i
+                            style={{
+                              cursor: 'pointer'
+                            }}
+                            className="ri-close-fill"
+                            onClick={() => {
+                              setFiles(prev => prev.filter((_, index) => index !== i));
+                            }}
+                          />
+                        </div>
+
                       ))}
                     </div>
                   ))}

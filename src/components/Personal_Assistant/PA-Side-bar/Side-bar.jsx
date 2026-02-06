@@ -17,7 +17,7 @@ const Side_bar = () => {
     }
   };
 
-  const [headline, setHeadline] = useState("PA Dashboard")
+  const [headline, setHeadline] = useState("Dashboard")
   return (
     <div className="app-container"> {/* Ek wrapper div zaroori hai React return ke liye */}
 
@@ -29,7 +29,7 @@ const Side_bar = () => {
         </div>
 
         <div className="nav-menu">
-          <NavLink to="/pa/dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("PA Dashboard")}>
+          <NavLink to="/pa/dashboard" className="nav-item " data-page="dashboard" onClick={() => setHeadline("Dashboard")}>
             <FontAwesomeIcon icon={faDashboard} />
             <span>Dashboard</span>
           </NavLink>

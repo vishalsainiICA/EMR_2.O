@@ -617,8 +617,36 @@ function Personalassitant() {
                 <th>Actions</th>
               </tr>
             </thead>
+            <tbody id="recentPatientsTable">
+              {/*  Loading State */}
+              {loading && (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: "center" }}>
 
-            <tbody>
+                    Loading patients...  <div className="loader-mini"></div>
+                  </td>
+                </tr>
+              )}
+
+              {/* Error State */}
+              {error && (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: "center", color: "red" }}>
+                    Failed to load patients
+                  </td>
+                </tr>
+              )}
+
+              {/* Empty State */}
+              {!loading && !error && patients?.length === 0 && (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: "center" }}>
+                    No patients found
+                  </td>
+                </tr>
+              )}
+
+              {/* Data Rows */}
               {!loading &&
                 patients?.map((item) => (
                   <tr key={item._id}>
@@ -635,12 +663,12 @@ function Personalassitant() {
                     <td>{item.status}</td>
 
                     <td className="">
-                    <button
+                      <button
                         className="action-btn edit_dropdown"
                         onClick={() => setSelectedPatient(item)}
                       >
                         <FontAwesomeIcon icon={faEye} /> View
-                      </button> 
+                      </button>
                       {/* <div
                         className="action-btn edit_dropdown "
                         onClick={(e) => {
@@ -654,19 +682,19 @@ function Personalassitant() {
                       {openEditId === item._id && (
                         <div className=""
                           onClick={(e) => e.stopPropagation()}
-                         
-                          style={{ 
-                         
+
+                          style={{
+
                             // display: "grid",
-                           backgroundColor:"",
+                            backgroundColor: "",
                             boxShadow: "1px 1px",
                             position: "absolute",
                             right: "90px",
                             // top:"20px",
-                            justifyContent:"center",
+                            justifyContent: "center",
                             borderRadius: "2px",
-                            alignItems:"center",
-                            textAlign:"center",
+                            alignItems: "center",
+                            textAlign: "center",
                             // border: "1px solid black"
 
                           }}
@@ -706,7 +734,7 @@ function Personalassitant() {
                       >
                         <FontAwesomeIcon icon={faEye} /> View
                       </button> */}
-                       <div
+                      <div
                         className="action-btn edit_dropdown "
                         onClick={(e) => {
                           e.stopPropagation()

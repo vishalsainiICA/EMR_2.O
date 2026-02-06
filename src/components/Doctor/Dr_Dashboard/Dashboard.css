@@ -22,7 +22,7 @@
   box-shadow: var(--card-shadow);
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .card:hover {

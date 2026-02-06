@@ -5,7 +5,7 @@
 // import { } from '@fortawesome/free-regular-svg-icons';
 
 // const PA_setting = () => {
-   
+
 //     const [settings, setSettings] = useState({
 //         emailNotifications: true,
 //         smsAlerts: true,
@@ -21,7 +21,7 @@
 //         cloudSync: true
 //     });
 
-  
+
 //     const handleToggle = (settingName) => {
 //         setSettings(prev => ({
 //             ...prev,
@@ -36,7 +36,7 @@
 //             </div>
 
 //             <div className="settings-grid">
-       
+
 //                 <div className="setting-card">
 //                     <h3><FontAwesomeIcon icon={faUserCog} /> Account Settings</h3>
 //                     <div className="setting-option">
@@ -74,7 +74,7 @@
 //                     </div>
 //                 </div>
 
-               
+
 //                 <div className="setting-card">
 //                     <h3><FontAwesomeIcon icon={faBell} /> Notification Settings</h3>
 //                     <div className="setting-option">
@@ -208,7 +208,7 @@
 
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "./PA_Settings.css";
+import "./PA_settings.css";
 
 import React, { useState } from "react";
 import { faSave, faUserCog } from "@fortawesome/free-solid-svg-icons";
@@ -224,7 +224,7 @@ const SettingsComponent = () => {
   const [Disabled, setDisabled] = useState(true);
 
   const handleChange = (e) => {
-    setFormData({ ...formData,[e.target.name]: e.target.value});
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const edit = () => {
@@ -244,7 +244,7 @@ const SettingsComponent = () => {
         <button className="btn btn-primary" onClick={edit}>Edit</button>
       </div>
 
-      
+
 
       <form className="consultation-container" onSubmit={submit}>
         <div className="patient-info-section">
@@ -254,8 +254,8 @@ const SettingsComponent = () => {
           </h3>
 
           <div className="form-group">
-          <img className="profile" src="/public/image/MainBefore.jpg" alt="...loading"/>
-          <br></br>
+            <img className="profile" src="/public/image/MainBefore.jpg" alt="...loading" />
+            <br></br>
             <label>Full Name</label>
             <input
               name="FullName"
@@ -293,15 +293,15 @@ const SettingsComponent = () => {
             </div>
           </div>
 
-         
-            <button
-              className="btn btn-primary"
-              type="submit"
-              style={{ marginTop: "20px", width: "100%" }}
-            >
-              <FontAwesomeIcon icon={faSave} /> Save Changes
-            </button>
-       
+
+          <button
+            className="btn btn-primary"
+            type="submit"
+            style={{ marginTop: "20px", width: "100%" }}
+          >
+            <FontAwesomeIcon icon={faSave} /> Save Changes
+          </button>
+
         </div>
       </form>
     </div>

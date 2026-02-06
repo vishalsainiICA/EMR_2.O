@@ -7,34 +7,6 @@ import { useApi } from '../../../api/useApi';
 import { personalAssitantApi } from '../../../api/apiService';
 import { toast } from 'react-toastify';
 
-const snapshot = {
-  "importantPoints": [
-    "The patient is a 61-year-old female with a BMI of 21.5 kg/m².",
-    "Serum TSH is elevated at 12.08 µIU/mL, consistent with hypothyroidism.",
-    "AST (53.2 U/L) and ALT (51.2 U/L) are mildly elevated.",
-    "Liver stiffness measured by FibroTouch is 7.3 kPa, suggesting early fibrosis (F1‑F2).",
-    "CT abdomen shows normal solid organs, a 16 × 18 mm lipoma in the splenic flexure, and a compression fracture of the L2 vertebra with reduced bone density.",
-    "Hemoglobin is 11.3 g/dL indicating mild anemia."
-  ],
-  "flags": [
-    {
-      "level": "high",
-      "color": "red",
-      "message": "Elevated TSH (12.08 µIU/mL) indicating hypothyroidism."
-    },
-    {
-      "level": "high",
-      "color": "red",
-      "message": "Compression fracture of L2 vertebra with reduced bone density."
-    },
-    {
-      "level": "medium",
-      "color": "yellow",
-      "message": "Mildly elevated AST and ALT suggesting hepatic injury."
-    }
-  ],
-  "summaryText": "61-year-old female presents with elevated TSH (12.08 µIU/mL) indicating hypothyroidism, mild transaminase elevation (AST 53.2 U/L, ALT 51.2 U/L) and early liver fibrosis (FibroTouch stiffness 7.3 kPa). Imaging reveals a small lipoma in the splenic flexure and a compression fracture of the L2 vertebra with osteopenia. Laboratory studies show mild anemia (Hb 11.3 g/dL)."
-}
 const Initialassessment = () => {
   // State to toggle form visibility
   const [patients, setPatients] = useState([]);
@@ -114,7 +86,7 @@ const Initialassessment = () => {
   }, 100);
 
   // Dummy Data for Tabl
-  const { request: loadpatient, loading, error } = useApi(personalAssitantApi.loadPatient)
+  const { request: loadpatient, loading, error } = useApi(personalAssitantApi.assessmentsPatient)
   const { request: saveIntialAssessment, loading: intiLoading, error: intialError } = useApi(personalAssitantApi.saveInitialAssessments)
 
   const handleLoadPatient = async () => {

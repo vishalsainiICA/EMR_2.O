@@ -105,8 +105,8 @@ const PatientRecords = () => {
 
         </div>
         <div className="filter-controls">
-         
-          <div style={{width:"100%",display:"flex",justifyContent:"space-between",padding:"0px 0px"}}>
+
+          <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: "0px 0px" }}>
 
             <div className="filter-btn-wrapper">
               <button
@@ -138,7 +138,7 @@ const PatientRecords = () => {
               <i className="ri-upload-2-line"></i> Export (.excel)
             </button>
           </div>
-           <div style={{justifyContent:"space-between"}}>
+          <div style={{ justifyContent: "space-between" }}>
 
             <input
               type="date"
@@ -255,13 +255,13 @@ const PatientRecords = () => {
 
                   {/* Actions */}
                   <td className="action-handler">
-                    <button
+                    {/* <button
                       className="action-btn"
-                    // onClick={() => handleEditPatient(item)}
+                      onClick={() => handleEditPatient(item)}
                     >
 
                       <FontAwesomeIcon icon={faEdit} /> Edit
-                    </button>
+                    </button> */}
 
                     <button
                       className="action-btn"
@@ -452,7 +452,7 @@ const PatientRecords = () => {
                   className="btn btn-outline"
                   onClick={() => navigate("/pa/pa_initial_assessment", { state: { patient: selectedPatient } })}
                 >
-                  <FontAwesomeIcon icon={faHospitalUser} /> Create New Assessment
+                  <FontAwesomeIcon icon={faHospitalUser} /> Create New Priscribtion
                 </button>
               </div>
             </div>

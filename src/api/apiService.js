@@ -11,6 +11,7 @@ export const personalAssitantApi = {
   getUsers: () => API.get("/users"),
   getProfile: () => API.get("/profile"),
   loadPatient: () => API.get("/assitant/no-assessment-patient"),
+  assessmentsPatient: () => API.get("/assitant/get-assessment-patient"),
   getAllPatient: (date = null, status = null) =>
     API.get("/assitant/all-patient-record", {
       params: {
