@@ -626,7 +626,7 @@ tr:hover {
   padding: 20px;
   box-shadow: var(--card-shadow);
   transition: all 0.3s ease;
-  /* cursor: pointer; */
+  cursor: pointer;
   border: 1px solid var(--border-color);
 }
 
@@ -1029,21 +1029,22 @@ tr:hover {
   gap: 10px;
 }
 
-.edit_dropdown{
+.edit_dropdown {
   width: 55px;
   height: 30px;
   justify-content: center;
   display: grid;
   align-items: center;
-  
+
 }
-.dropdown{
+
+.dropdown {
   width: 80px;
   /* height: 25px; */
   justify-content: center;
   /* padding: 8px; */
   /* border: 1px solid var(--border-color); */
-  
+
   /* border-radius: 6px; */
   cursor: pointer;
   transition: all 0.2s;
@@ -1059,11 +1060,11 @@ tr:hover {
 
 
 
-.edit_dropdown:hover{
+.edit_dropdown:hover {
   height: auto;
   color: black;
   background-color: lightgray;
-  
+
 }
 
 

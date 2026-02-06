@@ -646,25 +646,33 @@ const NewPatient = () => {
                       <h5>{obj?.category}</h5>
 
                       {obj?.files?.map((file, i) => (
-                        <div style={{
-                          display: 'flex'
-                        }}>
-                          <p key={i}>✓ {file.name || file} (Processing)
-                          </p>
+                        <div
+                          key={i}
+                          style={{ display: "flex", alignItems: "center", justifyContent: 'center' }}
+                        >
+                          <p>✓ {file.name || file} (Processing)</p>
+
                           <i
-                            style={{
-                              cursor: 'pointer'
-                            }}
                             className="ri-close-fill"
+                            style={{ cursor: "pointer", color: "red", fontSize: "20px", marginLeft: 8 }}
                             onClick={() => {
-                              setFiles(prev => prev.filter((_, index) => index !== i));
+                              setFiles(prev =>
+                                prev.map((item, idx) => {
+                                  if (idx !== index) return item;
+
+                                  return {
+                                    ...item,
+                                    files: item.files.filter((_, fileIndex) => fileIndex !== i)
+                                  };
+                                })
+                              );
                             }}
                           />
                         </div>
-
                       ))}
                     </div>
                   ))}
+
 
                 </div>
               )}

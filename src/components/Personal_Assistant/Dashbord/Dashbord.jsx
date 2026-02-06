@@ -563,7 +563,7 @@ function Personalassitant() {
             </div>
           </div>
 
-          <div className="card">
+          <div className="card" onClick={() => navigate("/pa/pa_initial_assessment")}>
             <div className="card-header">
               <div className="card-alignment">
                 <div className="card-count">
@@ -577,7 +577,7 @@ function Personalassitant() {
             </div>
           </div>
 
-          <div className="card">
+          <div className="card" onClick={() => navigate("/pa/patienthistory")}>
             <div className="card-header">
               <div className="card-alignment">
                 <div className="card-count">
