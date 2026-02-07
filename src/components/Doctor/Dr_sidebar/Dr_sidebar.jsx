@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import "./Dr_sidebar.css"
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard, faCog, faDashboard, faHistory, faPrescription, faSearch, faUserInjured, faUserMd } from '@fortawesome/free-solid-svg-icons';
+import { faClipboard, faCog, faUser, faDashboard, faHistory, faPrescription, faSearch, faUserInjured, faUserMd } from '@fortawesome/free-solid-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
 import { LogOut } from 'lucide-react';
 
@@ -48,8 +48,8 @@ const Side_bar = () => {
             <span>Prescription Management</span>
           </NavLink> */}
           <NavLink to="/dr/setting" className="nav-item" data-page="settings" onClick={() => setHeadline(" Settings")} >
-            <FontAwesomeIcon icon={faCog} />
-            <span>Settings</span>
+            <FontAwesomeIcon icon={faUser} />
+            <span>Profile</span>
           </NavLink>
           <div className="menu-item logout-item" onClick={handleLogout}>
             <LogOut size={16} /> <span>Sign Out</span>

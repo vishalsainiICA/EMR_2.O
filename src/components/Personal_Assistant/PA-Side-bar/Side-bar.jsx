@@ -4,7 +4,7 @@ import Newdashbord from '../NewPatientRegister/NewPatientRegister.jsx';
 import "./Side-bar.css"
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard, faCog, faDashboard, faHistory, faSearch, faUserInjured } from '@fortawesome/free-solid-svg-icons';
+import { faClipboard, faCog, faDashboard, faHistory, faPerson, faSearch, faUser, faUserInjured } from '@fortawesome/free-solid-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
 import { LogOut } from 'lucide-react';
 const Side_bar = () => {
@@ -55,10 +55,10 @@ const Side_bar = () => {
             <i className="fas fa-user-md"></i>
             <span>Doctor Queue</span>
           </NavLink> */}
-          <NavLink to="/pa/pa_setting" className="nav-item" data-page="settings" onClick={() => setHeadline("PA Settings")} >
+          <NavLink to="/pa/pa_setting" className="nav-item" data-page="settings" onClick={() => setHeadline("Profile")} >
             {/* <i className="fas fa-cog"></i> */}
-            <FontAwesomeIcon icon={faCog} />
-            <span>Settings</span>
+            <FontAwesomeIcon icon={faUser} />
+            <span>Profile</span>
           </NavLink>
           <hr />
           <div className="menu-item logout-item" onClick={handleLogout}>

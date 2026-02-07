@@ -38,7 +38,7 @@
 //             <div className="settings-grid">
 
 //                 <div className="setting-card">
-//                     <h3><FontAwesomeIcon icon={faUserCog} /> Account Settings</h3>
+//                     <h3><FontAwesomeIcon icon={faUserCog} /> Profile SettingsSettings</h3>
 //                     <div className="setting-option">
 //                         <span>Email Notifications</span>
 //                         <label className="toggle-switch">
@@ -240,7 +240,7 @@ const SettingsComponent = () => {
     <div className="section" id="settingsSection">
 
       <div className="section-header">
-        <h2 className="section-title">Settings</h2>
+        <h2 className="section-title">Profile</h2>
         <button className="btn btn-primary" onClick={edit}>Edit</button>
       </div>
 
@@ -250,7 +250,7 @@ const SettingsComponent = () => {
         <div className="patient-info-section">
           <h3 style={{ display: "flex", marginBottom: "20px", gap: "5px" }}>
             <FontAwesomeIcon icon={faUserCog} />
-            Account Settings
+            Profile Settings
           </h3>
 
           <div className="form-group">

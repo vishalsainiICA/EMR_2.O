@@ -6,35 +6,8 @@ import { doctorApi } from "../../../api/apiService";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faLink, faFileMedicalAlt, faPrescription, faRupeeSign, faStethoscope, faSyncAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
-const snapshot = {
-  "importantPoints": [
-    "The patient is a 61-year-old female with a BMI of 21.5 kg/m².",
-    "Serum TSH is elevated at 12.08 µIU/mL, consistent with hypothyroidism.",
-    "AST (53.2 U/L) and ALT (51.2 U/L) are mildly elevated.",
-    "Liver stiffness measured by FibroTouch is 7.3 kPa, suggesting early fibrosis (F1‑F2).",
-    "CT abdomen shows normal solid organs, a 16 × 18 mm lipoma in the splenic flexure, and a compression fracture of the L2 vertebra with reduced bone density.",
-    "Hemoglobin is 11.3 g/dL indicating mild anemia."
-  ],
-  "flags": [
-    {
-      "level": "high",
-      "color": "red",
-      "message": "Elevated TSH (12.08 µIU/mL) indicating hypothyroidism."
-    },
-    {
-      "level": "high",
-      "color": "red",
-      "message": "Compression fracture of L2 vertebra with reduced bone density."
-    },
-    {
-      "level": "medium",
-      "color": "yellow",
-      "message": "Mildly elevated AST and ALT suggesting hepatic injury."
-    }
-  ],
-  "summaryText": "61-year-old female presents with elevated TSH (12.08 µIU/mL) indicating hypothyroidism, mild transaminase elevation (AST 53.2 U/L, ALT 51.2 U/L) and early liver fibrosis (FibroTouch stiffness 7.3 kPa). Imaging reveals a small lipoma in the splenic flexure and a compression fracture of the L2 vertebra with osteopenia. Laboratory studies show mild anemia (Hb 11.3 g/dL)."
-}
 const DashboardComponent = () => {
   const [text, setText] = useState("");
   const [textForLabtest, setextForLabtest] = useState("");
@@ -46,7 +19,6 @@ const DashboardComponent = () => {
   const [loadIllness, setloadIllness] = useState([]);
   const [isImageOpen, setisImageOpen] = useState(null)
   const [diagnosisType, setDiagnosisType] = useState("Provisional");
-
   const [state, setState] = useState({
     labTest: [],
     illnessData: [],
@@ -58,7 +30,6 @@ const DashboardComponent = () => {
     selectedSymtompsData: [],
     selectedMedicieneData: [],
   });
-
   const [filterState, setfilterState] = useState({
     filterLabTest: [],
     filterIllnessData: [],
@@ -72,11 +43,8 @@ const DashboardComponent = () => {
   //  Modal State
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const [currentPatientForPrescription, setCurrentPatientForPrescription] = useState(null);
-
   //  NEW: Form view OR Final view (same modal)
   const [isFinalPrescriptionView, setIsFinalPrescriptionView] = useState(false);
-
-
   //  NEW: PA Documents Modal State
   const [isPaDocumentsModalOpen, setIsPaDocumentsModalOpen] = useState(false)
   //  NEW: Final Prescription Data
@@ -91,6 +59,8 @@ const DashboardComponent = () => {
     tests: "",
     advice: "",
   });
+
+  const navigate = useNavigate()
 
   const { request: loadpatient, loading, error } = useApi(doctorApi.loadPatient)
   const { request: getAllIllnessAndPharmacydata, loading: loadillnessAndMedicien, error: errorloadillnessAndMedicien } = useApi(doctorApi.getAllIllnessAndPharmacydata)
@@ -465,82 +435,105 @@ Patient Summary:${JSON.stringify(currentPatientForPrescription?.pastDocumentSumm
       }));
     }
   };
+
+  useEffect(() => {
+    const isError = error || errorloadillnessAndMedicien || null
+    if (isError) {
+      toast.error(isError)
+      navigate("/login")
+    }
+  })
   return (
     <div className="Dr_Dashboard_section section active" id="dashboardSection" style={{ display: "block" }}>
       {/* Stats Cards */}
-      <div className="stats-cards">
-        <div className="card" id="s">
-          <div className="card-header">
-            <div className="card-alignment">
-              {/* {console.log("metircs", metrices?.todayConsultations)
+      {loading && (
+        <div className="center">
+          <p>Loading...</p>
+          <div className="loader-mini"></div>
+
+        </div>
+      )}
+      {!loading && (
+        <div className="stats-cards">
+          <div className="card" id="s" onClick={() => {
+            const el = document.getElementById("table-container-id");
+            el?.scrollIntoView({ behavior: "smooth" });
+          }}
+
+          >
+            <div className="card-header">
+              <div className="card-alignment">
+                {/* {console.log("metircs", metrices?.todayConsultations)
               } */}
-              <div className="card-count">{metrices?.todayConsultations}</div>
-              <div className="card-title">Today's Consultations</div>
-            </div>
-            <div className="card-icon consultation">
-              <FontAwesomeIcon icon={faStethoscope} />
-            </div>
-          </div>
-          <div className="card-trend">+2 from yesterday</div>
-        </div>
-
-        <div className="card" id="waitingPatientsCard">
-          <div className="card-header">
-            <div className="card-alignment">
-              <div className="card-count">{metrices?.readyforConsultation}</div>
-              <div className="card-title">Ready for Consultation</div>
-            </div>
-            <div className="card-icon waiting">
-              <FontAwesomeIcon icon={faClock} />
-            </div>
-          </div>
-          <div className="card-trend down">-1 from yesterday</div>
-        </div>
-
-        <div className="card" id="prescriptionsCard">
-          <div className="card-header">
-            <div className="card-alignment" >
-              <div className="card-count">{metrices?.todayPrescription}</div>
-              <div className="card-title">Prescriptions Today</div>
-            </div>
-            <div className="card-icon prescription">
-              <FontAwesomeIcon icon={faPrescription} />
-            </div>
-          </div>
-          <div className="card-trend">+4 this week</div>
-        </div>
-
-        <div className="card" id="revenueCard">
-          <div className="card-header">
-            <div className="card-alignment">
-              <div
-                className={`revenue-amount ${!showRevenue ? "hidden" : ""}`}
-                id="revenueAmount"
-                style={!showRevenue ? { color: "transparent", textShadow: "0 0 8px rgba(0, 0, 0, 0.2)" } : {}}
-              >
-                ₹ 45,600
+                <div className="card-count">{metrices?.todayConsultations || "0"}</div>
+                <div className="card-title">Today's Consultations</div>
               </div>
-              <div className="card-title">Monthly Revenue</div>
+              <div className="card-icon consultation">
+                <FontAwesomeIcon icon={faStethoscope} />
+              </div>
             </div>
-            <div className="card-icon revenue">
-              <FontAwesomeIcon icon={faRupeeSign} />
-            </div>
+            <div className="card-trend">+2 from yesterday</div>
           </div>
 
-          <div className="revenue-toggle-container">
-            <span className="toggle-label">Hide Amount</span>
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                id="revenueToggle"
-                checked={!showRevenue}
-                onChange={() => setShowRevenue(!showRevenue)}
-              />
-              <span className="toggle-slider"></span>
-            </label>
+          <div className="card" id="waitingPatientsCard" onClick={() => navigate("/dr/consultation_Queue")}>
+            <div className="card-header">
+              <div className="card-alignment">
+                <div className="card-count">{metrices?.readyforConsultation || "0"}</div>
+                <div className="card-title">Ready for Consultation</div>
+              </div>
+              <div className="card-icon waiting">
+                <FontAwesomeIcon icon={faClock} />
+              </div>
+            </div>
+            <div className="card-trend down">-1 from yesterday</div>
+          </div>
+
+          <div className="card" id="prescriptionsCard" onClick={() => navigate("/dr/patientRecord")}>
+            <div className="card-header">
+              <div className="card-alignment" >
+                <div className="card-count">{metrices?.todayPrescription || "0"}</div>
+                <div className="card-title">Prescriptions Today</div>
+              </div>
+              <div className="card-icon prescription">
+                <FontAwesomeIcon icon={faPrescription} />
+              </div>
+            </div>
+            <div className="card-trend">+4 this week</div>
+          </div>
+
+          <div className="card" id="revenueCard">
+            <div className="card-header">
+              <div className="card-alignment">
+                <div
+                  className={`revenue-amount ${!showRevenue ? "hidden" : ""}`}
+                  id="revenueAmount"
+                  style={!showRevenue ? { color: "transparent", textShadow: "0 0 8px rgba(0, 0, 0, 0.2)" } : {}}
+                >
+                  ₹ 45,600
+                </div>
+                <div className="card-title">Monthly Revenue</div>
+              </div>
+              <div className="card-icon revenue">
+                <FontAwesomeIcon icon={faRupeeSign} />
+              </div>
+            </div>
+
+            <div className="revenue-toggle-container">
+              <span className="toggle-label">Hide Amount</span>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="revenueToggle"
+                  checked={!showRevenue}
+                  onChange={() => setShowRevenue(!showRevenue)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
 
       {/* Consultation Queue */}
       <div className="consultation-queue">
@@ -558,7 +551,7 @@ Patient Summary:${JSON.stringify(currentPatientForPrescription?.pastDocumentSumm
           </div>
         </div>
 
-        <div className="table-container">
+        <div id="table-container-id" className="table-container">
           <table  >
             <thead >
               <tr>
@@ -575,12 +568,13 @@ Patient Summary:${JSON.stringify(currentPatientForPrescription?.pastDocumentSumm
 
             <tbody id="dashboardQueueTable">
               {/*Loading state */}
-              {console.log(patients)}
+              {console.log("patient", patients)}
 
               {loading && (
                 <tr>
                   <td colSpan="8" style={{ textAlign: "center", padding: "20px" }}>
                     <i className="fas fa-spinner fa-spin"></i> Loading patients...
+                    <div className="loader-mini"></div>
                   </td>
                 </tr>
               )}
@@ -595,82 +589,81 @@ Patient Summary:${JSON.stringify(currentPatientForPrescription?.pastDocumentSumm
               )}
 
               {/* Patient rows */}
-              {!loading &&
-                patients?.map((patient, index) => (
-                  <tr key={patient._id}>
-                    {/* Queue No */}
-                    <td>
-                      <strong>{patient.uid}</strong>
-                    </td>
+              {!loading && !error && patients?.map((patient, index) => (
+                <tr key={patient._id}>
+                  {/* Queue No */}
+                  <td>
+                    <strong>{patient.uid}</strong>
+                  </td>
 
-                    {/* Patient Info */}
-                    <td>
-                      <strong>{patient.name}</strong>
-                    </td>
+                  {/* Patient Info */}
+                  <td>
+                    <strong>{patient.name}</strong>
+                  </td>
 
-                    {/* Age / Gender */}
-                    <td>
-                      {patient.age} / {patient.gender}
-                    </td>
+                  {/* Age / Gender */}
+                  <td>
+                    {patient.age} / {patient.gender}
+                  </td>
 
-                    {/* Chief Complaint */}
-                    <td>
-                      {patient.initialAssementId?.complaint || "-"}
-                    </td>
+                  {/* Chief Complaint */}
+                  <td>
+                    {patient.initialAssementId?.complaint || "-"}
+                  </td>
 
-                    {/* Assessment */}
-                    <td>
-                      <div style={{ fontSize: "11px" }}>
-                        <div>
-                          <i className="fas fa-notes-medical"></i> Initial Assessment
-                        </div>
-                        <div>
-                          {patient.initialAssementId?.notes
-                            ? patient.initialAssementId.notes.substring(0, 40) + "..."
-                            : "-"}
-                        </div>
+                  {/* Assessment */}
+                  <td>
+                    <div style={{ fontSize: "11px" }}>
+                      <div>
+                        <i className="fas fa-notes-medical"></i> Initial Assessment
                       </div>
-                    </td>
+                      <div>
+                        {patient.initialAssementId?.notes
+                          ? patient.initialAssementId.notes.substring(0, 40) + "..."
+                          : "-"}
+                      </div>
+                    </div>
+                  </td>
 
-                    {/* Priority / Status */}
-                    <td>
-                      <span className="priority normal">
-                        {patient.status}
-                      </span>
-                    </td>
+                  {/* Priority / Status */}
+                  <td>
+                    <span className="priority normal">
+                      {patient.status}
+                    </span>
+                  </td>
 
-                    {/* Prescription Status */}
-                    <td>
-                      {patient.isPrescbribedDone ? "Completed" : "Pending"}
-                    </td>
+                  {/* Prescription Status */}
+                  <td>
+                    {patient.isPrescbribedDone ? "Completed" : "Pending"}
+                  </td>
 
-                    {/* Action */}
-                    <td>
-                      {patient?.currentPrescriptionId ?
-                        (
-                          <button
+                  {/* Action */}
+                  <td>
+                    {patient?.currentPrescriptionId ?
+                      (
+                        <button
 
-                            disabled={true}
-                            className="btn btn-primary"
-                            onClick={() => showPrescriptionModal(patient._id)}
-
-                          >
-                            {"Prescribe Done"}
-                          </button>
-                        ) :
-                        (<button
+                          disabled={true}
                           className="btn btn-primary"
                           onClick={() => showPrescriptionModal(patient._id)}
 
                         >
+                          {"Prescribe Done"}
+                        </button>
+                      ) :
+                      (<button
+                        className="btn btn-primary"
+                        onClick={() => showPrescriptionModal(patient._id)}
 
-                          {"Prescribe"}
-                        </button>)
-                      }
+                      >
 
-                    </td>
-                  </tr>
-                ))}
+                        {"Prescribe"}
+                      </button>)
+                    }
+
+                  </td>
+                </tr>
+              ))}
             </tbody>
 
           </table>

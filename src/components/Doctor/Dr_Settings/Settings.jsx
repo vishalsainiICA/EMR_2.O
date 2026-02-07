@@ -11,11 +11,11 @@
 //       </div>
 
 //       <div className="consultation-container">
-//         {/* Account Settings */}
+//         {/* Profile SettingsSettings */}
 //         <div className="patient-info-section">
 //           <h3 style={{ display:"flex",marginBottom: '20px', gap:"5px" }}>
 //             < FontAwesomeIcon icon={faUserCog}/>
-//              Account Settings
+//              Profile SettingsSettings
 //           </h3>
 
 //           <div className="form-group">
@@ -100,7 +100,7 @@ const SettingsComponent = () => {
         <div className="patient-info-section">
           <h3 style={{ display: "flex", marginBottom: "20px", gap: "5px" }}>
             <FontAwesomeIcon icon={faUserCog} />
-            Account Settings
+            Profile SettingsSettings
           </h3>
 
           <div className="form-group">
